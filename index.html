@@ -119,7 +119,7 @@ Engine
 <button onclick="downloadTxt()">Download .txt</button>
 <button onclick="saveBuild()">Save Build</button>
 <button onclick="loadBuild()">Load Build</button>
-
+<button onclick="shareBuild()">Share Build</button>
 </div>
 
 <div class="card">
@@ -347,10 +347,57 @@ function loadBuild() {
   alert("Build Loaded!");
 }
 window.addEventListener("load", () => {
-  if (localStorage.getItem("corewright_build")) {
+
+  loadFromURL(); // 👈 FIRST priority
+
+  if (!window.location.search && localStorage.getItem("corewright_build")) {
     loadBuild();
   }
+
 });
+function shareBuild() {
+
+  const build = {
+    level: document.getElementById("level").value,
+    int: document.getElementById("int").value,
+    engine: document.getElementById("engine").value,
+    infusions: getSelectedInfusions()
+  };
+
+  // Encode build into URL
+  const encoded = btoa(JSON.stringify(build));
+
+  const url = `${window.location.origin}${window.location.pathname}?build=${encoded}`;
+
+  // Copy to clipboard
+  navigator.clipboard.writeText(url);
+
+  alert("Share link copied to clipboard!");
+}
+function loadFromURL() {
+
+  const params = new URLSearchParams(window.location.search);
+  const data = params.get("build");
+
+  if (!data) return;
+
+  try {
+    const build = JSON.parse(atob(data));
+
+    document.getElementById("level").value = build.level;
+    document.getElementById("int").value = build.int;
+    document.getElementById("engine").value = build.engine;
+
+    document.querySelectorAll("#infusions input").forEach(cb => {
+      cb.checked = build.infusions.includes(cb.value);
+    });
+
+    buildGolem();
+
+  } catch (e) {
+    console.error("Invalid build data");
+  }
+}
 </script>
 
 </body>
