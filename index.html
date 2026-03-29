@@ -362,44 +362,75 @@ function buildGolem() {
 const engine = document.getElementById("engine").value;
 
 golem.engine = engine;
+golem.engineEffects = [];
 
 switch (engine) {
+
   case "flame":
     golem.engineName = "Flame Engine";
+
+    // 🔥 Mechanical Effects
+    golem.resistances = (golem.resistances || []).concat(["fire"]);
+    golem.bonusDamage = (golem.bonusDamage || 0) + player.intMod;
+    golem.auraDamage = player.intMod;
+
     golem.engineEffects = [
       "Resistance to fire damage",
-      "Creatures that hit the golem take fire damage",
-      "Attacks deal +fire damage (INT modifier)",
+      `Creatures that hit the golem take ${player.intMod} fire damage`,
+      `Attacks deal +${player.intMod} fire damage`,
       "Emits bright light (20 ft)"
     ];
     break;
 
+
   case "stone":
     golem.engineName = "Stone Engine";
+
+    // 🪨 Mechanical Effects
+    golem.damageReduction = player.pb;
+    golem.advVsForcedMovement = true;
+    golem.ignoreDifficultTerrain = true;
+
     golem.engineEffects = [
-      "Reduce all damage by proficiency bonus",
+      `Reduce all damage by ${player.pb}`,
       "Advantage vs being moved or knocked prone",
-      "Difficult terrain does not affect movement"
+      "Ignores difficult terrain"
     ];
     break;
 
+
   case "frost":
     golem.engineName = "Frost Engine";
+
+    // ❄️ Mechanical Effects
+    golem.resistances = (golem.resistances || []).concat(["cold"]);
+    golem.slowOnHit = 10;
+    golem.difficultTerrainAura = true;
+
     golem.engineEffects = [
       "On hit, reduce target speed by 10 ft",
-      "Creatures near golem treat ground as difficult terrain",
+      "Nearby ground becomes difficult terrain",
       "Resistance to cold damage"
     ];
     break;
 
+
   case "aether":
     golem.engineName = "Aether Engine";
+
+    // 🌌 Mechanical Effects
+    golem.flySpeed = golem.speed;
+    golem.hover = true;
+    golem.phasing = true;
+    golem.forceDamageBonus = player.intMod;
+
     golem.engineEffects = [
-      "Gain hover speed equal to movement",
+      `Fly speed ${golem.speed} ft (hover)`,
       "Can move through creatures",
-      "Bonus force damage on attacks"
+      `Deals +${player.intMod} force damage`
     ];
     break;
+
 
   default:
     golem.engineName = "No Engine";
@@ -424,7 +455,7 @@ statblock.innerHTML = `
 
   <div class="stat-line"><strong>Armor Class</strong> ${golem.ac}</div>
   <div class="stat-line"><strong>Hit Points</strong> ${golem.hp}</div>
-  <div class="stat-line"><strong>Speed</strong> ${golem.speed} ft.</div>
+ <div class="stat-line"><strong>Speed</strong>${golem.speed} ft${golem.flySpeed ? `, fly ${golem.flySpeed} ft (hover)` : ""}</div>
 
   <div class="ability-grid">
     <div><strong>STR</strong><br>${golem.str}</div>
@@ -444,9 +475,16 @@ statblock.innerHTML = `
 
 <div class="stat-section">
   <strong>Traits</strong>
+  ${golem.auraDamage ? `<li><strong>Flame Aura.</strong> Creatures that hit the golem take ${golem.auraDamage} fire damage.</li>` : ""}
+
+${golem.slowOnHit ? `<li><strong>Frost Strike.</strong> Targets hit have speed reduced by ${golem.slowOnHit} ft.</li>` : ""}
+
+${golem.damageReduction ? `<li><strong>Stone Body.</strong> Reduces all damage taken by ${golem.damageReduction}.</li>` : ""}
+
+${golem.phasing ? `<li><strong>Phasing.</strong> Can move through creatures and objects.</li>` : ""}
   <div class="stat-section">
     <div class="stat-line"><strong>Saving Throws</strong> ${golem.allSaveProf ? "Proficient in all saves" : "—"}</div>
-    <div class="stat-line"><strong>Damage Resistances</strong> ${golem.adaptiveResist ? "Adaptive" : "—"}</div>
+    <div class="stat-line"><strong>Damage Resistances</strong>${golem.resistances ? golem.resistances.join(", ") : "—"}</div>
     <div class="stat-line"><strong>Condition Immunities</strong> charmed, exhaustion</div>
     <div class="stat-line"><strong>Senses</strong> darkvision 60 ft., passive Perception 10</div>
     <div class="stat-line"><strong>Languages</strong> understands your commands</div>
@@ -465,8 +503,15 @@ statblock.innerHTML = `
   <div class="stat-section">
     <strong>Actions</strong>
     <ul>
-      <li><strong>Slam.</strong> Melee Weapon Attack: +${Math.floor(golem.str / 2) + 2} to hit, reach ${golem.reach} ft., one target. 
-      Hit: ${Math.floor(golem.str / 2) + 3} bludgeoning damage ${golem.bonusDamage ? "+ bonus damage" : ""}</li>
+     <li>
+<strong>Slam.</strong> Melee Weapon Attack: 
++${Math.floor(golem.str / 2) + 2} to hit, 
+reach ${golem.reach} ft., one target. 
+
+Hit: ${Math.floor(golem.str / 2) + 3} bludgeoning damage
+${golem.bonusDamage ? ` + ${golem.bonusDamage} bonus damage` : ""}
+${golem.forceDamageBonus ? ` + ${golem.forceDamageBonus} force damage` : ""}
+</li>
 
       ${golem.multiAttack ? "<li><strong>Multiattack.</strong> The golem makes two attacks.</li>" : ""}
       ${golem.extraAttack ? "<li><strong>Overdrive.</strong> Gains one additional attack.</li>" : ""}
