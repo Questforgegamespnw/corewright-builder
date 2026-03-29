@@ -52,6 +52,31 @@ button { margin:5px; padding:10px; font-size:1em; }
 .nav a:hover {
   text-decoration:underline;
 }
+  #statblock {
+  background: #fffaf0;
+  border: 2px solid #8b7355;
+  padding: 15px;
+  border-radius: 8px;
+  font-family: "Georgia", serif;
+}
+
+.stat-title {
+  font-size: 1.4em;
+  font-weight: bold;
+  border-bottom: 2px solid #8b7355;
+  margin-bottom: 10px;
+}
+
+.stat-line {
+  margin: 4px 0;
+}
+
+.ability-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+  margin-top: 10px;
+}
 </style>
 </head>
 <body>
@@ -97,7 +122,10 @@ Modes<br>
 <button onclick="downloadTxt()">Download .txt</button>
 <button onclick="buildGolem()">Build Golem</button>
 </div>
-
+<div id="output" class="card">
+  <h2>Golem Stat Block</h2>
+  <div id="statblock"></div>
+</div>
 <div class="card printable">
 <h2>Construct</h2>
 <div id="out" class="statblock"></div>
@@ -317,7 +345,34 @@ function buildGolem() {
     }
   });
 
-  console.log(golem);
+const statblock = document.getElementById("statblock");
+
+statblock.innerHTML = `
+  <div class="stat-title">Custom Golem</div>
+
+  <div class="stat-line"><strong>Armor Class:</strong> ${golem.ac}</div>
+  <div class="stat-line"><strong>Hit Points:</strong> ${golem.hp}</div>
+  <div class="stat-line"><strong>Speed:</strong> ${golem.speed} ft</div>
+
+  <div class="ability-grid">
+    <div><strong>STR</strong><br>${golem.str}</div>
+    <div><strong>DEX</strong><br>${golem.dex}</div>
+    <div><strong>CON</strong><br>${golem.con}</div>
+  </div>
+
+  <hr>
+
+  <div class="stat-line"><strong>Infusions:</strong> ${getSelectedInfusions().join(", ") || "None"}</div>
+
+  <div class="stat-line"><strong>Special Traits:</strong></div>
+  <ul>
+    ${golem.multiAttack ? "<li>Multiattack</li>" : ""}
+    ${golem.reactionAttack ? "<li>Reaction Attack</li>" : ""}
+    ${golem.phasing ? "<li>Phase Shift</li>" : ""}
+    ${golem.regen ? `<li>Regeneration (${golem.regen}/turn)</li>` : ""}
+    ${golem.damageReduction ? `<li>Damage Reduction (${golem.damageReduction})</li>` : ""}
+  </ul>
+`;
 }
 }
 </script>
