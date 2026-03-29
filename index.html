@@ -115,7 +115,6 @@ Engine
 <div id="infusions"></div>
 
 <br>
-<button onclick="buildGolem()">Build Golem</button>
 <button onclick="printGolem()">Print / Save PDF</button>
 <button onclick="downloadTxt()">Download .txt</button>
 
@@ -278,7 +277,24 @@ function downloadTxt(){
   a.download = 'golem.txt';
   a.click();
 }
+// AUTO UPDATE SYSTEM
 
+function setupAutoUpdate() {
+
+  // Inputs
+  document.getElementById("level").addEventListener("input", buildGolem);
+  document.getElementById("int").addEventListener("input", buildGolem);
+  document.getElementById("engine").addEventListener("change", buildGolem);
+
+  // Infusion checkboxes (dynamic)
+  document.getElementById("infusions").addEventListener("change", buildGolem);
+}
+
+// Run once on load
+setupAutoUpdate();
+
+// Build once at start so it's not empty
+buildGolem();
 </script>
 
 </body>
