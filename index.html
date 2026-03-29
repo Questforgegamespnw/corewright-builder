@@ -267,5 +267,59 @@ navigator.clipboard.writeText(text).then(()=>{
 
 </script>
 <script src="js/infusions.js"></script>
+<script>
+  const infusionContainer = document.getElementById("infusions");
+
+function renderInfusions() {
+  infusionContainer.innerHTML = "<h3>Infusions</h3>";
+
+  Object.entries(INFUSIONS).forEach(([key, infusion]) => {
+    const label = document.createElement("label");
+    label.style.display = "block";
+
+    label.innerHTML = `
+      <input type="checkbox" value="${key}">
+      ${infusion.name}
+    `;
+
+    infusionContainer.appendChild(label);
+  });
+}
+
+renderInfusions();  
+function getSelectedInfusions() {
+  const checkboxes = document.querySelectorAll("#infusions input:checked");
+  return Array.from(checkboxes).map(cb => cb.value);
+function buildGolem() {
+  const player = {
+    level: parseInt(document.getElementById("level").value),
+    intMod: parseInt(document.getElementById("int").value),
+    pb: Math.ceil((parseInt(document.getElementById("level").value) - 1) / 4) + 1,
+    spellDC: 8 + Math.ceil((parseInt(document.getElementById("level").value) - 1) / 4) + 1 + parseInt(document.getElementById("int").value)
+  };
+
+  let golem = {
+    hp: 50,
+    ac: 15,
+    str: 14,
+    con: 14,
+    dex: 10,
+    speed: 30,
+    reach: 5
+  };
+
+  const selectedInfusions = getSelectedInfusions();
+
+  selectedInfusions.forEach(key => {
+    const infusion = INFUSIONS[key];
+    if (infusion) {
+      infusion.apply(golem, player);
+    }
+  });
+
+  console.log(golem);
+}
+}
+</script>
 </body>
 </html>
