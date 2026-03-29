@@ -359,7 +359,52 @@ function buildGolem() {
     speed: 30,
     reach: 5
   };
+const engine = document.getElementById("engine").value;
 
+golem.engine = engine;
+
+switch (engine) {
+  case "flame":
+    golem.engineName = "Flame Engine";
+    golem.engineEffects = [
+      "Resistance to fire damage",
+      "Creatures that hit the golem take fire damage",
+      "Attacks deal +fire damage (INT modifier)",
+      "Emits bright light (20 ft)"
+    ];
+    break;
+
+  case "stone":
+    golem.engineName = "Stone Engine";
+    golem.engineEffects = [
+      "Reduce all damage by proficiency bonus",
+      "Advantage vs being moved or knocked prone",
+      "Difficult terrain does not affect movement"
+    ];
+    break;
+
+  case "frost":
+    golem.engineName = "Frost Engine";
+    golem.engineEffects = [
+      "On hit, reduce target speed by 10 ft",
+      "Creatures near golem treat ground as difficult terrain",
+      "Resistance to cold damage"
+    ];
+    break;
+
+  case "aether":
+    golem.engineName = "Aether Engine";
+    golem.engineEffects = [
+      "Gain hover speed equal to movement",
+      "Can move through creatures",
+      "Bonus force damage on attacks"
+    ];
+    break;
+
+  default:
+    golem.engineName = "No Engine";
+    golem.engineEffects = [];
+}
   const selectedInfusions = getSelectedInfusions();
 
   selectedInfusions.forEach(key => {
@@ -389,7 +434,16 @@ statblock.innerHTML = `
     <div><strong>WIS</strong><br>—</div>
     <div><strong>CHA</strong><br>—</div>
   </div>
+<div class="stat-section">
+  <strong>Engine Core</strong>
+  <div><em>${golem.engineName}</em></div>
+  <ul>
+    ${golem.engineEffects.map(e => `<li>${e}</li>`).join("")}
+  </ul>
+</div>
 
+<div class="stat-section">
+  <strong>Traits</strong>
   <div class="stat-section">
     <div class="stat-line"><strong>Saving Throws</strong> ${golem.allSaveProf ? "Proficient in all saves" : "—"}</div>
     <div class="stat-line"><strong>Damage Resistances</strong> ${golem.adaptiveResist ? "Adaptive" : "—"}</div>
