@@ -282,14 +282,18 @@ function downloadTxt(){
 function setupAutoUpdate() {
 
   // Inputs
-  document.getElementById("level").addEventListener("input", buildGolem);
-  document.getElementById("int").addEventListener("input", buildGolem);
-  document.getElementById("engine").addEventListener("change", buildGolem);
+document.getElementById("level").addEventListener("input", triggerBuild);
+document.getElementById("int").addEventListener("input", triggerBuild);
+document.getElementById("engine").addEventListener("change", triggerBuild);
 
   // Infusion checkboxes (dynamic)
-  document.getElementById("infusions").addEventListener("change", buildGolem);
+document.getElementById("infusions").addEventListener("change", triggerBuild);
+// 🔄 DEBOUNCE (prevents rapid spam updates)  
+let timeout;
+function triggerBuild() {
+  clearTimeout(timeout);
+  timeout = setTimeout(buildGolem, 100);
 }
-
 // Run once on load
 setupAutoUpdate();
 
