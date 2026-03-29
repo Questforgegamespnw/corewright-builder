@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <title>Questforge Corewright Interface</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
 body { font-family: Georgia, serif; margin:0; background:#e8dcc3; }
 
-/* SPLASH */
 #splash {
   height:100vh;
   display:flex;
@@ -18,51 +18,18 @@ body { font-family: Georgia, serif; margin:0; background:#e8dcc3; }
   background:linear-gradient(#2f2a24,#5a4a32);
   color:#fdf6e3;
 }
-#splash h1 { font-size:2.5em; margin-bottom:10px; }
-#splash button { padding:12px 20px; font-size:1.1em; cursor:pointer; }
 
 .container { max-width:1100px; margin:auto; padding:15px; }
 .card { background:#fdf6e3; padding:15px; margin-bottom:15px; border:2px solid #8b7355; border-radius:10px; }
+
 button { margin:5px; padding:10px; font-size:1em; }
 
-.statblock {
-  background:#fffaf0;
-  border:3px solid black;
-  padding:15px;
-}
-
-@media print {
-  
-  body * {
-    visibility: hidden;
-  }
-
-  #statblock, #statblock * {
-    visibility: visible;
-  }
-
-  #statblock {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    border: none;
-    font-size: 14px;
-    line-height: 1.3;
-  }
-
-  button {
-    display: none;
-  }
-
-}
-  .nav {
+.nav {
   text-align:center;
   background:#5a4a32;
   padding:10px;
   position: sticky;
   top: 0;
-  z-index: 1000;
 }
 .nav a {
   color:#fdf6e3;
@@ -70,70 +37,61 @@ button { margin:5px; padding:10px; font-size:1em; }
   text-decoration:none;
   font-weight:bold;
 }
-.nav a:hover {
-  text-decoration:underline;
-}
+
 #statblock {
-  background: #fdf1dc;
-  border: 2px solid #3b2f1b;
-  border-radius: 6px;
-  padding: 16px;
-  font-family: "Georgia", "Times New Roman", serif;
-  color: #2b2b2b;
-  line-height: 1.4;
+  background:#fdf1dc;
+  border:2px solid #3b2f1b;
+  border-radius:6px;
+  padding:16px;
 }
 
-.stat-header {
-  border-bottom: 3px solid #3b2f1b;
-  margin-bottom: 8px;
-  padding-bottom: 4px;
-}
+.stat-header { border-bottom:3px solid #3b2f1b; margin-bottom:8px; }
+.stat-name { font-size:1.6em; font-weight:bold; }
+.stat-type { font-style:italic; }
 
-.stat-name {
-  font-size: 1.6em;
-  font-weight: bold;
-}
-
-.stat-type {
-  font-style: italic;
-  font-size: 0.95em;
-}
-
-.stat-section {
-  border-top: 2px solid #3b2f1b;
-  margin-top: 10px;
-  padding-top: 6px;
-}
-
-.stat-line {
-  margin: 3px 0;
-}
+.stat-section { border-top:2px solid #3b2f1b; margin-top:10px; padding-top:6px; }
 
 .ability-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  text-align: center;
-  margin-top: 8px;
-  font-size: 0.9em;
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  text-align:center;
+  margin-top:8px;
 }
 
 .ability-grid div {
-  border: 1px solid #3b2f1b;
-  padding: 4px;
-  background: #fff8e7;
+  border:1px solid #3b2f1b;
+  padding:4px;
+  background:#fff8e7;
+}
+
+@media print {
+  body * { visibility:hidden; }
+  #statblock, #statblock * { visibility:visible; }
+
+  #statblock {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    border:none;
+  }
+
+  button { display:none; }
 }
 </style>
 </head>
+
 <body>
+
 <div class="nav">
   <a href="/corewright-builder/">Builder</a>
   <a href="/corewright-builder/infusions/">Infusions</a>
   <a href="/corewright-builder/corewright/">Subclass</a>
 </div>
+
 <div id="splash">
-<h1>Questforge Corewright Interface</h1>
-<p>Forge. Animate. Command.</p>
-<button onclick="enterApp()">Enter Workshop</button>
+  <h1>Questforge Corewright Interface</h1>
+  <button onclick="enterApp()">Enter Workshop</button>
 </div>
 
 <div id="app" style="display:none;">
@@ -141,6 +99,7 @@ button { margin:5px; padding:10px; font-size:1em; }
 
 <div class="card">
 <h2>Assembly</h2>
+
 Level <input id="level" type="number" value="10"><br>
 INT Mod <input id="int" type="number" value="4"><br>
 
@@ -155,220 +114,59 @@ Engine
 
 <div id="infusions"></div>
 
-Modes<br>
-<input type="checkbox" id="dual"> Dual
-<input type="checkbox" id="fusion"> Fusion
-
 <br>
-<button onclick="saveBuild()">Save</button>
-<button onclick="loadBuild()">Load</button>
-<button onclick="exportBuild()">Export</button>
-<button onclick="downloadTxt()">Download .txt</button>
 <button onclick="buildGolem()">Build Golem</button>
 <button onclick="printGolem()">Print / Save PDF</button>
+<button onclick="downloadTxt()">Download .txt</button>
+
 </div>
-<div id="output" class="card">
-  <h2>Golem Stat Block</h2>
-  <div id="statblock"></div>
-</div>
-<div class="card printable">
-<h2>Construct</h2>
-<div id="out" class="statblock"></div>
+
+<div class="card">
+<h2>Golem Stat Block</h2>
+<div id="statblock"></div>
 </div>
 
 </div>
 </div>
+
+<script src="js/infusions.js"></script>
 
 <script>
+
 function enterApp(){
  document.getElementById('splash').style.display='none';
  document.getElementById('app').style.display='block';
 }
 
-function PB(l){ return Math.ceil(l/4)+1 }
-function mod(s){ return Math.floor((s-10)/2); }
-function die(l){ return l>=15?"1d10":l>=9?"1d8":"1d6" }
-
-const engines={
-flame:(pb)=>({dmg:"1d8 fire",trait:`Burning Aura (${pb})`} ),
-stone:(pb)=>({trait:`DR ${pb}`} ),
-frost:()=>({dmg:"1d6 cold",trait:"No reactions"}),
-aether:()=>({speed:20,trait:"Flying"})
-};
-
-const infusions={
-reinforced:(l)=>({hp:l,ac:1}),
-war:()=>({multi:2,dmg:"1d6"}),
-servo:()=>({speed:10}),
-overdrive:(pb)=>({extra:1}),
-giant:(l)=>({hp:l*2,str:2,speed:-10})
-};
-
-let infDiv=document.getElementById('infusions');
-Object.keys(infusions).forEach(k=>{
-infDiv.innerHTML+=`<input type='checkbox' value='${k}'> ${k}<br>`});
-
-function getState(){
-return {
-level:level.value,
-int:int.value,
-engine:engine.value,
-infusions:[...document.querySelectorAll('#infusions input:checked')].map(i=>i.value),
-dual:dual.checked,
-fusion:fusion.checked
-};
-}
-
-function setState(s){
-level.value=s.level;
-int.value=s.int;
-engine.value=s.engine;
-dual.checked=s.dual;
-fusion.checked=s.fusion;
-
-document.querySelectorAll('#infusions input').forEach(i=>{
-i.checked=s.infusions.includes(i.value);
-});
-}
-
-function saveBuild(){
-localStorage.setItem('golemBuild', JSON.stringify(getState()));
-alert('Build Saved');
-}
-
-function loadBuild(){
-let s=JSON.parse(localStorage.getItem('golemBuild'));
-if(!s) return alert('No Save Found');
-setState(s);
-build();
-}
-
-function build(){
-let lvl=+level.value;
-let pb=PB(lvl);
-
-let base={ac:13+pb,hp:5+lvl*5,speed:30,STR:14,traits:[],attacks:1,dmg:`${die(lvl)}+${pb}`};
-
-let e=engines[engine.value];
-if(e){
-let ed=e(pb);
-if(ed.dmg) base.dmg+=`+${ed.dmg}`;
-if(ed.speed) base.speed+=ed.speed;
-if(ed.trait) base.traits.push(ed.trait);
-}
-
-[...document.querySelectorAll('#infusions input:checked')].forEach(i=>{
-let d=infusions[i.value](lvl,pb);
-if(d.hp) base.hp+=d.hp;
-if(d.ac) base.ac+=d.ac;
-if(d.speed) base.speed+=d.speed;
-if(d.str) base.STR+=d.str;
-if(d.multi) base.attacks=d.multi;
-if(d.extra) base.attacks+=d.extra;
-if(d.dmg) base.dmg+=`+${d.dmg}`;
-});
-
-let block=`<b>AC</b> ${base.ac}<br>
-<b>HP</b> ${base.hp}<br>
-<b>Speed</b> ${base.speed}<br>
-<b>STR</b> ${base.STR} (${mod(base.STR)})<br>
-<br><b>Traits</b><br>${base.traits.join('<br>')||'None'}
-<br><br><b>Actions</b><br>${base.attacks} attacks, ${base.dmg}`;
-
-if(fusion.checked){ out.innerHTML=`<h3>Fusion Construct</h3>${block}`; return; }
-if(dual.checked){ out.innerHTML=`<h3>Golem A</h3>${block}<hr><h3>Golem B</h3>${block}`; return; }
-
-out.innerHTML=`<h3>Golem</h3>${block}`;
-}
-function buildExportText(){
-let lvl=+level.value;
-let intMod=+int.value;
-let selectedInf=[...document.querySelectorAll('#infusions input:checked')].map(i=>i.value);
-
-let text=`Corewright Golem (Level ${lvl})
-`;
-text+=`INT Mod: ${intMod}
-`;
-text+=`Engine: ${engine.value}
-`;
-text+=`Infusions: ${selectedInf.join(', ')||'None'}
-`;
-text+=`Mode: ${fusion.checked?'Fusion':dual.checked?'Dual':'Single'}
-
-`;
-
-text+=out.innerText || out.textContent;
-return text;
-}
-
-function exportBuild(){
-let text=buildExportText();
-navigator.clipboard.writeText(text).then(()=>{
- alert('Build copied to clipboard!');
-});
-}
-
-function downloadTxt(){
-let text=buildExportText();
-let blob=new Blob([text], { type: 'text/plain' });
-let url=URL.createObjectURL(blob);
-let a=document.createElement('a');
-a.href=url;
-a.download='corewright-golem.txt';
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-URL.revokeObjectURL(url);
-})
-`;
-text+=`INT Mod: ${intMod}
-`;
-text+=`Engine: ${engine.value}
-`;
-text+=`Infusions: ${selectedInf.join(', ')||'None'}
-`;
-text+=`Mode: ${fusion.checked?'Fusion':dual.checked?'Dual':'Single'}
-
-`;
-
-text+=out.innerText || out.textContent;
-
-navigator.clipboard.writeText(text).then(()=>{
- alert('Build copied to clipboard!');
-});
-}
-
-</script>
-<script src="js/infusions.js"></script>
-<script>
-  const infusionContainer = document.getElementById("infusions");
+// Render Infusions
+const infusionContainer = document.getElementById("infusions");
 
 function renderInfusions() {
   infusionContainer.innerHTML = "<h3>Infusions</h3>";
 
   Object.entries(INFUSIONS).forEach(([key, infusion]) => {
-    const label = document.createElement("label");
-    label.style.display = "block";
-
-    label.innerHTML = `
-      <input type="checkbox" value="${key}">
-      ${infusion.name}
+    infusionContainer.innerHTML += `
+      <label>
+        <input type="checkbox" value="${key}">
+        ${infusion.name}
+      </label><br>
     `;
-
-    infusionContainer.appendChild(label);
   });
 }
+renderInfusions();
 
-renderInfusions();  
 function getSelectedInfusions() {
-  const checkboxes = document.querySelectorAll("#infusions input:checked");
-  return Array.from(checkboxes).map(cb => cb.value);
+  return [...document.querySelectorAll("#infusions input:checked")]
+    .map(cb => cb.value);
+}
+
+// MAIN BUILDER
 function buildGolem() {
+
   const player = {
-    level: parseInt(document.getElementById("level").value),
-    intMod: parseInt(document.getElementById("int").value),
-    pb: Math.ceil((parseInt(document.getElementById("level").value) - 1) / 4) + 1,
-    spellDC: 8 + Math.ceil((parseInt(document.getElementById("level").value) - 1) / 4) + 1 + parseInt(document.getElementById("int").value)
+    level: parseInt(level.value),
+    intMod: parseInt(int.value),
+    pb: Math.ceil((level.value - 1)/4) + 1
   };
 
   let golem = {
@@ -380,176 +178,108 @@ function buildGolem() {
     speed: 30,
     reach: 5
   };
-const engine = document.getElementById("engine").value;
 
-golem.engine = engine;
-golem.engineEffects = [];
+  // ENGINE
+  const engine = engineSelect.value;
+  golem.engineName = "None";
+  golem.engineEffects = [];
 
-switch (engine) {
+  switch (engine) {
+    case "flame":
+      golem.engineName = "Flame Engine";
+      golem.resistances = ["fire"];
+      golem.bonusDamage = player.intMod;
+      break;
 
-  case "flame":
-    golem.engineName = "Flame Engine";
+    case "stone":
+      golem.engineName = "Stone Engine";
+      golem.damageReduction = player.pb;
+      break;
 
-    // 🔥 Mechanical Effects
-    golem.resistances = (golem.resistances || []).concat(["fire"]);
-    golem.bonusDamage = (golem.bonusDamage || 0) + player.intMod;
-    golem.auraDamage = player.intMod;
+    case "frost":
+      golem.engineName = "Frost Engine";
+      golem.resistances = ["cold"];
+      break;
 
-    golem.engineEffects = [
-      "Resistance to fire damage",
-      `Creatures that hit the golem take ${player.intMod} fire damage`,
-      `Attacks deal +${player.intMod} fire damage`,
-      "Emits bright light (20 ft)"
-    ];
-    break;
+    case "aether":
+      golem.engineName = "Aether Engine";
+      golem.flySpeed = golem.speed;
+      golem.phasing = true;
+      break;
+  }
 
-
-  case "stone":
-    golem.engineName = "Stone Engine";
-
-    // 🪨 Mechanical Effects
-    golem.damageReduction = player.pb;
-    golem.advVsForcedMovement = true;
-    golem.ignoreDifficultTerrain = true;
-
-    golem.engineEffects = [
-      `Reduce all damage by ${player.pb}`,
-      "Advantage vs being moved or knocked prone",
-      "Ignores difficult terrain"
-    ];
-    break;
-
-
-  case "frost":
-    golem.engineName = "Frost Engine";
-
-    // ❄️ Mechanical Effects
-    golem.resistances = (golem.resistances || []).concat(["cold"]);
-    golem.slowOnHit = 10;
-    golem.difficultTerrainAura = true;
-
-    golem.engineEffects = [
-      "On hit, reduce target speed by 10 ft",
-      "Nearby ground becomes difficult terrain",
-      "Resistance to cold damage"
-    ];
-    break;
-
-
-  case "aether":
-    golem.engineName = "Aether Engine";
-
-    // 🌌 Mechanical Effects
-    golem.flySpeed = golem.speed;
-    golem.hover = true;
-    golem.phasing = true;
-    golem.forceDamageBonus = player.intMod;
-
-    golem.engineEffects = [
-      `Fly speed ${golem.speed} ft (hover)`,
-      "Can move through creatures",
-      `Deals +${player.intMod} force damage`
-    ];
-    break;
-
-
-  default:
-    golem.engineName = "No Engine";
-    golem.engineEffects = [];
-}
-  const selectedInfusions = getSelectedInfusions();
-
-  selectedInfusions.forEach(key => {
+  // INFUSIONS
+  getSelectedInfusions().forEach(key => {
     const infusion = INFUSIONS[key];
-    if (infusion) {
-      infusion.apply(golem, player);
-    }
+    if (infusion) infusion.apply(golem, player);
   });
 
-const statblock = document.getElementById("statblock");
+  // OUTPUT
+  const statblock = document.getElementById("statblock");
 
-statblock.innerHTML = `
-  <div class="stat-header">
-    <div class="stat-name">Custom Golem</div>
-    <div class="stat-type">Medium Construct</div>
-  </div>
+  statblock.innerHTML = `
+    <div class="stat-header">
+      <div class="stat-name">Custom Golem</div>
+      <div class="stat-type">Construct</div>
+    </div>
 
-  <div class="stat-line"><strong>Armor Class</strong> ${golem.ac}</div>
-  <div class="stat-line"><strong>Hit Points</strong> ${golem.hp}</div>
- <div class="stat-line"><strong>Speed</strong>${golem.speed} ft${golem.flySpeed ? `, fly ${golem.flySpeed} ft (hover)` : ""}</div>
+    <div><strong>AC</strong> ${golem.ac}</div>
+    <div><strong>HP</strong> ${golem.hp}</div>
+    <div><strong>Speed</strong> ${golem.speed} ft${golem.flySpeed ? ", fly " + golem.flySpeed : ""}</div>
 
-  <div class="ability-grid">
-    <div><strong>STR</strong><br>${golem.str}</div>
-    <div><strong>DEX</strong><br>${golem.dex}</div>
-    <div><strong>CON</strong><br>${golem.con}</div>
-    <div><strong>INT</strong><br>—</div>
-    <div><strong>WIS</strong><br>—</div>
-    <div><strong>CHA</strong><br>—</div>
-  </div>
-<div class="stat-section">
-  <strong>Engine Core</strong>
-  <div><em>${golem.engineName}</em></div>
-  <ul>
-    ${golem.engineEffects.map(e => `<li>${e}</li>`).join("")}
-  </ul>
-</div>
+    <div class="ability-grid">
+      <div><strong>STR</strong><br>${golem.str}</div>
+      <div><strong>DEX</strong><br>${golem.dex}</div>
+      <div><strong>CON</strong><br>${golem.con}</div>
+      <div><strong>INT</strong><br>-</div>
+      <div><strong>WIS</strong><br>-</div>
+      <div><strong>CHA</strong><br>-</div>
+    </div>
 
-<div class="stat-section">
-  <strong>Traits</strong>
-  ${golem.auraDamage ? `<li><strong>Flame Aura.</strong> Creatures that hit the golem take ${golem.auraDamage} fire damage.</li>` : ""}
+    <div class="stat-section">
+      <strong>Engine</strong><br>${golem.engineName}
+    </div>
 
-${golem.slowOnHit ? `<li><strong>Frost Strike.</strong> Targets hit have speed reduced by ${golem.slowOnHit} ft.</li>` : ""}
+    <div class="stat-section">
+      <strong>Traits</strong>
+      <ul>
+        ${golem.damageReduction ? `<li>Reduce damage by ${golem.damageReduction}</li>` : ""}
+        ${golem.phasing ? `<li>Can move through objects</li>` : ""}
+      </ul>
+    </div>
 
-${golem.damageReduction ? `<li><strong>Stone Body.</strong> Reduces all damage taken by ${golem.damageReduction}.</li>` : ""}
+    <div class="stat-section">
+      <strong>Actions</strong>
+      <ul>
+        <li>Slam: ${Math.floor(golem.str/2)+3} damage</li>
+      </ul>
+    </div>
 
-${golem.phasing ? `<li><strong>Phasing.</strong> Can move through creatures and objects.</li>` : ""}
-  <div class="stat-section">
-    <div class="stat-line"><strong>Saving Throws</strong> ${golem.allSaveProf ? "Proficient in all saves" : "—"}</div>
-    <div class="stat-line"><strong>Damage Resistances</strong>${golem.resistances ? golem.resistances.join(", ") : "—"}</div>
-    <div class="stat-line"><strong>Condition Immunities</strong> charmed, exhaustion</div>
-    <div class="stat-line"><strong>Senses</strong> darkvision 60 ft., passive Perception 10</div>
-    <div class="stat-line"><strong>Languages</strong> understands your commands</div>
-  </div>
+    <div class="stat-section">
+      <strong>Infusions</strong><br>
+      ${getSelectedInfusions().map(k=>INFUSIONS[k].name).join(", ") || "None"}
+    </div>
+  `;
+}
 
-  <div class="stat-section">
-    <strong>Traits</strong>
-    <ul>
-      ${golem.regen ? `<li><strong>Regeneration.</strong> Regains ${golem.regen} HP at start of turn.</li>` : ""}
-      ${golem.damageReduction ? `<li><strong>Reactive Plating.</strong> Reduce damage by ${golem.damageReduction}.</li>` : ""}
-      ${golem.phasing ? `<li><strong>Phase Shift.</strong> Can move through objects temporarily.</li>` : ""}
-      ${golem.sizeUp ? `<li><strong>Massive Frame.</strong> Increased reach and strength.</li>` : ""}
-    </ul>
-  </div>
-
-  <div class="stat-section">
-    <strong>Actions</strong>
-    <ul>
-     <li>
-<strong>Slam.</strong> Melee Weapon Attack: 
-+${Math.floor(golem.str / 2) + 2} to hit, 
-reach ${golem.reach} ft., one target. 
-
-Hit: ${Math.floor(golem.str / 2) + 3} bludgeoning damage
-${golem.bonusDamage ? ` + ${golem.bonusDamage} bonus damage` : ""}
-${golem.forceDamageBonus ? ` + ${golem.forceDamageBonus} force damage` : ""}
-</li>
-
-      ${golem.multiAttack ? "<li><strong>Multiattack.</strong> The golem makes two attacks.</li>" : ""}
-      ${golem.extraAttack ? "<li><strong>Overdrive.</strong> Gains one additional attack.</li>" : ""}
-    </ul>
-  </div>
-
-  <div class="stat-section">
-    <strong>Infusions</strong>
-    <div>${getSelectedInfusions().join(", ") || "None"}</div>
-
-  </div>
-`;
+// PRINT
 function printGolem() {
   window.print();
 }
+
+// TXT EXPORT
+function downloadTxt(){
+  let text = document.getElementById("statblock").innerText;
+  let blob = new Blob([text], { type: 'text/plain' });
+  let url = URL.createObjectURL(blob);
+
+  let a = document.createElement('a');
+  a.href = url;
+  a.download = 'golem.txt';
+  a.click();
 }
-}
+
 </script>
+
 </body>
 </html>
