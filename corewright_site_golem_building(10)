@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Questforge Corewright Interface</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { font-family: Georgia, serif; margin:0; background:#e8dcc3; }
+
+/* SPLASH */
+#splash {
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  background:linear-gradient(#2f2a24,#5a4a32);
+  color:#fdf6e3;
+}
+#splash h1 { font-size:2.5em; margin-bottom:10px; }
+#splash button { padding:12px 20px; font-size:1.1em; cursor:pointer; }
+
+.container { max-width:1100px; margin:auto; padding:15px; }
+.card { background:#fdf6e3; padding:15px; margin-bottom:15px; border:2px solid #8b7355; border-radius:10px; }
+button { margin:5px; padding:10px; font-size:1em; }
+
+.statblock {
+  background:#fffaf0;
+  border:3px solid black;
+  padding:15px;
+}
+
+@media print {
+  body { background:white; }
+  .card:not(.printable) { display:none; }
+}
+</style>
+</head>
+<body>
+
+<div id="splash">
+<h1>Questforge Corewright Interface</h1>
+<p>Forge. Animate. Command.</p>
+<button onclick="enterApp()">Enter Workshop</button>
+</div>
+
+<div id="app" style="display:none;">
+<div class="container">
+
+<div class="card">
+<h2>Assembly</h2>
+Level <input id="level" type="number" value="10"><br>
+INT Mod <input id="int" type="number" value="4"><br>
+
+Engine
+<select id="engine">
+<option value="none">None</option>
+<option value="flame">Flame</option>
+<option value="stone">Stone</option>
+<option value="frost">Frost</option>
+<option value="aether">Aether</option>
+</select>
+
+<div id="infusions"></div>
+
+Modes<br>
+<input type="checkbox" id="dual"> Dual
+<input type="checkbox" id="fusion"> Fusion
+
+<br>
+<button onclick="build()">Build</button>
+<button onclick="saveBuild()">Save</button>
+<button onclick="loadBuild()">Load</button>
+<button onclick="window.print()">Print</button>
+<button onclick="exportBuild()">Export</button>
+<button onclick="downloadTxt()">Download .txt</button>
+</div>
+
+<div class="card printable">
+<h2>Construct</h2>
+<div id="out" class="statblock"></div>
+</div>
+
+</div>
+</div>
+
+<script>
+function enterApp(){
+ document.getElementById('splash').style.display='none';
+ document.getElementById('app').style.display='block';
+}
+
+function PB(l){ return Math.ceil(l/4)+1 }
+function mod(s){ return Math.floor((s-10)/2); }
+function die(l){ return l>=15?"1d10":l>=9?"1d8":"1d6" }
+
+const engines={
+flame:(pb)=>({dmg:"1d8 fire",trait:`Burning Aura (${pb})`} ),
+stone:(pb)=>({trait:`DR ${pb}`} ),
+frost:()=>({dmg:"1d6 cold",trait:"No reactions"}),
+aether:()=>({speed:20,trait:"Flying"})
+};
+
+const infusions={
+reinforced:(l)=>({hp:l,ac:1}),
+war:()=>({multi:2,dmg:"1d6"}),
+servo:()=>({speed:10}),
+overdrive:(pb)=>({extra:1}),
+giant:(l)=>({hp:l*2,str:2,speed:-10})
+};
+
+let infDiv=document.getElementById('infusions');
+Object.keys(infusions).forEach(k=>{
+infDiv.innerHTML+=`<input type='checkbox' value='${k}'> ${k}<br>`});
+
+function getState(){
+return {
+level:level.value,
+int:int.value,
+engine:engine.value,
+infusions:[...document.querySelectorAll('#infusions input:checked')].map(i=>i.value),
+dual:dual.checked,
+fusion:fusion.checked
+};
+}
+
+function setState(s){
+level.value=s.level;
+int.value=s.int;
+engine.value=s.engine;
+dual.checked=s.dual;
+fusion.checked=s.fusion;
+
+document.querySelectorAll('#infusions input').forEach(i=>{
+i.checked=s.infusions.includes(i.value);
+});
+}
+
+function saveBuild(){
+localStorage.setItem('golemBuild', JSON.stringify(getState()));
+alert('Build Saved');
+}
+
+function loadBuild(){
+let s=JSON.parse(localStorage.getItem('golemBuild'));
+if(!s) return alert('No Save Found');
+setState(s);
+build();
+}
+
+function build(){
+let lvl=+level.value;
+let pb=PB(lvl);
+
+let base={ac:13+pb,hp:5+lvl*5,speed:30,STR:14,traits:[],attacks:1,dmg:`${die(lvl)}+${pb}`};
+
+let e=engines[engine.value];
+if(e){
+let ed=e(pb);
+if(ed.dmg) base.dmg+=`+${ed.dmg}`;
+if(ed.speed) base.speed+=ed.speed;
+if(ed.trait) base.traits.push(ed.trait);
+}
+
+[...document.querySelectorAll('#infusions input:checked')].forEach(i=>{
+let d=infusions[i.value](lvl,pb);
+if(d.hp) base.hp+=d.hp;
+if(d.ac) base.ac+=d.ac;
+if(d.speed) base.speed+=d.speed;
+if(d.str) base.STR+=d.str;
+if(d.multi) base.attacks=d.multi;
+if(d.extra) base.attacks+=d.extra;
+if(d.dmg) base.dmg+=`+${d.dmg}`;
+});
+
+let block=`<b>AC</b> ${base.ac}<br>
+<b>HP</b> ${base.hp}<br>
+<b>Speed</b> ${base.speed}<br>
+<b>STR</b> ${base.STR} (${mod(base.STR)})<br>
+<br><b>Traits</b><br>${base.traits.join('<br>')||'None'}
+<br><br><b>Actions</b><br>${base.attacks} attacks, ${base.dmg}`;
+
+if(fusion.checked){ out.innerHTML=`<h3>Fusion Construct</h3>${block}`; return; }
+if(dual.checked){ out.innerHTML=`<h3>Golem A</h3>${block}<hr><h3>Golem B</h3>${block}`; return; }
+
+out.innerHTML=`<h3>Golem</h3>${block}`;
+}
+function buildExportText(){
+let lvl=+level.value;
+let intMod=+int.value;
+let selectedInf=[...document.querySelectorAll('#infusions input:checked')].map(i=>i.value);
+
+let text=`Corewright Golem (Level ${lvl})
+`;
+text+=`INT Mod: ${intMod}
+`;
+text+=`Engine: ${engine.value}
+`;
+text+=`Infusions: ${selectedInf.join(', ')||'None'}
+`;
+text+=`Mode: ${fusion.checked?'Fusion':dual.checked?'Dual':'Single'}
+
+`;
+
+text+=out.innerText || out.textContent;
+return text;
+}
+
+function exportBuild(){
+let text=buildExportText();
+navigator.clipboard.writeText(text).then(()=>{
+ alert('Build copied to clipboard!');
+});
+}
+
+function downloadTxt(){
+let text=buildExportText();
+let blob=new Blob([text], { type: 'text/plain' });
+let url=URL.createObjectURL(blob);
+let a=document.createElement('a');
+a.href=url;
+a.download='corewright-golem.txt';
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+})
+`;
+text+=`INT Mod: ${intMod}
+`;
+text+=`Engine: ${engine.value}
+`;
+text+=`Infusions: ${selectedInf.join(', ')||'None'}
+`;
+text+=`Mode: ${fusion.checked?'Fusion':dual.checked?'Dual':'Single'}
+
+`;
+
+text+=out.innerText || out.textContent;
+
+navigator.clipboard.writeText(text).then(()=>{
+ alert('Build copied to clipboard!');
+});
+}
+
+</script>
+</body>
+</html>
