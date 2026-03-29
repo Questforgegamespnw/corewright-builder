@@ -52,30 +52,54 @@ button { margin:5px; padding:10px; font-size:1em; }
 .nav a:hover {
   text-decoration:underline;
 }
-  #statblock {
-  background: #fffaf0;
-  border: 2px solid #8b7355;
-  padding: 15px;
-  border-radius: 8px;
-  font-family: "Georgia", serif;
+#statblock {
+  background: #fdf1dc;
+  border: 2px solid #3b2f1b;
+  border-radius: 6px;
+  padding: 16px;
+  font-family: "Georgia", "Times New Roman", serif;
+  color: #2b2b2b;
+  line-height: 1.4;
 }
 
-.stat-title {
-  font-size: 1.4em;
+.stat-header {
+  border-bottom: 3px solid #3b2f1b;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+}
+
+.stat-name {
+  font-size: 1.6em;
   font-weight: bold;
-  border-bottom: 2px solid #8b7355;
-  margin-bottom: 10px;
+}
+
+.stat-type {
+  font-style: italic;
+  font-size: 0.95em;
+}
+
+.stat-section {
+  border-top: 2px solid #3b2f1b;
+  margin-top: 10px;
+  padding-top: 6px;
 }
 
 .stat-line {
-  margin: 4px 0;
+  margin: 3px 0;
 }
 
 .ability-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   text-align: center;
-  margin-top: 10px;
+  margin-top: 8px;
+  font-size: 0.9em;
+}
+
+.ability-grid div {
+  border: 1px solid #3b2f1b;
+  padding: 4px;
+  background: #fff8e7;
 }
 </style>
 </head>
@@ -348,30 +372,57 @@ function buildGolem() {
 const statblock = document.getElementById("statblock");
 
 statblock.innerHTML = `
-  <div class="stat-title">Custom Golem</div>
+  <div class="stat-header">
+    <div class="stat-name">Custom Golem</div>
+    <div class="stat-type">Medium Construct</div>
+  </div>
 
-  <div class="stat-line"><strong>Armor Class:</strong> ${golem.ac}</div>
-  <div class="stat-line"><strong>Hit Points:</strong> ${golem.hp}</div>
-  <div class="stat-line"><strong>Speed:</strong> ${golem.speed} ft</div>
+  <div class="stat-line"><strong>Armor Class</strong> ${golem.ac}</div>
+  <div class="stat-line"><strong>Hit Points</strong> ${golem.hp}</div>
+  <div class="stat-line"><strong>Speed</strong> ${golem.speed} ft.</div>
 
   <div class="ability-grid">
     <div><strong>STR</strong><br>${golem.str}</div>
     <div><strong>DEX</strong><br>${golem.dex}</div>
     <div><strong>CON</strong><br>${golem.con}</div>
+    <div><strong>INT</strong><br>—</div>
+    <div><strong>WIS</strong><br>—</div>
+    <div><strong>CHA</strong><br>—</div>
   </div>
 
-  <hr>
+  <div class="stat-section">
+    <div class="stat-line"><strong>Saving Throws</strong> ${golem.allSaveProf ? "Proficient in all saves" : "—"}</div>
+    <div class="stat-line"><strong>Damage Resistances</strong> ${golem.adaptiveResist ? "Adaptive" : "—"}</div>
+    <div class="stat-line"><strong>Condition Immunities</strong> charmed, exhaustion</div>
+    <div class="stat-line"><strong>Senses</strong> darkvision 60 ft., passive Perception 10</div>
+    <div class="stat-line"><strong>Languages</strong> understands your commands</div>
+  </div>
 
-  <div class="stat-line"><strong>Infusions:</strong> ${getSelectedInfusions().join(", ") || "None"}</div>
+  <div class="stat-section">
+    <strong>Traits</strong>
+    <ul>
+      ${golem.regen ? `<li><strong>Regeneration.</strong> Regains ${golem.regen} HP at start of turn.</li>` : ""}
+      ${golem.damageReduction ? `<li><strong>Reactive Plating.</strong> Reduce damage by ${golem.damageReduction}.</li>` : ""}
+      ${golem.phasing ? `<li><strong>Phase Shift.</strong> Can move through objects temporarily.</li>` : ""}
+      ${golem.sizeUp ? `<li><strong>Massive Frame.</strong> Increased reach and strength.</li>` : ""}
+    </ul>
+  </div>
 
-  <div class="stat-line"><strong>Special Traits:</strong></div>
-  <ul>
-    ${golem.multiAttack ? "<li>Multiattack</li>" : ""}
-    ${golem.reactionAttack ? "<li>Reaction Attack</li>" : ""}
-    ${golem.phasing ? "<li>Phase Shift</li>" : ""}
-    ${golem.regen ? `<li>Regeneration (${golem.regen}/turn)</li>` : ""}
-    ${golem.damageReduction ? `<li>Damage Reduction (${golem.damageReduction})</li>` : ""}
-  </ul>
+  <div class="stat-section">
+    <strong>Actions</strong>
+    <ul>
+      <li><strong>Slam.</strong> Melee Weapon Attack: +${Math.floor(golem.str / 2) + 2} to hit, reach ${golem.reach} ft., one target. 
+      Hit: ${Math.floor(golem.str / 2) + 3} bludgeoning damage ${golem.bonusDamage ? "+ bonus damage" : ""}</li>
+
+      ${golem.multiAttack ? "<li><strong>Multiattack.</strong> The golem makes two attacks.</li>" : ""}
+      ${golem.extraAttack ? "<li><strong>Overdrive.</strong> Gains one additional attack.</li>" : ""}
+    </ul>
+  </div>
+
+  <div class="stat-section">
+    <strong>Infusions</strong>
+    <div>${getSelectedInfusions().join(", ") || "None"}</div>
+  </div>
 `;
 }
 }
