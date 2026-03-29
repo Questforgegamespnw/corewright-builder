@@ -47,35 +47,13 @@ button { margin:5px; padding:10px; font-size:1em; }
 
 .stat-header { border-bottom:3px solid #3b2f1b; margin-bottom:8px; }
 .stat-name { font-size:1.6em; font-weight:bold; }
-.stat-type { font-style:italic; }
 
 .stat-section { border-top:2px solid #3b2f1b; margin-top:10px; padding-top:6px; }
-
-.ability-grid {
-  display:grid;
-  grid-template-columns:repeat(6,1fr);
-  text-align:center;
-  margin-top:8px;
-}
-
-.ability-grid div {
-  border:1px solid #3b2f1b;
-  padding:4px;
-  background:#fff8e7;
-}
 
 @media print {
   body * { visibility:hidden; }
   #statblock, #statblock * { visibility:visible; }
-
-  #statblock {
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    border:none;
-  }
-
+  #statblock { position:absolute; top:0; left:0; width:100%; border:none; }
   button { display:none; }
 }
 </style>
@@ -84,9 +62,7 @@ button { margin:5px; padding:10px; font-size:1em; }
 <body>
 
 <div class="nav">
-  <a href="/corewright-builder/">Builder</a>
-  <a href="/corewright-builder/infusions/">Infusions</a>
-  <a href="/corewright-builder/corewright/">Subclass</a>
+  <a href="#">Builder</a>
 </div>
 
 <div id="splash">
@@ -112,6 +88,15 @@ Engine
 <option value="aether">Aether</option>
 </select>
 
+<br><br>
+
+Mode
+<select id="mode">
+<option value="single">Single Golem</option>
+<option value="multi">Multi-Golem</option>
+<option value="fusion">Fusion Mode</option>
+</select>
+
 <div id="infusions"></div>
 
 <br>
@@ -120,6 +105,24 @@ Engine
 <button onclick="saveBuild()">Save Build</button>
 <button onclick="loadBuild()">Load Build</button>
 <button onclick="shareBuild()">Share Build</button>
+</div>
+
+<div id="golem2" class="card" style="display:none;">
+<h2>Second Golem</h2>
+
+Level <input id="level2" type="number" value="10"><br>
+INT Mod <input id="int2" type="number" value="4"><br>
+
+Engine
+<select id="engine2">
+<option value="none">None</option>
+<option value="flame">Flame</option>
+<option value="stone">Stone</option>
+<option value="frost">Frost</option>
+<option value="aether">Aether</option>
+</select>
+
+<div id="infusions2"></div>
 </div>
 
 <div class="card">
@@ -139,14 +142,13 @@ function enterApp(){
  document.getElementById('app').style.display='block';
 }
 
-// Render Infusions
-const infusionContainer = document.getElementById("infusions");
-
-function renderInfusions() {
-  infusionContainer.innerHTML = "<h3>Infusions</h3>";
+// INFUSIONS RENDER
+function renderInfusions(containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = "<h3>Infusions</h3>";
 
   Object.entries(INFUSIONS).forEach(([key, infusion]) => {
-    infusionContainer.innerHTML += `
+    container.innerHTML += `
       <label>
         <input type="checkbox" value="${key}">
         ${infusion.name}
@@ -154,20 +156,25 @@ function renderInfusions() {
     `;
   });
 }
-renderInfusions();
 
-function getSelectedInfusions() {
-  return [...document.querySelectorAll("#infusions input:checked")]
+renderInfusions("infusions");
+renderInfusions("infusions2");
+
+function getSelectedInfusions(container="infusions") {
+  return [...document.querySelectorAll(`#${container} input:checked`)]
     .map(cb => cb.value);
 }
 
-// MAIN BUILDER
-function buildGolem() {
+// CREATE GOLEM
+function createGolem(levelId, intId, engineId, infusionContainer) {
+
+  const level = parseInt(document.getElementById(levelId).value);
+  const intMod = parseInt(document.getElementById(intId).value);
 
   const player = {
-    level: parseInt(level.value),
-    intMod: parseInt(int.value),
-    pb: Math.ceil((level.value - 1)/4) + 1
+    level,
+    intMod,
+    pb: Math.ceil((level - 1)/4) + 1
   };
 
   let golem = {
@@ -180,224 +187,186 @@ function buildGolem() {
     reach: 5
   };
 
-  // ENGINE
-  const engine = engineSelect.value;
-  golem.engineName = "None";
-  golem.engineEffects = [];
+  const engine = document.getElementById(engineId).value;
 
-  switch (engine) {
-    case "flame":
-      golem.engineName = "Flame Engine";
-      golem.resistances = ["fire"];
-      golem.bonusDamage = player.intMod;
-      break;
+  if (engine === "flame") golem.bonusDamage = intMod;
+  if (engine === "stone") golem.damageReduction = player.pb;
+  if (engine === "aether") golem.flySpeed = golem.speed;
 
-    case "stone":
-      golem.engineName = "Stone Engine";
-      golem.damageReduction = player.pb;
-      break;
+  getSelectedInfusions(infusionContainer)
+    .forEach(key => INFUSIONS[key]?.apply(golem, player));
 
-    case "frost":
-      golem.engineName = "Frost Engine";
-      golem.resistances = ["cold"];
-      break;
+  return golem;
+}
 
-    case "aether":
-      golem.engineName = "Aether Engine";
-      golem.flySpeed = golem.speed;
-      golem.phasing = true;
-      break;
-  }
-
-  // INFUSIONS
-  getSelectedInfusions().forEach(key => {
-    const infusion = INFUSIONS[key];
-    if (infusion) infusion.apply(golem, player);
-  });
-
-  // OUTPUT
-  const statblock = document.getElementById("statblock");
-
-  statblock.innerHTML = `
-    <div class="stat-header">
-      <div class="stat-name">Custom Golem</div>
-      <div class="stat-type">Construct</div>
-    </div>
-
-    <div><strong>AC</strong> ${golem.ac}</div>
-    <div><strong>HP</strong> ${golem.hp}</div>
-    <div><strong>Speed</strong> ${golem.speed} ft${golem.flySpeed ? ", fly " + golem.flySpeed : ""}</div>
-
-    <div class="ability-grid">
-      <div><strong>STR</strong><br>${golem.str}</div>
-      <div><strong>DEX</strong><br>${golem.dex}</div>
-      <div><strong>CON</strong><br>${golem.con}</div>
-      <div><strong>INT</strong><br>-</div>
-      <div><strong>WIS</strong><br>-</div>
-      <div><strong>CHA</strong><br>-</div>
-    </div>
-
+// RENDER STAT BLOCK
+function renderStatBlock(golem, name) {
+  return `
     <div class="stat-section">
-      <strong>Engine</strong><br>${golem.engineName}
-    </div>
-
-    <div class="stat-section">
-      <strong>Traits</strong>
-      <ul>
-        ${golem.damageReduction ? `<li>Reduce damage by ${golem.damageReduction}</li>` : ""}
-        ${golem.phasing ? `<li>Can move through objects</li>` : ""}
-      </ul>
-    </div>
-
-    <div class="stat-section">
-      <strong>Actions</strong>
-      <ul>
-        <li>Slam: ${Math.floor(golem.str/2)+3} damage</li>
-      </ul>
-    </div>
-
-    <div class="stat-section">
-      <strong>Infusions</strong><br>
-      ${getSelectedInfusions().map(k=>INFUSIONS[k].name).join(", ") || "None"}
+      <div class="stat-name">${name}</div>
+      <div><strong>AC</strong> ${golem.ac} | <strong>HP</strong> ${golem.hp}</div>
+      <div>STR ${golem.str} DEX ${golem.dex} CON ${golem.con}</div>
+      <div>Speed ${golem.speed} ft${golem.flySpeed ? ", fly "+golem.flySpeed : ""}</div>
     </div>
   `;
 }
 
-// PRINT
-function printGolem() {
-  window.print();
+// BUILD
+function buildGolem() {
+
+  const mode = document.getElementById("mode").value;
+
+  const g1 = createGolem("level","int","engine","infusions");
+
+  let output = "";
+
+  if (mode === "single") {
+    output = renderStatBlock(g1, "Golem");
+  }
+
+  if (mode === "multi") {
+    const g2 = createGolem("level2","int2","engine2","infusions2");
+
+    output =
+      renderStatBlock(g1, "Golem One") +
+      renderStatBlock(g2, "Golem Two");
+  }
+
+  if (mode === "fusion") {
+    const g2 = createGolem("level2","int2","engine2","infusions2");
+
+    const fused = {
+      hp: g1.hp + g2.hp,
+      ac: Math.max(g1.ac, g2.ac),
+      str: Math.max(g1.str, g2.str),
+      dex: Math.max(g1.dex, g2.dex),
+      con: Math.max(g1.con, g2.con),
+      speed: Math.max(g1.speed, g2.speed),
+      reach: Math.max(g1.reach, g2.reach) + 5
+    };
+
+    output = renderStatBlock(fused, "Fused Golem");
+  }
+
+  document.getElementById("statblock").innerHTML = output;
 }
 
-// TXT EXPORT
-function downloadTxt(){
-  let text = document.getElementById("statblock").innerText;
-  let blob = new Blob([text], { type: 'text/plain' });
-  let url = URL.createObjectURL(blob);
+// MODE TOGGLE
+document.getElementById("mode").addEventListener("change", () => {
+  const mode = document.getElementById("mode").value;
 
-  let a = document.createElement('a');
-  a.href = url;
-  a.download = 'golem.txt';
-  a.click();
-}
-// AUTO UPDATE SYSTEM
+  document.getElementById("golem2").style.display =
+    (mode === "multi" || mode === "fusion") ? "block" : "none";
 
-function setupAutoUpdate() {
+  buildGolem();
+});
 
-  // Inputs
-document.getElementById("level").addEventListener("input", triggerBuild);
-document.getElementById("int").addEventListener("input", triggerBuild);
-document.getElementById("engine").addEventListener("change", triggerBuild);
-
-  // Infusion checkboxes (dynamic)
-document.getElementById("infusions").addEventListener("change", triggerBuild);
-// 🔄 DEBOUNCE (prevents rapid spam updates)  
+// DEBOUNCE
 let timeout;
 function triggerBuild() {
   clearTimeout(timeout);
   timeout = setTimeout(buildGolem, 100);
 }
-// Run once on load
-setupAutoUpdate();
 
-// Build once at start so it's not empty
-buildGolem();
+// AUTO UPDATE
+["level","int","engine","mode"].forEach(id=>{
+  document.getElementById(id).addEventListener("input", triggerBuild);
+});
+document.getElementById("infusions").addEventListener("change", triggerBuild);
+document.getElementById("golem2").addEventListener("input", triggerBuild);
+document.getElementById("infusions2").addEventListener("change", triggerBuild);
+
+// SAVE
 function saveBuild() {
-  // 👇 Build name check here for multiple saves. 
   const name = prompt("Name your build:");
+  if (!name) return;
 
-  if (!name) {
-    alert("Build not saved.");
-    return;
-  }
   const build = {
-    level: document.getElementById("level").value,
-    int: document.getElementById("int").value,
-    engine: document.getElementById("engine").value,
+    level: level.value,
+    int: int.value,
+    engine: engine.value,
     infusions: getSelectedInfusions()
   };
 
-  localStorage.setItem("corewright_build", JSON.stringify(build));
-
-  alert("Build Saved!");
+  localStorage.setItem("corewright_"+name, JSON.stringify(build));
+  alert("Saved!");
 }
+
+// LOAD
 function loadBuild() {
+  const keys = Object.keys(localStorage).filter(k=>k.startsWith("corewright_"));
+  const names = keys.map(k=>k.replace("corewright_","")).join("\n");
 
-  const saved = localStorage.getItem("corewright_build");
+  const choice = prompt("Load build:\n"+names);
+  if (!choice) return;
 
-  if (!saved) {
-    alert("No saved build found.");
-    return;
-  }
+  const build = JSON.parse(localStorage.getItem("corewright_"+choice));
 
-  const build = JSON.parse(saved);
+  level.value = build.level;
+  int.value = build.int;
+  engine.value = build.engine;
 
-  // Restore inputs
-  document.getElementById("level").value = build.level;
-  document.getElementById("int").value = build.int;
-  document.getElementById("engine").value = build.engine;
-
-  // Restore infusions
-  document.querySelectorAll("#infusions input").forEach(cb => {
+  document.querySelectorAll("#infusions input").forEach(cb=>{
     cb.checked = build.infusions.includes(cb.value);
   });
 
-  // Rebuild
   buildGolem();
-
-  alert("Build Loaded!");
 }
-window.addEventListener("load", () => {
 
-  loadFromURL(); // 👈 FIRST priority
-
-  if (!window.location.search && localStorage.getItem("corewright_build")) {
-    loadBuild();
-  }
-
-});
+// SHARE
 function shareBuild() {
-
   const build = {
-    level: document.getElementById("level").value,
-    int: document.getElementById("int").value,
-    engine: document.getElementById("engine").value,
+    level: level.value,
+    int: int.value,
+    engine: engine.value,
     infusions: getSelectedInfusions()
   };
 
-  // Encode build into URL
   const encoded = btoa(JSON.stringify(build));
+  const url = `${location.origin}${location.pathname}?build=${encoded}`;
 
-  const url = `${window.location.origin}${window.location.pathname}?build=${encoded}`;
-
-  // Copy to clipboard
   navigator.clipboard.writeText(url);
-
-  alert("Share link copied to clipboard!");
+  alert("Link copied!");
 }
-function loadFromURL() {
 
-  const params = new URLSearchParams(window.location.search);
+// LOAD FROM URL
+function loadFromURL() {
+  const params = new URLSearchParams(location.search);
   const data = params.get("build");
 
   if (!data) return;
 
-  try {
-    const build = JSON.parse(atob(data));
+  const build = JSON.parse(atob(data));
 
-    document.getElementById("level").value = build.level;
-    document.getElementById("int").value = build.int;
-    document.getElementById("engine").value = build.engine;
+  level.value = build.level;
+  int.value = build.int;
+  engine.value = build.engine;
 
-    document.querySelectorAll("#infusions input").forEach(cb => {
-      cb.checked = build.infusions.includes(cb.value);
-    });
+  document.querySelectorAll("#infusions input").forEach(cb=>{
+    cb.checked = build.infusions.includes(cb.value);
+  });
 
-    buildGolem();
-
-  } catch (e) {
-    console.error("Invalid build data");
-  }
+  buildGolem();
 }
+
+// PRINT
+function printGolem(){ window.print(); }
+
+// TXT EXPORT
+function downloadTxt(){
+  let blob = new Blob([statblock.innerText], {type:'text/plain'});
+  let a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'golem.txt';
+  a.click();
+}
+
+// INIT
+window.addEventListener("load", ()=>{
+  loadFromURL();
+  buildGolem();
+});
+
 </script>
 
 </body>
