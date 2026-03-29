@@ -117,6 +117,8 @@ Engine
 <br>
 <button onclick="printGolem()">Print / Save PDF</button>
 <button onclick="downloadTxt()">Download .txt</button>
+<button onclick="saveBuild()">Save Build</button>
+<button onclick="loadBuild()">Load Build</button>
 
 </div>
 
@@ -299,6 +301,56 @@ setupAutoUpdate();
 
 // Build once at start so it's not empty
 buildGolem();
+function saveBuild() {
+  // 👇 Build name check here for multiple saves. 
+  const name = prompt("Name your build:");
+
+  if (!name) {
+    alert("Build not saved.");
+    return;
+  }
+  const build = {
+    level: document.getElementById("level").value,
+    int: document.getElementById("int").value,
+    engine: document.getElementById("engine").value,
+    infusions: getSelectedInfusions()
+  };
+
+  localStorage.setItem("corewright_build", JSON.stringify(build));
+
+  alert("Build Saved!");
+}
+function loadBuild() {
+
+  const saved = localStorage.getItem("corewright_build");
+
+  if (!saved) {
+    alert("No saved build found.");
+    return;
+  }
+
+  const build = JSON.parse(saved);
+
+  // Restore inputs
+  document.getElementById("level").value = build.level;
+  document.getElementById("int").value = build.int;
+  document.getElementById("engine").value = build.engine;
+
+  // Restore infusions
+  document.querySelectorAll("#infusions input").forEach(cb => {
+    cb.checked = build.infusions.includes(cb.value);
+  });
+
+  // Rebuild
+  buildGolem();
+
+  alert("Build Loaded!");
+}
+window.addEventListener("load", () => {
+  if (localStorage.getItem("corewright_build")) {
+    loadBuild();
+  }
+});
 </script>
 
 </body>
