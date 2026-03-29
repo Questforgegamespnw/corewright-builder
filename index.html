@@ -35,10 +35,31 @@ button { margin:5px; padding:10px; font-size:1em; }
   body { background:white; }
   .card:not(.printable) { display:none; }
 }
+  .nav {
+  text-align:center;
+  background:#5a4a32;
+  padding:10px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+.nav a {
+  color:#fdf6e3;
+  margin:0 10px;
+  text-decoration:none;
+  font-weight:bold;
+}
+.nav a:hover {
+  text-decoration:underline;
+}
 </style>
 </head>
 <body>
-
+<div class="nav">
+  <a href="/corewright-builder/">Builder</a>
+  <a href="/corewright-builder/infusions/">Infusions</a>
+  <a href="/corewright-builder/corewright/">Subclass</a>
+</div>
 <div id="splash">
 <h1>Questforge Corewright Interface</h1>
 <p>Forge. Animate. Command.</p>
