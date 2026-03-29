@@ -32,8 +32,29 @@ button { margin:5px; padding:10px; font-size:1em; }
 }
 
 @media print {
-  body { background:white; }
-  .card:not(.printable) { display:none; }
+  
+  body * {
+    visibility: hidden;
+  }
+
+  #statblock, #statblock * {
+    visibility: visible;
+  }
+
+  #statblock {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    border: none;
+    font-size: 14px;
+    line-height: 1.3;
+  }
+
+  button {
+    display: none;
+  }
+
 }
   .nav {
   text-align:center;
@@ -141,10 +162,10 @@ Modes<br>
 <br>
 <button onclick="saveBuild()">Save</button>
 <button onclick="loadBuild()">Load</button>
-<button onclick="window.print()">Print</button>
 <button onclick="exportBuild()">Export</button>
 <button onclick="downloadTxt()">Download .txt</button>
 <button onclick="buildGolem()">Build Golem</button>
+<button onclick="printGolem()">Print / Save PDF</button>
 </div>
 <div id="output" class="card">
   <h2>Golem Stat Block</h2>
@@ -521,8 +542,12 @@ ${golem.forceDamageBonus ? ` + ${golem.forceDamageBonus} force damage` : ""}
   <div class="stat-section">
     <strong>Infusions</strong>
     <div>${getSelectedInfusions().join(", ") || "None"}</div>
+
   </div>
 `;
+function printGolem() {
+  window.print();
+}
 }
 }
 </script>
