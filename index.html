@@ -8,24 +8,20 @@
 </head>
 <body>
 
-<!-- Navigation -->
 <div class="nav">
   <a href="./">Builder</a>
   <a href="./infusions/">Infusions</a>
   <a href="./corewright/">Subclass</a>
 </div>
 
-<!-- Splash Screen -->
 <div id="splash">
   <h1>Questforge Corewright Interface</h1>
   <button onclick="enterApp()">Enter Workshop</button>
 </div>
 
-<!-- App -->
 <div id="app" style="display:none;">
   <div class="container">
 
-    <!-- Assembly Card -->
     <div class="card">
       <h2>Assembly</h2>
       Level <input id="level" type="number" value="10"><br>
@@ -49,16 +45,14 @@
         <option value="fusion">Fusion Mode</option>
       </select>
 
-      <!-- Infusions for Golem One -->
+      <!-- First Golem Infusions -->
       <div id="infusions" class="container">
         <h2>Infusions</h2>
-        <!-- Cards for each infusion will be injected here by JS -->
       </div>
 
-      <!-- Infusions for Golem Two -->
+      <!-- Second Golem Infusions (hidden by default) -->
       <div id="infusions2" class="container" style="display:none;">
         <h2>Second Golem Infusions</h2>
-        <!-- Cards for each infusion will be injected here by JS -->
       </div>
 
       <br>
@@ -69,7 +63,7 @@
       <button onclick="shareBuild()">Share Build</button>
     </div>
 
-    <!-- Second Golem Card -->
+    <!-- Second Golem (hidden by default) -->
     <div id="golem2" class="card" style="display:none;">
       <h2>Second Golem</h2>
       Level <input id="level2" type="number" value="10"><br>
@@ -85,7 +79,6 @@
       </select>
     </div>
 
-    <!-- Stat Block -->
     <div class="card">
       <h2>Golem Stat Block</h2>
       <div id="statblock"></div>
@@ -94,32 +87,7 @@
   </div>
 </div>
 
-<!-- Scripts -->
 <script src="./js/infusions.js"></script>
 <script src="./js/builder.js"></script>
-
-<!-- Splash and Mode Toggle -->
-<script>
-  function enterApp(){
-    document.getElementById('splash').style.display='none';
-    document.getElementById('app').style.display='block';
-  }
-
-  // Show/hide second golem and its infusions based on mode
-  document.getElementById("mode").addEventListener("change", () => {
-    const mode = document.getElementById("mode").value;
-    const golem2 = document.getElementById("golem2");
-    const infusions2 = document.getElementById("infusions2");
-
-    if (mode === "multi" || mode === "fusion") {
-      golem2.style.display = "block";
-      infusions2.style.display = "block";
-    } else {
-      golem2.style.display = "none";
-      infusions2.style.display = "none";
-    }
-  });
-</script>
-
 </body>
 </html>
