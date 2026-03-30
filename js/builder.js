@@ -9,6 +9,9 @@ function enterApp() {
 // ====== INFUSIONS RENDER ======
 function renderInfusions(containerId) {
   const container = document.getElementById(containerId);
+
+  if (!container) return; // 🔥 prevents crash
+
   container.innerHTML = ""; // Clear previous content
 
   Object.entries(INFUSIONS).forEach(([key, infusion]) => {
@@ -150,18 +153,28 @@ function setupEventListeners() {
       (mode === "multi" || mode === "fusion") ? "block" : "none";
     buildGolem();
   });
-
+}
   // Auto update inputs
-  ["level","int","engine"].forEach(id =>
-    document.getElementById(id).addEventListener("input", debounce(buildGolem))
-  );
-  ["level2","int2","engine2"].forEach(id =>
-    document.getElementById(id).addEventListener("input", debounce(buildGolem))
-  );
+["level","int","engine"].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener("input", debounce(buildGolem));
+  }
+});
 
-  ["infusions","infusions2"].forEach(id =>
-    document.getElementById(id).addEventListener("change", buildGolem)
-  );
+["level2","int2","engine2"].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener("input", debounce(buildGolem));
+  }
+});
+
+["infusions","infusions2"].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener("change", buildGolem);
+  }
+});
 }
 
 // ====== DEBOUNCE ======
