@@ -147,23 +147,41 @@ function renderInfusionList() {
         });
       }
 
-      // EFFECT
-      const effect = document.createElement("p");
-      effect.innerHTML = `<strong>Effect:</strong> ${infusion.effect}`;
-      content.appendChild(effect);
+// DETAILS
+const details = document.createElement("p");
+details.innerHTML = `<strong>Details:</strong> ${infusion.details}`;
+content.appendChild(details);
 
-      // DETAILS
-      const details = document.createElement("p");
-      details.innerHTML = `<strong>Details:</strong> ${infusion.details}`;
-      content.appendChild(details);
+// ===== LORE / MECHANICS PANEL =====
+if (infusion.lore || infusion.mechanics) {
 
-      card.appendChild(button);
-      card.appendChild(content);
-      section.appendChild(card);
-    });
+  const loreButton = document.createElement("button");
+  loreButton.className = "collapsible";
+  loreButton.textContent = "Show Lore & Mechanics";
 
-    if (hasContent) {
-      container.appendChild(section);
+  const loreContent = document.createElement("div");
+  loreContent.className = "content";
+
+  if (infusion.lore) {
+    const lore = document.createElement("p");
+    lore.innerHTML = `<strong>Lore:</strong> ${infusion.lore}`;
+    loreContent.appendChild(lore);
+  }
+
+  if (infusion.mechanics) {
+    const mech = document.createElement("p");
+    mech.innerHTML = `<strong>Mechanics:</strong> ${infusion.mechanics}`;
+    loreContent.appendChild(mech);
+  }
+
+  content.appendChild(loreButton);
+  content.appendChild(loreContent);
+}
+
+// NOW finish building the card
+card.appendChild(button);
+card.appendChild(content);
+section.appendChild(card);
     }
   });
 
