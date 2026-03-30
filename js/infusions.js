@@ -1,195 +1,196 @@
-// Define all infusions here
+// infusions.js
+
 const INFUSIONS = {
-  // 3rd-Level Infusions
   reinforced_frame: {
     name: "Reinforced Frame",
     tags: ["Tank"],
-    effect: "Golem’s hit points increase by your artificer level and gains +1 AC.",
-    details: "Bonus applied when golem is created; scales automatically with level."
+    effect: "The golem’s hit point maximum increases by your artificer level and gains +1 AC.",
+    details: "Applied when the golem is created; scales automatically with level.",
+    apply: function(golem, player) {
+      golem.hp += player.level;
+      golem.ac += 1;
+    }
   },
+
   war_construct: {
     name: "War Construct",
     tags: ["DPS"],
     effect: "Golem can make two attacks instead of one when taking the Attack action.",
-    details: "Each attack deals an additional 1d6 damage; damage type matches attack."
+    details: "Each attack deals an additional 1d6 damage.",
+    apply: function(golem, player) {
+      golem.extraAttacks = (golem.extraAttacks || 0) + 1;
+      golem.bonusDamage = (golem.bonusDamage || 0) + 1; // adjust with actual damage logic
+    }
   },
+
   dexterous_manipulators: {
     name: "Dexterous Manipulators",
     tags: ["Utility"],
-    effect: "Golem’s Dexterity becomes 14 and gains proficiency with simple weapons.",
-    details: "Can take the Use an Object action without requiring command."
+    effect: "Golem Dexterity becomes 14 unless higher and gains simple weapon proficiency.",
+    details: "Can wield weapons and manipulate objects freely.",
+    apply: function(golem, player) {
+      golem.dex = Math.max(golem.dex, 14);
+      golem.weaponProficiency = true;
+    }
   },
+
   accelerated_servos: {
     name: "Accelerated Servos",
     tags: ["Utility"],
-    effect: "Golem’s movement speed increases by 10 feet.",
-    details: "Can take Dash or Disengage as a bonus action without command."
+    effect: "Golem movement speed increases by 10 feet.",
+    details: "Can take Dash or Disengage as a bonus action without command.",
+    apply: function(golem, player) {
+      golem.speed += 10;
+    }
   },
+
   reactive_plating: {
     name: "Reactive Plating",
     tags: ["Tank"],
-    effect: "Golem can reduce damage by 1d10 + proficiency bonus using its reaction.",
-    details: "Can be used after damage is rolled but before applied."
+    effect: "When the golem takes damage, it can use its reaction to reduce it by 1d10 + proficiency bonus.",
+    details: "Used after damage is rolled but before it is applied.",
+    apply: function(golem, player) {
+      golem.reactivePlating = player.pb; // placeholder for actual damage reduction logic
+    }
   },
+
   arcane_conduit: {
     name: "Arcane Conduit",
     tags: ["Utility"],
-    effect: "Golem can deliver touch-range spells you cast.",
-    details: "Golem must be within 30 feet; spell originates from golem."
+    effect: "Your golem can deliver touch-range spells for you.",
+    details: "Golem must be within 30 feet; spell originates from its position.",
+    apply: function(golem, player) {
+      golem.arcaneDelivery = true;
+    }
   },
+
   anchored_frame: {
     name: "Anchored Frame",
     tags: ["Tank", "Control"],
-    effect: "Golem has advantage on saving throws vs being knocked prone, pushed, or pulled.",
-    details: "Forced movement affecting golem is reduced to 10 feet."
+    effect: "Golem has advantage on saving throws against being knocked prone, pushed, or pulled.",
+    details: "Forced movement affecting the golem is capped at 10 feet.",
+    apply: function(golem, player) {
+      golem.anchored = true;
+    }
   },
+
   overcharged_core: {
     name: "Overcharged Core",
     tags: ["DPS"],
-    effect: "Once per turn, golem deals +10 force damage on hit.",
-    details: "After using, golem takes force damage equal to proficiency bonus."
+    effect: "Once per turn, golem deals an additional 10 force damage on hit.",
+    details: "After using this, golem takes force damage equal to your proficiency bonus.",
+    apply: function(golem, player) {
+      golem.overchargedCore = player.pb; // placeholder for damage logic
+    }
   },
+
   sentinel_protocol: {
     name: "Sentinel Protocol",
     tags: ["Control"],
-    effect: "Golem can use reaction to attack creatures attacking others within 5 feet.",
-    details: "Triggers after the attack is declared."
+    effect: "When a creature attacks a target other than the golem within 5 feet, golem can use its reaction to attack.",
+    details: "Triggers after the attack is declared.",
+    apply: function(golem, player) {
+      golem.sentinelProtocol = true;
+    }
   },
 
-  // 9th-Level Infusions
   self_repair_matrix: {
     name: "Self-Repair Matrix",
     tags: ["Tank"],
-    effect: "At start of its turn, golem regains HP equal to Int modifier + proficiency bonus.",
-    details: "Regeneration suppressed until end of next turn if it takes acid or fire damage."
+    effect: "Golem regains HP at the start of its turn equal to INT modifier + proficiency bonus.",
+    details: "Regeneration suppressed until end of next turn if taking acid or fire damage.",
+    apply: function(golem, player) {
+      golem.regeneration = player.intMod + player.pb;
+    }
   },
+
   siege_engine: {
     name: "Siege Engine",
     tags: ["DPS"],
     effect: "Golem deals double damage to objects and structures.",
-    details: "Attacks deal +1d8; attack rolls against golem have advantage until next turn."
+    details: "Its attacks deal 1d8 extra damage; attack rolls against it have advantage until next turn.",
+    apply: function(golem, player) {
+      golem.siege = true;
+    }
   },
+
   reflexive_countermeasures: {
     name: "Reflexive Countermeasures",
     tags: ["Control"],
-    effect: "Golem can make a melee attack as reaction when a creature misses it.",
-    details: "Triggers once per round."
+    effect: "When a creature misses the golem, it can use its reaction to make a melee attack.",
+    details: "Can trigger once per round.",
+    apply: function(golem, player) {
+      golem.reflexiveCounter = true;
+    }
   },
 
-  // 15th-Level Infusions
   cognitive_matrix: {
     name: "Cognitive Matrix",
     tags: ["Utility"],
     effect: "Golem gains proficiency in all saving throws.",
-    details: "Adds Int modifier to ability checks and saving throws; can Help as bonus action."
+    details: "Adds INT modifier to ability checks/saves; can use Help action as bonus without command.",
+    apply: function(golem, player) {
+      golem.allSavesProficient = true;
+    }
   },
+
   phase_shifter: {
     name: "Phase Shifter",
     tags: ["Utility"],
-    effect: "Golem becomes incorporeal until start of next turn.",
-    details: "Can move through creatures and objects as difficult terrain."
+    effect: "As a bonus action, golem becomes incorporeal until next turn.",
+    details: "Can move through creatures and objects as difficult terrain.",
+    apply: function(golem, player) {
+      golem.phaseShift = true;
+    }
   },
+
   overdrive_protocol: {
     name: "Overdrive Protocol",
     tags: ["DPS"],
-    effect: "Golem makes one additional attack when commanded to attack.",
-    details: "At end of turn, it takes force damage equal to your proficiency bonus."
+    effect: "When commanded to attack, golem makes one additional attack.",
+    details: "At the end of its turn, it takes force damage equal to your proficiency bonus.",
+    apply: function(golem, player) {
+      golem.overdrive = true;
+    }
   },
+
   adaptive_plating: {
     name: "Adaptive Plating",
     tags: ["Tank"],
-    effect: "Golem can use reaction to gain resistance to damage it takes.",
-    details: "Resistance lasts until end of next turn."
+    effect: "When golem takes damage, it can use its reaction to gain resistance to that damage type.",
+    details: "Resistance lasts until end of its next turn.",
+    apply: function(golem, player) {
+      golem.adaptivePlating = true;
+    }
   },
+
   replication_matrix: {
     name: "Replication Matrix",
     tags: ["Utility"],
-    effect: "Golem can create a duplicate in an adjacent space as an action.",
-    details: "Duplicate has hit points equal to artificer level and lasts 1 minute."
+    effect: "Golem creates a duplicate in an adjacent space.",
+    details: "Duplicate has hit points equal to your artificer level and lasts 1 minute.",
+    apply: function(golem, player) {
+      golem.replication = player.level;
+    }
   },
+
   elemental_convergence: {
     name: "Elemental Convergence",
     tags: ["DPS"],
-    effect: "Golem deals additional damage equal to your Int modifier when using Engine Core type.",
-    details: "If damaging multiple creatures, gain temporary hit points equal to proficiency bonus."
+    effect: "Golem deals extra damage equal to INT modifier when using Engine Core damage.",
+    details: "If it damages multiple creatures, gains temporary hit points equal to proficiency bonus.",
+    apply: function(golem, player) {
+      golem.elementalConvergence = player.intMod;
+    }
   },
+
   giant_frame: {
     name: "Giant Frame",
     tags: ["Tank", "DPS"],
-    effect: "Golem increases size by one category (max Huge).",
-    details: "Gains HP, Strength, Con, reach; speed reduced and DEX saves at disadvantage."
+    effect: "Golem size increases by one category (max Huge).",
+    details: "Increases HP, STR, CON, reach, but reduced speed and disadvantage on DEX saves.",
+    apply: function(golem, player) {
+      golem.giant = true;
+    }
   }
 };
-// Function to render infusion cards
-function renderInfusions(containerId) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = ""; // Clear previous content
-
-  Object.entries(INFUSIONS).forEach(([key, infusion]) => {
-    const card = document.createElement("div");
-    card.className = "card";
-
-    const button = document.createElement("button");
-    button.className = "collapsible";
-    button.textContent = infusion.name;
-
-    const content = document.createElement("div");
-    content.className = "content";
-
-    // Tags
-    if (infusion.tags) {
-      infusion.tags.forEach(tag => {
-        const span = document.createElement("span");
-        span.className = `tag ${tag.toLowerCase()}`;
-        span.textContent = tag.charAt(0).toUpperCase() + tag.slice(1);
-        content.appendChild(span);
-      });
-    }
-
-    // Effect
-    const effect = document.createElement("p");
-    effect.innerHTML = `<strong>Effect:</strong> ${infusion.effect}`;
-    content.appendChild(effect);
-
-    // Details
-    const details = document.createElement("p");
-    details.innerHTML = `<strong>Details:</strong> ${infusion.details}`;
-    content.appendChild(details);
-
-    // Checkbox
-    const checkboxLabel = document.createElement("label");
-    checkboxLabel.style.display = "block";
-    checkboxLabel.style.marginTop = "8px";
-
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.value = key;
-
-    checkboxLabel.appendChild(checkbox);
-    checkboxLabel.appendChild(document.createTextNode(" Select"));
-    content.appendChild(checkboxLabel);
-
-    card.appendChild(button);
-    card.appendChild(content);
-    container.appendChild(card);
-  });
-
-  // Collapsible behavior
-  const col = container.getElementsByClassName("collapsible");
-  for (let i = 0; i < col.length; i++) {
-    col[i].addEventListener("click", function () {
-      this.classList.toggle("active");
-      const content = this.nextElementSibling;
-      content.style.display = content.style.display === "block" ? "none" : "block";
-    });
-  }
-}
-
-// Initial render for both golems
-renderInfusions("infusions");
-renderInfusions("infusions2");
-
-// Helper to get selected infusions from a container
-function getSelectedInfusions(containerId) {
-  return [...document.querySelectorAll(`#${containerId} input:checked`)].map(cb => cb.value);
-}
