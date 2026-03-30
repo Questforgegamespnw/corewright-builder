@@ -35,6 +35,10 @@ This project follows a simplified version of [Keep a Changelog](https://keepacha
 - Responsive layout and unified styling (`style.css`)
 - GitHub Pages deployment with relative paths
 
+### Notes
+- Baseline release for future expansion
+- Designed for scalability (additional subclasses, features, and systems)
+
 ## [1.0.1] - Infusions QC passover
 
 ### Added
@@ -45,6 +49,4 @@ This project follows a simplified version of [Keep a Changelog](https://keepacha
 -No missing infusions  
 -infusions.js is now the source pull for infusions.html
 
-### Notes
-- Baseline release for future expansion
-- Designed for scalability (additional subclasses, features, and systems)
+
