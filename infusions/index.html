@@ -122,8 +122,8 @@ function renderInfusionList() {
         (!infusion.tags || !infusion.tags.map(t => t.toLowerCase()).includes(currentFilter))
       ) return;
 
-      // SEARCH FILTER
-      const text = (infusion.name + infusion.effect + infusion.details).toLowerCase();
+      // ✅ FUTURE-PROOF SEARCH (THIS IS THE FIX)
+      const text = JSON.stringify(infusion).toLowerCase();
       if (!text.includes(search)) return;
 
       hasContent = true;
@@ -150,12 +150,12 @@ function renderInfusionList() {
 
       // EFFECT
       const effect = document.createElement("p");
-      effect.innerHTML = `<strong>Effect:</strong> ${infusion.effect}`;
+      effect.innerHTML = `<strong>Effect:</strong> ${infusion.effect || ""}`;
       content.appendChild(effect);
 
       // DETAILS
       const details = document.createElement("p");
-      details.innerHTML = `<strong>Details:</strong> ${infusion.details}`;
+      details.innerHTML = `<strong>Details:</strong> ${infusion.details || ""}`;
       content.appendChild(details);
 
       // ===== LORE / MECHANICS PANEL =====
@@ -191,7 +191,6 @@ function renderInfusionList() {
 
     });
 
-    // ADD SECTION IF IT HAS CONTENT
     if (hasContent) {
       container.appendChild(section);
     }
