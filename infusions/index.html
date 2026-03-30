@@ -5,6 +5,42 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Corewright Infusion Compendium</title>
 <link rel="stylesheet" href="../css/style.css">
+<style>
+/* Collapsible Buttons */
+.collapsible {
+  cursor: pointer;
+  padding: 10px;
+  background: #8b7355;
+  color: white;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-size: 1em;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+.content {
+  display: none;
+  padding: 10px 15px;
+  background: #fffaf0;
+  border: 1px solid #8b7355;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  margin-right: 5px;
+  border-radius: 5px;
+  font-size: 0.8em;
+}
+.tank { background: #4CAF50; color: white; }
+.dps { background: #f44336; color: white; }
+.control { background: #2196F3; color: white; }
+.utility { background: #9C27B0; color: white; }
+</style>
 </head>
 <body>
 
@@ -13,12 +49,116 @@
   <a href="./">Infusions</a>
   <a href="../corewright/">Subclass</a>
 </div>
-  
+
 <div class="container">
 <h1>Corewright Infusion Compendium</h1>
 
-<!-- Collapsible infusions go here (all your previous collapsible HTML content) -->
+<!-- Example Infusion Card -->
+<div class="card">
+  <button class="collapsible">Reinforced Frame</button>
+  <div class="content">
+    <span class="tag tank">Tank</span>
+    <p><strong>Effect:</strong> The golem’s hit point maximum increases by an amount equal to your artificer level, and it gains a +1 bonus to Armor Class.</p>
+    <p><strong>Details:</strong> Applied at creation and scales automatically with level.</p>
+  </div>
+</div>
 
+<div class="card">
+  <button class="collapsible">War Construct</button>
+  <div class="content">
+    <span class="tag dps">DPS</span>
+    <p><strong>Effect:</strong> When commanded to take the Attack action, the golem can make two attacks instead of one. Each attack deals an additional 1d6 damage.</p>
+    <p><strong>Details:</strong> Damage type matches the attack unless specified otherwise.</p>
+  </div>
+</div>
+
+<div class="card">
+  <button class="collapsible">Dexterous Manipulators</button>
+  <div class="content">
+    <span class="tag utility">Utility</span>
+    <p><strong>Effect:</strong> The golem’s Dexterity becomes 14 unless higher. Gains proficiency with simple weapons and can manipulate objects.</p>
+    <p><strong>Details:</strong> Can take the Use an Object action without requiring your command.</p>
+  </div>
+</div>
+
+<div class="card">
+  <button class="collapsible">Accelerated Servos</button>
+  <div class="content">
+    <span class="tag utility">Utility</span>
+    <p><strong>Effect:</strong> Golem movement speed increases by 10 feet.</p>
+    <p><strong>Details:</strong> Can take Dash or Disengage as a bonus action.</p>
+  </div>
+</div>
+
+<div class="card">
+  <button class="collapsible">Reactive Plating</button>
+  <div class="content">
+    <span class="tag tank">Tank</span>
+    <p><strong>Effect:</strong> When the golem takes damage, it can use its reaction to reduce that damage by 1d10 + your proficiency bonus.</p>
+    <p><strong>Details:</strong> Use after damage is rolled but before applied.</p>
+  </div>
+</div>
+
+<div class="card">
+  <button class="collapsible">Arcane Conduit</button>
+  <div class="content">
+    <span class="tag utility">Utility</span>
+    <p><strong>Effect:</strong> Your golem can deliver touch-range spells you cast.</p>
+    <p><strong>Details:</strong> Golem must be within 30 feet; spell originates from golem.</p>
+  </div>
+</div>
+
+<!-- Additional Infusions... replicate the same structure -->
+<!-- Advanced Infusions -->
+<h2>Advanced Infusions (9th Level)</h2>
+<div class="card">
+  <button class="collapsible">Self-Repair Matrix</button>
+  <div class="content">
+    <span class="tag tank">Tank</span>
+    <p><strong>Effect:</strong> At the start of each turn, golem regains hit points equal to your Int modifier + proficiency bonus.</p>
+    <p><strong>Details:</strong> Regeneration suppressed until end of next turn if taking acid or fire damage.</p>
+  </div>
+</div>
+
+<div class="card">
+  <button class="collapsible">Siege Engine</button>
+  <div class="content">
+    <span class="tag dps">DPS</span>
+    <p><strong>Effect:</strong> Golem deals double damage to objects and structures.</p>
+    <p><strong>Details:</strong> Attacks deal +1d8 damage; attack rolls against it have advantage until next turn.</p>
+  </div>
+</div>
+
+<div class="card">
+  <button class="collapsible">Reflexive Countermeasures</button>
+  <div class="content">
+    <span class="tag control">Control</span>
+    <p><strong>Effect:</strong> When a creature misses the golem, it can make a melee attack as a reaction.</p>
+    <p><strong>Details:</strong> Can trigger once per round.</p>
+  </div>
+</div>
+
+<!-- Masterwork Infusions (15th Level) -->
+<h2>Masterwork Infusions (15th Level)</h2>
+<div class="card">
+  <button class="collapsible">Cognitive Matrix</button>
+  <div class="content">
+    <span class="tag utility">Utility</span>
+    <p><strong>Effect:</strong> Golem gains proficiency in all saving throws.</p>
+    <p><strong>Details:</strong> Adds your Int modifier to ability checks & saving throws; can take Help action as bonus action.</p>
+  </div>
+</div>
+
+<div class="card">
+  <button class="collapsible">Phase Shifter</button>
+  <div class="content">
+    <span class="tag utility">Utility</span>
+    <p><strong>Effect:</strong> Golem becomes incorporeal as a bonus action until next turn.</p>
+    <p><strong>Details:</strong> Can move through creatures and objects (difficult terrain).</p>
+  </div>
+</div>
+
+<!-- Collapsible Script -->
 <script>
 let col = document.getElementsByClassName("collapsible");
 for (let i = 0; i < col.length; i++) {
