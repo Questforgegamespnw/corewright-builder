@@ -1,0 +1,130 @@
+/* ===== Global Body & Fonts ===== */
+body {
+  font-family: Georgia, serif;
+  background: #e8dcc3;
+  margin: 0;
+}
+
+/* ===== Navigation Bar ===== */
+.nav {
+  text-align: center;
+  background: #5a4a32;
+  padding: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+.nav a {
+  color: #fdf6e3;
+  margin: 0 10px;
+  text-decoration: none;
+  font-weight: bold;
+}
+.nav a:hover {
+  text-decoration: underline;
+}
+
+/* ===== Container & Cards ===== */
+.container {
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
+}
+.card {
+  background: #fdf6e3;
+  border: 2px solid #8b7355;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+/* ===== Headings ===== */
+h1, h2, h3 {
+  text-align: center;
+}
+
+/* ===== Tables ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th, td {
+  border: 1px solid #8b7355;
+  padding: 8px;
+  text-align: center;
+}
+
+/* ===== Features & Stat Sections ===== */
+.feature, .stat-section {
+  margin-top: 15px;
+}
+
+/* ===== Collapsible Buttons ===== */
+.collapsible {
+  cursor: pointer;
+  padding: 10px;
+  border: none;
+  text-align: left;
+  width: 100%;
+  background: #8b7355;
+  color: white;
+  font-size: 1em;
+  margin-top: 10px;
+}
+.content {
+  display: none;
+  padding: 10px;
+  background: #fffaf0;
+  border: 1px solid #8b7355;
+}
+
+/* ===== Infusion Tags ===== */
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  margin-right: 5px;
+  border-radius: 5px;
+  font-size: 0.8em;
+}
+.tank { background: #4CAF50; color: white; }
+.dps { background: #f44336; color: white; }
+.control { background: #2196F3; color: white; }
+.utility { background: #9C27B0; color: white; }
+
+/* ===== Stat Block Specific ===== */
+#statblock {
+  background: #fdf1dc;
+  border: 2px solid #3b2f1b;
+  border-radius: 6px;
+  padding: 16px;
+}
+.stat-header { border-bottom: 3px solid #3b2f1b; margin-bottom: 8px; }
+.stat-name { font-size: 1.6em; font-weight: bold; }
+.stat-section { border-top: 2px solid #3b2f1b; margin-top: 10px; padding-top: 6px; }
+
+/* ===== Splash Page ===== */
+#splash {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(#2f2a24, #5a4a32);
+  color: #fdf6e3;
+}
+
+/* ===== Buttons ===== */
+button {
+  margin: 5px;
+  padding: 10px;
+  font-size: 1em;
+}
+
+/* ===== Print Styles ===== */
+@media print {
+  body * { visibility: hidden; }
+  #statblock, #statblock * { visibility: visible; }
+  #statblock { position: absolute; top: 0; left: 0; width: 100%; border: none; }
+  button { display: none; }
+}
