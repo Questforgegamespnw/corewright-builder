@@ -251,11 +251,17 @@ ${allActions.join("<br><br>")}
         ${golem.flySpeed ? `, fly ${golem.flySpeed} ft` : ""}
       </div>
 
-      <div class="stat-section">
-        <strong>STR</strong> ${golem.str}
-        &nbsp; <strong>DEX</strong> ${golem.dex}
-        &nbsp; <strong>CON</strong> ${golem.con}
-      </div>
+<div class="stat-section">
+  <strong>STR</strong> ${golem.str}
+  &nbsp; <strong>DEX</strong> ${golem.dex}
+  &nbsp; <strong>CON</strong> ${golem.con}
+</div>
+
+<div class="stat-section">
+  <strong>INT</strong> ${golem.int}
+  &nbsp; <strong>WIS</strong> ${golem.wis}
+  &nbsp; <strong>CHA</strong> ${golem.cha}
+</div>
 
       ${golem.damageReduction ? `<div><strong>Damage Reduction</strong> ${golem.damageReduction}</div>` : ""}
       ${golem.bonusDamage ? `<div><strong>Bonus Damage</strong> +${golem.bonusDamage}</div>` : ""}
