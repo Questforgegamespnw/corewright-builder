@@ -1,10 +1,17 @@
-Corewright Builder
+# Corewright Builder
 
-The Corewright Builder is a web-based interface designed to streamline the creation and management of customizable golems for Questforge games. This builder allows players to assemble golems, assign engines, apply infusions, and generate detailed stat blocks for gameplay. It supports single golems, multiple golems, and fused golem modes, providing a flexible toolkit for both players and game masters.
+The Corewright Builder is a web-based interface designed to streamline the creation and management of customizable golems for Questforge games. This builder allows players to:
+
+Assemble golems
+Assign engines
+Apply infusions
+Generate detailed stat blocks for gameplay
+
+It supports single golems, multiple golems, and fused golem modes, providing a flexible toolkit for both players and game masters.
 
 This repository contains the complete HTML, CSS, and JavaScript needed to run the builder locally or via GitHub Pages. All components use relative links for easy deployment and maintenance.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Features
+## Features
 
 Dynamic Assembly: Adjust level, Intelligence modifier, and engine type for your golem.
 
@@ -19,7 +26,7 @@ Export Options: Print, save as PDF, or download as a .txt file.
 Save & Share Builds: Store builds locally or generate shareable links.
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Getting Started
+## Getting Started
 1. Open the Builder
 Open index.html in your browser for local use.
 Or visit the live GitHub Pages link: https://questforgegamespnw.github.io/corewright-builder/
@@ -54,36 +61,67 @@ Commit changes and push to GitHub.
 GitHub Pages automatically updates the live site.
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Quick Reference / Checklist
+<h2>Quick Reference / Checklist</h2>
+<p>Use this checklist to ensure the builder is functioning properly before committing changes or deploying updates:</p>
 
-Use this checklist to ensure the builder is functioning properly before committing changes or deploying updates:
+<ul>
+  <li><strong>Navigation</strong>
+    <ul>
+      <li>Links to Builder, Infusions, and Subclass work.</li>
+      <li>Sticky nav bar stays visible when scrolling.</li>
+    </ul>
+  </li>
 
-Navigation
- Links to Builder, Infusions, and Subclass work.
- Sticky nav bar stays visible when scrolling.
-Golem Assembly
- Level and INT inputs correctly affect stat calculations.
- Engine selection applies correct bonuses.
- Mode selection toggles single, multi, and fusion correctly.
-Infusions
- All infusions render as collapsible cards.
- Tags (Tank, DPS, Control, Utility) display correctly.
- Checkboxes allow selection and deselection.
- Second golem infusions render in multi/fusion mode.
-Stat Block
- Stat block updates dynamically with selections.
- Fused golem combines stats correctly.
- Print/Save PDF displays only the stat block.
-Build Management
- Save Build stores current build in localStorage.
- Load Build retrieves saved builds.
- Share Build generates a valid URL that recreates the build.
-Export / Download
- Download .txt outputs correct stat block.
- Print preview hides unnecessary elements.
-General UI
+  <li><strong>Golem Assembly</strong>
+    <ul>
+      <li>Level and INT inputs correctly affect stat calculations.</li>
+      <li>Engine selection applies correct bonuses.</li>
+      <li>Mode selection toggles single, multi, and fusion correctly.</li>
+    </ul>
+  </li>
+
+  <li><strong>Infusions</strong>
+    <ul>
+      <li>All infusions render as collapsible cards.</li>
+      <li>Tags (Tank, DPS, Control, Utility) display correctly.</li>
+      <li>Checkboxes allow selection and deselection.</li>
+      <li>Second golem infusions render in multi/fusion mode.</li>
+    </ul>
+  </li>
+
+  <li><strong>Stat Block</strong>
+    <ul>
+      <li>Stat block updates dynamically with selections.</li>
+      <li>Fused golem combines stats correctly.</li>
+      <li>Print/Save PDF displays only the stat block.</li>
+    </ul>
+  </li>
+
+  <li><strong>Build Management</strong>
+    <ul>
+      <li>Save Build stores current build in localStorage.</li>
+      <li>Load Build retrieves saved builds.</li>
+      <li>Share Build generates a valid URL that recreates the build.</li>
+    </ul>
+  </li>
+
+  <li><strong>Export / Download</strong>
+    <ul>
+      <li>Download .txt outputs correct stat block.</li>
+      <li>Print preview hides unnecessary elements.</li>
+    </ul>
+  </li>
+
+  <li><strong>General UI</strong>
+    <ul>
+      <li>Buttons and input fields are styled consistently.</li>
+      <li>Collapsible content expands and collapses correctly.</li>
+      <li>Responsive layout on different screen sizes.</li>
+    </ul>
+  </li>
+</ul>
 --------------------------------------------------------------------------------------------------------------
-File Structure
+## File Structure
 
 corewright-builder/
 ├─ index.html        # Main builder interface
@@ -96,7 +134,7 @@ corewright-builder/
 
 
 ------------------------------------------------------------------------------------------------------------
-Developer Notes
+## Developer Notes
 Adding New Infusions
 Open js/infusions.js.
 
