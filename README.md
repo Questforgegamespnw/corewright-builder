@@ -8,7 +8,7 @@ This repository contains the complete HTML, CSS, and JavaScript needed to run th
 
 ## Features
 
-- **Dynamic Assembly**: Adjust level, Intelligence modifier, and engine type for your golem.  
+- **Dynamic Assembly**: Adjust level, Intelligence modifier, engine type, and material for your golem.  
 - **Infusion Management**: Select infusions categorized as Tank, DPS, Control, or Utility.  
 - **Multi-Golem & Fusion Modes**: Build up to two golems and combine stats in fusion mode.  
 - **Real-Time Stat Block**: View a live, detailed stat block that updates as you tweak settings.  
