@@ -1,3 +1,4 @@
+// Define all infusions here
 const INFUSIONS = {
   // 3rd-Level Infusions
   reinforced_frame: {
@@ -119,3 +120,76 @@ const INFUSIONS = {
     details: "Gains HP, Strength, Con, reach; speed reduced and DEX saves at disadvantage."
   }
 };
+// Function to render infusion cards
+function renderInfusions(containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = ""; // Clear previous content
+
+  Object.entries(INFUSIONS).forEach(([key, infusion]) => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const button = document.createElement("button");
+    button.className = "collapsible";
+    button.textContent = infusion.name;
+
+    const content = document.createElement("div");
+    content.className = "content";
+
+    // Tags
+    if (infusion.tags) {
+      infusion.tags.forEach(tag => {
+        const span = document.createElement("span");
+        span.className = `tag ${tag.toLowerCase()}`;
+        span.textContent = tag.charAt(0).toUpperCase() + tag.slice(1);
+        content.appendChild(span);
+      });
+    }
+
+    // Effect
+    const effect = document.createElement("p");
+    effect.innerHTML = `<strong>Effect:</strong> ${infusion.effect}`;
+    content.appendChild(effect);
+
+    // Details
+    const details = document.createElement("p");
+    details.innerHTML = `<strong>Details:</strong> ${infusion.details}`;
+    content.appendChild(details);
+
+    // Checkbox
+    const checkboxLabel = document.createElement("label");
+    checkboxLabel.style.display = "block";
+    checkboxLabel.style.marginTop = "8px";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = key;
+
+    checkboxLabel.appendChild(checkbox);
+    checkboxLabel.appendChild(document.createTextNode(" Select"));
+    content.appendChild(checkboxLabel);
+
+    card.appendChild(button);
+    card.appendChild(content);
+    container.appendChild(card);
+  });
+
+  // Collapsible behavior
+  const col = container.getElementsByClassName("collapsible");
+  for (let i = 0; i < col.length; i++) {
+    col[i].addEventListener("click", function () {
+      this.classList.toggle("active");
+      const content = this.nextElementSibling;
+      content.style.display = content.style.display === "block" ? "none" : "block";
+    });
+  }
+}
+
+// Initial render for both golems
+renderInfusions("infusions");
+renderInfusions("infusions2");
+
+// Helper to get selected infusions from a container
+function getSelectedInfusions(containerId) {
+  return [...document.querySelectorAll(`#${containerId} input:checked`)].map(cb => cb.value);
+}
