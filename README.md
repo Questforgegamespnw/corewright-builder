@@ -154,7 +154,7 @@ Use this checklist before committing or deploying:
 ---
 
 ## File Structure
-//
+```
 corewright-builder/
 ├─ index.html
 ├─ css/
@@ -166,7 +166,7 @@ corewright-builder/
 │ ├─ engines.js # NEW (v2.0)
 └─ README.md
 └─ CHANGELOG.md
-//
+```
 
 ---
 
@@ -195,7 +195,7 @@ This allows consistent expansion across:
 Adding New Infusions
 
 In js/infusions.js:
-//
+```
 "newInfusion": {
   name: "New Infusion Name",
   effect: "Effect description",
@@ -203,27 +203,27 @@ In js/infusions.js:
   tags: ["Tank","Utility"],
   apply: (golem, player) => {}
 }
-//
+```
 ---
 Adding New Templates
 
 In js/templates.js:
-//
+```
 newTemplate: {
   name: "New Template",
   apply: (golem, player) => {}
 }
-//
+```
 ---
 Adding New Engines
 
 In js/engines.js:
-//
+```
 newEngine: {
   name: "New Engine",
   apply: (golem, player) => {}
 }
-//
+```
 ---
 Debugging Tips
 Use browser console to inspect golem object
