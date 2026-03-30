@@ -45,7 +45,85 @@ Mode
 <option value="fusion">Fusion Mode</option>
 </select>
 
-<div id="infusions"></div>
+<!-- INFUSIONS -->
+<div id="infusions" class="container">
+  <h2>Infusions</h2>
+  <!-- Cards for each infusion will be injected here by JS -->
+</div>
+
+<div id="infusions2" class="container" style="display:none;">
+  <h2>Second Golem Infusions</h2>
+  <!-- Cards for each infusion will be injected here by JS -->
+</div>
+
+<script>
+// Render Infusions as Cards
+function renderInfusions(containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = ""; // Clear existing content
+
+  Object.entries(INFUSIONS).forEach(([key, infusion]) => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const button = document.createElement("button");
+    button.className = "collapsible";
+    button.textContent = infusion.name;
+
+    const content = document.createElement("div");
+    content.className = "content";
+
+    if (infusion.tags) {
+      infusion.tags.forEach(tag => {
+        const span = document.createElement("span");
+        span.className = `tag ${tag.toLowerCase()}`;
+        span.textContent = tag.charAt(0).toUpperCase() + tag.slice(1);
+        content.appendChild(span);
+      });
+    }
+
+    const effect = document.createElement("p");
+    effect.innerHTML = `<strong>Effect:</strong> ${infusion.effect}`;
+    content.appendChild(effect);
+
+    const details = document.createElement("p");
+    details.innerHTML = `<strong>Details:</strong> ${infusion.details}`;
+    content.appendChild(details);
+
+    // Checkbox for selection
+    const checkboxLabel = document.createElement("label");
+    checkboxLabel.style.display = "block";
+    checkboxLabel.style.marginTop = "8px";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = key;
+
+    checkboxLabel.appendChild(checkbox);
+    checkboxLabel.appendChild(document.createTextNode(" Select"));
+
+    content.appendChild(checkboxLabel);
+
+    card.appendChild(button);
+    card.appendChild(content);
+    container.appendChild(card);
+  });
+
+  // Collapsible behavior
+  let col = container.getElementsByClassName("collapsible");
+  for (let i = 0; i < col.length; i++) {
+    col[i].addEventListener("click", function() {
+      this.classList.toggle("active");
+      let content = this.nextElementSibling;
+      content.style.display = content.style.display === "block" ? "none" : "block";
+    });
+  }
+}
+
+// Initial render
+renderInfusions("infusions");
+renderInfusions("infusions2");
+</script>
 
 <br>
 <button onclick="printGolem()">Print / Save PDF</button>
@@ -69,7 +147,85 @@ Engine
 <option value="aether">Aether</option>
 </select>
 
-<div id="infusions2"></div>
+<!-- INFUSIONS -->
+<div id="infusions" class="container">
+  <h2>Infusions</h2>
+  <!-- Cards for each infusion will be injected here by JS -->
+</div>
+
+<div id="infusions2" class="container" style="display:none;">
+  <h2>Second Golem Infusions</h2>
+  <!-- Cards for each infusion will be injected here by JS -->
+</div>
+
+<script>
+// Render Infusions as Cards
+function renderInfusions(containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = ""; // Clear existing content
+
+  Object.entries(INFUSIONS).forEach(([key, infusion]) => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const button = document.createElement("button");
+    button.className = "collapsible";
+    button.textContent = infusion.name;
+
+    const content = document.createElement("div");
+    content.className = "content";
+
+    if (infusion.tags) {
+      infusion.tags.forEach(tag => {
+        const span = document.createElement("span");
+        span.className = `tag ${tag.toLowerCase()}`;
+        span.textContent = tag.charAt(0).toUpperCase() + tag.slice(1);
+        content.appendChild(span);
+      });
+    }
+
+    const effect = document.createElement("p");
+    effect.innerHTML = `<strong>Effect:</strong> ${infusion.effect}`;
+    content.appendChild(effect);
+
+    const details = document.createElement("p");
+    details.innerHTML = `<strong>Details:</strong> ${infusion.details}`;
+    content.appendChild(details);
+
+    // Checkbox for selection
+    const checkboxLabel = document.createElement("label");
+    checkboxLabel.style.display = "block";
+    checkboxLabel.style.marginTop = "8px";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = key;
+
+    checkboxLabel.appendChild(checkbox);
+    checkboxLabel.appendChild(document.createTextNode(" Select"));
+
+    content.appendChild(checkboxLabel);
+
+    card.appendChild(button);
+    card.appendChild(content);
+    container.appendChild(card);
+  });
+
+  // Collapsible behavior
+  let col = container.getElementsByClassName("collapsible");
+  for (let i = 0; i < col.length; i++) {
+    col[i].addEventListener("click", function() {
+      this.classList.toggle("active");
+      let content = this.nextElementSibling;
+      content.style.display = content.style.display === "block" ? "none" : "block";
+    });
+  }
+}
+
+// Initial render
+renderInfusions("infusions");
+renderInfusions("infusions2");
+</script>
 </div>
 
 <div class="card">
