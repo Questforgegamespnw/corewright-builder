@@ -1,5 +1,3 @@
-// builder.js
-
 // ====== APP ENTRY ======
 function enterApp() {
   document.getElementById('splash').style.display = 'none';
@@ -50,9 +48,6 @@ function renderInfusions(containerId) {
     content.appendChild(details);
 
     const checkboxLabel = document.createElement("label");
-    checkboxLabel.style.display = "block";
-    checkboxLabel.style.marginTop = "8px";
-
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.value = key;
@@ -76,32 +71,20 @@ function renderInfusions(containerId) {
   });
 }
 
-// ===== TEMPLATE SYSTEM (NEW PATTERN) =====
-const templateId = engineId.replace("engine", "template");
-const templateEl = document.getElementById(templateId);
-const templateKey = templateEl?.value;
+// ====== TEMPLATE DROPDOWN ======
+function renderTemplates(selectId) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
 
-if (templateKey && templateKey !== "none") {
-  const template = TEMPLATES[templateKey];
-
-  if (template) {
-    template.apply?.(golem, player);
-
-    if (template.traits) {
-      golem.traits.push(
-        ...template.traits.map(fn => fn(player))
-      );
-    }
-
-    if (template.actions) {
-      golem.actions.push(
-        ...template.actions.map(fn => fn(player))
-      );
-    }
-  }
+  Object.entries(TEMPLATES).forEach(([key, template]) => {
+    const option = document.createElement("option");
+    option.value = key;
+    option.textContent = template.name;
+    select.appendChild(option);
+  });
 }
 
-// ====== INFUSION UTILITIES ======
+// ====== INFUSION UTIL ======
 function getSelectedInfusions(containerId) {
   return [...document.querySelectorAll(`#${containerId} input:checked`)]
     .map(cb => cb.value);
@@ -124,15 +107,15 @@ function createGolem(levelId, intId, engineId, infusionContainer) {
   let golem = {
     hp: 50,
     ac: 15,
-    
-    str: 14,
-    con: 14,
-    dex: 10,
 
-    int: 6
-    wis: 10
-    cha: 5
-      
+    str: 14,
+    dex: 10,
+    con: 14,
+
+    int: 6,
+    wis: 10,
+    cha: 5,
+
     speed: 30,
     reach: 5,
 
@@ -141,44 +124,44 @@ function createGolem(levelId, intId, engineId, infusionContainer) {
     reactions: []
   };
 
-  // ===== TEMPLATE (CLEAN SYSTEM) =====
+  // ===== TEMPLATE SYSTEM =====
   const templateId = engineId.replace("engine", "template");
   const templateEl = document.getElementById(templateId);
 
   if (templateEl && templateEl.value !== "none") {
     const template = TEMPLATES[templateEl.value];
 
-    if (template?.apply) {
-      template.apply(golem, player);
+    if (template) {
+      template.apply?.(golem, player);
 
       if (template.traits) {
-        golem.traits.push(...template.traits);
+        golem.traits.push(...template.traits.map(fn => fn(player)));
+      }
+
+      if (template.actions) {
+        golem.actions.push(...template.actions.map(fn => fn(player)));
       }
     }
   }
 
- // ===== ENGINE SYSTEM (NEW PATTERN) =====
-const engineKey = engineEl.value;
+  // ===== ENGINE SYSTEM =====
+  const engineKey = engineEl.value;
 
-if (engineKey && engineKey !== "none") {
-  const engine = ENGINES[engineKey];
+  if (engineKey && engineKey !== "none") {
+    const engine = ENGINES[engineKey];
 
-  if (engine) {
-    engine.apply?.(golem, player);
+    if (engine) {
+      engine.apply?.(golem, player);
 
-    if (engine.traits) {
-      golem.traits.push(
-        ...engine.traits.map(fn => fn(player))
-      );
-    }
+      if (engine.traits) {
+        golem.traits.push(...engine.traits.map(fn => fn(player)));
+      }
 
-    if (engine.actions) {
-      golem.actions.push(
-        ...engine.actions.map(fn => fn(player))
-      );
+      if (engine.actions) {
+        golem.actions.push(...engine.actions.map(fn => fn(player)));
+      }
     }
   }
-};
 
   // ===== INFUSIONS =====
   getSelectedInfusions(infusionContainer).forEach(key => {
@@ -192,95 +175,22 @@ if (engineKey && engineKey !== "none") {
     if (infusion.reactions) golem.reactions.push(...infusion.reactions);
   });
 
-// ===== COMBAT STATS =====
+  // ===== STATS =====
+  golem.strMod = Math.floor((golem.str - 10) / 2);
+  golem.dexMod = Math.floor((golem.dex - 10) / 2);
+  golem.conMod = Math.floor((golem.con - 10) / 2);
+  golem.intMod = Math.floor((golem.int - 10) / 2);
+  golem.wisMod = Math.floor((golem.wis - 10) / 2);
+  golem.chaMod = Math.floor((golem.cha - 10) / 2);
 
-// Ability modifiers
-golem.strMod = Math.floor((golem.str - 10) / 2);
-golem.dexMod = Math.floor((golem.dex - 10) / 2);
-golem.conMod = Math.floor((golem.con - 10) / 2);
-golem.intMod = Math.floor((golem.int - 10) / 2);
-golem.wisMod = Math.floor((golem.wis - 10) / 2);
-golem.chaMod = Math.floor((golem.cha - 10) / 2);
+  if (player.level <= 4) golem.damageDice = "1d8";
+  else if (player.level <= 10) golem.damageDice = "1d10";
+  else if (player.level <= 16) golem.damageDice = "1d12";
+  else golem.damageDice = "2d12";
 
-// Damage scaling
-if (player.level <= 4) golem.damageDice = "1d8";
-else if (player.level <= 10) golem.damageDice = "1d10";
-else if (player.level <= 16) golem.damageDice = "1d12";
-else golem.damageDice = "2d12";
+  golem.attackBonus = player.pb + golem.strMod;
 
-// Attack bonus
-golem.attackBonus = player.pb + golem.strMod;
-
-return golem;
-}
-
-// ====== STAT BLOCK ======
-function renderStatBlock(golem, name) {
-
-  const traitBlock = golem.traits?.length
-    ? `<div class="stat-section"><strong>Traits</strong><br>${golem.traits.join("<br><br>")}</div>`
-    : "";
-
-  let baseAttack = `
-<strong>Slam.</strong> Melee Weapon Attack: +${golem.attackBonus} to hit,
-reach ${golem.reach} ft., one target.
-Hit: ${golem.damageDice} + ${golem.strMod} bludgeoning damage
-${golem.bonusDamage ? `+ ${golem.bonusDamage} fire damage` : ""}.
-`;
-
-  let allActions = [baseAttack];
-
-  if (golem.actions?.length) {
-    allActions.push(...golem.actions);
-  }
-
-  const actionBlock = `
-<div class="stat-section">
-<strong>Actions</strong><br>
-${allActions.join("<br><br>")}
-</div>
-`;
-
-  const reactionBlock = golem.reactions?.length
-    ? `<div class="stat-section"><strong>Reactions</strong><br>${golem.reactions.join("<br><br>")}</div>`
-    : "";
-
-  return `
-    <div id="statblock">
-
-      <div class="stat-header">
-        <div class="stat-name">${name}</div>
-      </div>
-
-      <div><strong>Armor Class</strong> ${golem.ac}</div>
-      <div><strong>Hit Points</strong> ${golem.hp}</div>
-
-      <div class="stat-section">
-        <strong>Speed</strong> ${golem.speed} ft
-        ${golem.flySpeed ? `, fly ${golem.flySpeed} ft` : ""}
-      </div>
-
-<div class="stat-section">
-  <strong>STR</strong> ${golem.str}
-  &nbsp; <strong>DEX</strong> ${golem.dex}
-  &nbsp; <strong>CON</strong> ${golem.con}
-</div>
-
-<div class="stat-section">
-  <strong>INT</strong> ${golem.int}
-  &nbsp; <strong>WIS</strong> ${golem.wis}
-  &nbsp; <strong>CHA</strong> ${golem.cha}
-</div>
-
-      ${golem.damageReduction ? `<div><strong>Damage Reduction</strong> ${golem.damageReduction}</div>` : ""}
-      ${golem.bonusDamage ? `<div><strong>Bonus Damage</strong> +${golem.bonusDamage}</div>` : ""}
-
-      ${traitBlock}
-      ${actionBlock}
-      ${reactionBlock}
-
-    </div>
-  `;
+  return golem;
 }
 
 // ====== BUILD ======
@@ -291,65 +201,18 @@ function buildGolem() {
   const mode = modeEl.value;
   const g1 = createGolem("level", "int", "engine", "infusions");
 
-  let output = "";
-
-  if (mode === "single") {
-    output = renderStatBlock(g1, "Golem");
-  }
-
-  else if (mode === "multi") {
-    const g2 = createGolem("level2", "int2", "engine2", "infusions2");
-    output =
-      renderStatBlock(g1, "Golem One") +
-      renderStatBlock(g2, "Golem Two");
-  }
-
-  else if (mode === "fusion") {
-    const g2 = createGolem("level2", "int2", "engine2", "infusions2");
-
-    const fused = {
-      hp: g1.hp + g2.hp,
-      ac: Math.max(g1.ac, g2.ac),
-      str: Math.max(g1.str, g2.str),
-      dex: Math.max(g1.dex, g2.dex),
-      con: Math.max(g1.con, g2.con),
-      speed: Math.max(g1.speed, g2.speed),
-      reach: Math.max(g1.reach, g2.reach) + 5,
-      traits: [...(g1.traits || []), ...(g2.traits || [])],
-      actions: [...(g1.actions || []), ...(g2.actions || [])],
-      reactions: [...(g1.reactions || []), ...(g2.reactions || [])]
-    };
-
-    output = renderStatBlock(fused, "Fused Golem");
-  }
+  let output = renderStatBlock(g1, "Golem");
 
   document.getElementById("statblock").innerHTML = output;
 }
 
 // ====== EVENTS ======
 function setupEventListeners() {
-
-  const modeEl = document.getElementById("mode");
-  const golem2El = document.getElementById("golem2");
-
-  if (modeEl && golem2El) {
-    modeEl.addEventListener("change", () => {
-      const mode = modeEl.value;
-      golem2El.style.display =
-        (mode === "multi" || mode === "fusion") ? "block" : "none";
-      buildGolem();
+  ["level","int","engine","template","level2","int2","engine2","template2"]
+    .forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener("input", debounce(buildGolem));
     });
-  }
-
-  ["level","int","engine","template"].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener("input", debounce(buildGolem));
-  });
-
-  ["level2","int2","engine2","template2"].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener("input", debounce(buildGolem));
-  });
 
   ["infusions","infusions2"].forEach(id => {
     const el = document.getElementById(id);
@@ -357,7 +220,6 @@ function setupEventListeners() {
   });
 }
 
-// ====== DEBOUNCE ======
 function debounce(fn, delay = 100) {
   let timeout;
   return function() {
