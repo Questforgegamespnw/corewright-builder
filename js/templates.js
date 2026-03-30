@@ -10,18 +10,16 @@ const TEMPLATES = {
     },
 
     traits: [
-      (player) => `Stone Body. Reduces nonmagical bludgeoning, piercing, and slashing damage by ${player.pb}.`
+      (p) => `Stone Body. Reduces nonmagical B/P/S damage by ${p.pb}.`
     ]
   },
 
   clay: {
     name: "Clay Template",
 
-    apply: () => {},
-
     traits: [
-      (player) => `Regeneration. Regains ${player.pb} HP at start of turn if above 0 HP.`,
-      () => `Acid Vulnerability. Regeneration is suppressed after acid damage until end of next turn.`
+      (p) => `Regeneration. Regains ${p.pb} HP at start of turn if above 0 HP.`,
+      () => `Acid Suppression. Regeneration stops until end of next turn after acid damage.`
     ]
   },
 
@@ -47,18 +45,16 @@ const TEMPLATES = {
     },
 
     actions: [
-      () => `Reinforced Strike. Deals +1d4 additional damage on hit.`
+      () => "Reinforced Strike. Deals +1d4 additional damage on hit."
     ]
   },
 
   earth: {
     name: "Earth Template",
 
-    apply: () => {},
-
     traits: [
-      () => "Earthbound. Advantage on STR checks and saves while touching ground.",
-      () => "Terrain Mastery. Ignores difficult terrain from earth/stone.",
+      () => "Earthbound. Advantage on STR checks and saves while grounded.",
+      () => "Terrain Mastery. Ignores earth/stone difficult terrain.",
       () => "Resistance to acid damage."
     ]
   },
@@ -66,36 +62,30 @@ const TEMPLATES = {
   cloth: {
     name: "Cloth Template",
 
-    apply: () => {},
-
     traits: [
       () => "Amorphous Form. Can move through 1-inch spaces.",
-      () => "Slippery Form. Advantage vs grapple and restraint."
+      () => "Slippery Form. Advantage vs grapple/restraint."
     ],
 
     actions: [
-      (player) => `Smother. On hit, may grapple target (Escape DC ${8 + player.pb + player.intMod}).`
+      (p) => `Smother. On hit, may grapple (Escape DC ${8 + p.pb + p.intMod}).`
     ]
   },
 
   bone: {
     name: "Bone Template",
 
-    apply: () => {},
-
     traits: [
-      () => `Dread Aura. Creatures within 5 ft must succeed on a Wisdom save or have disadvantage on next attack.`
+      () => "Dread Aura. Creatures within 5 ft suffer disadvantage on next attack on failed WIS save."
     ],
 
     actions: [
-      () => `Necrotic Strike. Deals +1d4 necrotic damage once per turn.`
+      () => "Necrotic Strike. Deals +1d4 necrotic damage once per turn."
     ]
   },
 
   blood: {
     name: "Blood Template",
-
-    apply: () => {},
 
     traits: [
       () => "Liquid Form. Can move through 1-inch spaces.",
@@ -103,7 +93,7 @@ const TEMPLATES = {
     ],
 
     actions: [
-      (player) => `Sanguine Absorption. Regains ${player.pb} HP once per turn when dealing damage.`
+      (p) => `Sanguine Absorption. Regains ${p.pb} HP once per turn when dealing damage.`
     ]
   }
 
