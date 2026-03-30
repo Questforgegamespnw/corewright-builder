@@ -50,7 +50,7 @@ const INFUSIONS = {
     name: "Arcane Conduit",
     tier: "base",
     tags: ["Utility"],
-    effect: Boosts spell synergy,
+    effect: "Boosts spell synergy",
     details: "Improves magical interactions with the golem.",
     apply: (golem) => { golem.arcaneBoost = true; }
   },
@@ -59,7 +59,7 @@ const INFUSIONS = {
     name: "Anchored Frame",
     tier: "base",
     tags: ["Tank"],
-    effect: Resistance to forced movement,
+    effect: "Resistance to forced movement",
     details: "The golem cannot easily be moved against its will.",
     apply: (golem) => { golem.anchored = true; }
   },
@@ -68,7 +68,7 @@ const INFUSIONS = {
     name: "Overcharged Core",
     tier: "base",
     tags: ["DPS"],
-    effect: Bonus damage output,
+    effect: "Bonus damage output",
     details: "The golem deals additional damage at the cost of stability.",
     apply: (golem) => { golem.overcharged = true; }
   },
@@ -77,7 +77,7 @@ const INFUSIONS = {
     name: "Sentinel Protocol",
     tier: "base",
     tags: ["Control"],
-    effect: Reaction-based defense,
+    effect: "Reaction-based defense",
     details: "Allows the golem to react to enemy movement.",
     apply: (golem) => { golem.sentinel = true; }
   },
@@ -87,7 +87,7 @@ const INFUSIONS = {
     name: "Self-Repair Matrix",
     tier: "advanced",
     tags: ["Tank"],
-    effect: Regeneration,
+    effect: "Regeneration",
     details: "The golem regains HP each round.",
     apply: (golem) => { golem.regen = 5; }
   },
@@ -96,7 +96,7 @@ const INFUSIONS = {
     name: "Siege Engine",
     tier: "advanced",
     tags: ["DPS"],
-    effect: Structure damage bonus,
+    effect: "Structure damage bonus",
     details: "Deals extra damage to structures and objects.",
     apply: (golem) => { golem.siege = true; }
   },
@@ -105,7 +105,7 @@ const INFUSIONS = {
     name: "Reflexive Countermeasures",
     tier: "advanced",
     tags: ["Control"],
-    effect: Counterattack reactions,
+    effect: "Counterattack reactions",
     details: "The golem can retaliate when attacked.",
     apply: (golem) => { golem.counter = true; }
   },
@@ -115,7 +115,7 @@ const INFUSIONS = {
     name: "Cognitive Matrix",
     tier: "masterwork",
     tags: ["Utility"],
-    effect: Enhanced intelligence,
+    effect: "Enhanced intelligence",
     details: "Grants advanced decision-making capabilities.",
     apply: (golem) => { golem.intBoost = true; }
   },
@@ -124,7 +124,7 @@ const INFUSIONS = {
     name: "Phase Shifter",
     tier: "masterwork",
     tags: ["Control"],
-    effect: Partial intangibility,
+    effect: "Partial intangibility",
     details: "Allows the golem to phase through obstacles briefly.",
     apply: (golem) => { golem.phase = true; }
   },
@@ -133,7 +133,7 @@ const INFUSIONS = {
     name: "Overdrive Protocol",
     tier: "masterwork",
     tags: ["DPS"],
-    effect: Burst damage mode,
+    effect: "Burst damage mode",
     details: "Temporarily increases attack output significantly.",
     apply: (golem) => { golem.overdrive = true; }
   },
@@ -142,7 +142,7 @@ const INFUSIONS = {
     name: "Adaptive Plating",
     tier: "masterwork",
     tags: ["Tank"],
-    effect: Dynamic resistance,
+    effect: "Dynamic resistance",
     details: "Adapts to incoming damage types.",
     apply: (golem) => { golem.adaptive = true; }
   },
@@ -151,7 +151,7 @@ const INFUSIONS = {
     name: "Replication Matrix",
     tier: "masterwork",
     tags: ["Utility"],
-    effect: Duplicate effects,
+    effect: "Duplicate effects",
     details: "Can replicate certain abilities or effects.",
     apply: (golem) => { golem.replicate = true; }
   },
@@ -160,7 +160,7 @@ const INFUSIONS = {
     name: "Elemental Convergence",
     tier: "masterwork",
     tags: ["DPS"],
-    effect: Elemental damage boost,
+    effect: "Elemental damage boost",
     details: "Channels elemental energy into attacks.",
     apply: (golem) => { golem.elemental = true; }
   },
@@ -169,7 +169,7 @@ const INFUSIONS = {
     name: "Giant Frame",
     tier: "masterwork",
     tags: ["Tank"],
-    effect: Increased size and strength,
+    effect: "Increased size and strength",
     details: "The golem becomes larger and more powerful.",
     apply: (golem) => {
       golem.hp += 30;
