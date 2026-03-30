@@ -28,7 +28,6 @@ function renderInfusions(containerId) {
     const content = document.createElement("div");
     content.className = "content";
 
-    // TAGS
     if (infusion.tags) {
       infusion.tags.forEach(tag => {
         const span = document.createElement("span");
@@ -38,17 +37,14 @@ function renderInfusions(containerId) {
       });
     }
 
-    // EFFECT
     const effect = document.createElement("p");
     effect.innerHTML = `<strong>Effect:</strong> ${infusion.effect}`;
     content.appendChild(effect);
 
-    // DETAILS
     const details = document.createElement("p");
     details.innerHTML = `<strong>Details:</strong> ${infusion.details}`;
     content.appendChild(details);
 
-    // CHECKBOX
     const checkboxLabel = document.createElement("label");
     checkboxLabel.style.display = "block";
     checkboxLabel.style.marginTop = "8px";
@@ -66,7 +62,6 @@ function renderInfusions(containerId) {
     container.appendChild(card);
   });
 
-  // COLLAPSIBLE
   Array.from(container.getElementsByClassName("collapsible")).forEach(col => {
     col.addEventListener("click", function () {
       this.classList.toggle("active");
@@ -88,6 +83,7 @@ function createGolem(levelId, intId, engineId, infusionContainer) {
   const levelEl = document.getElementById(levelId);
   const intEl = document.getElementById(intId);
   const engineEl = document.getElementById(engineId);
+  const templateEl = document.getElementById("template"); // 👈 NEW
 
   if (!levelEl || !intEl || !engineEl) return {};
 
@@ -110,13 +106,27 @@ function createGolem(levelId, intId, engineId, infusionContainer) {
     reactions: []
   };
 
-  // ENGINE EFFECTS
+  // ===== TEMPLATE (NEW SYSTEM) =====
+  if (templateEl && typeof TEMPLATES !== "undefined") {
+    const templateKey = templateEl.value;
+    const template = TEMPLATES[templateKey];
+
+    if (template && template.apply) {
+      template.apply(golem, player);
+
+      if (template.traits) {
+        golem.traits.push(...template.traits);
+      }
+    }
+  }
+
+  // ===== ENGINE EFFECTS =====
   const engine = engineEl.value;
   if (engine === "flame") golem.bonusDamage = intMod;
   if (engine === "stone") golem.damageReduction = player.pb;
   if (engine === "aether") golem.flySpeed = golem.speed;
 
-  // APPLY INFUSIONS (DATA-DRIVEN)
+  // ===== INFUSIONS =====
   getSelectedInfusions(infusionContainer).forEach(key => {
     const infusion = INFUSIONS[key];
     if (!infusion) return;
@@ -135,17 +145,17 @@ function createGolem(levelId, intId, engineId, infusionContainer) {
       golem.reactions.push(...infusion.reactions);
     }
   });
-// ====== COMBAT STATS ======
-golem.strMod = Math.floor((golem.str - 10) / 2);
 
-// Damage scaling by level
-if (player.level <= 4) golem.damageDice = "1d8";
-else if (player.level <= 10) golem.damageDice = "1d10";
-else if (player.level <= 16) golem.damageDice = "1d12";
-else golem.damageDice = "2d12";
-// ^^^^^  This above section might need some damage scaling adjustment pending review of combat effectivness//
-// Attack bonus
-golem.attackBonus = player.pb + golem.strMod;
+  // ===== COMBAT STATS =====
+  golem.strMod = Math.floor((golem.str - 10) / 2);
+
+  if (player.level <= 4) golem.damageDice = "1d8";
+  else if (player.level <= 10) golem.damageDice = "1d10";
+  else if (player.level <= 16) golem.damageDice = "1d12";
+  else golem.damageDice = "2d12";
+
+  golem.attackBonus = player.pb + golem.strMod;
+
   return golem;
 }
 
@@ -156,22 +166,20 @@ function renderStatBlock(golem, name) {
     ? `<div class="stat-section"><strong>Traits</strong><br>${golem.traits.join("<br><br>")}</div>`
     : "";
 
-// ===== BASE ATTACK =====
-let baseAttack = `
+  let baseAttack = `
 <strong>Slam.</strong> Melee Weapon Attack: +${golem.attackBonus} to hit,
 reach ${golem.reach} ft., one target.
 Hit: ${golem.damageDice} + ${golem.strMod} bludgeoning damage
 ${golem.bonusDamage ? `+ ${golem.bonusDamage} fire damage` : ""}.
 `;
 
-// Combine base + infusion actions
-let allActions = [baseAttack];
+  let allActions = [baseAttack];
 
-if (golem.actions?.length) {
-  allActions.push(...golem.actions);
-}
+  if (golem.actions?.length) {
+    allActions.push(...golem.actions);
+  }
 
-const actionBlock = `
+  const actionBlock = `
 <div class="stat-section">
 <strong>Actions</strong><br>
 ${allActions.join("<br><br>")}
@@ -214,13 +222,14 @@ ${allActions.join("<br><br>")}
   `;
 }
 
-// ====== BUILD LOGIC ======
+// ====== BUILD ======
 function buildGolem() {
   const modeEl = document.getElementById("mode");
   if (!modeEl) return;
 
   const mode = modeEl.value;
   const g1 = createGolem("level", "int", "engine", "infusions");
+
   let output = "";
 
   if (mode === "single") {
@@ -256,7 +265,7 @@ function buildGolem() {
   document.getElementById("statblock").innerHTML = output;
 }
 
-// ====== EVENT HANDLERS ======
+// ====== EVENTS ======
 function setupEventListeners() {
 
   const modeEl = document.getElementById("mode");
@@ -271,7 +280,7 @@ function setupEventListeners() {
     });
   }
 
-  ["level","int","engine"].forEach(id => {
+  ["level","int","engine","template"].forEach(id => { // 👈 added template
     const el = document.getElementById(id);
     if (el) el.addEventListener("input", debounce(buildGolem));
   });
