@@ -104,6 +104,7 @@ corewright-builder/
 │ ├─ builder.js # Main functionality & event handling
 │ └─ infusions.js # Infusion definitions & render logic
 └─ README.md
+└─ CHANGELOG.md
 ```
 
 ---
@@ -151,3 +152,8 @@ corewright-builder/
 - GitHub Pages automatically hosts relative paths.
 - Ensure `index.html` is at the root of the repository.
 - Confirm CSS and JS paths before committing.
+
+---
+## Changelog
+
+See full version history here: [CHANGELOG.md](./CHANGELOG.md)
