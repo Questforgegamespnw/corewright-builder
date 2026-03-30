@@ -151,11 +151,28 @@ function createGolem(levelId, intId, engineId, infusionContainer) {
     }
   }
 
-  // ===== ENGINE =====
-  const engine = engineEl.value;
-  if (engine === "flame") golem.bonusDamage = intMod;
-  if (engine === "stone") golem.damageReduction = player.pb;
-  if (engine === "aether") golem.flySpeed = golem.speed;
+ // ===== ENGINE SYSTEM (NEW PATTERN) =====
+const engineKey = engineEl.value;
+
+if (engineKey && engineKey !== "none") {
+  const engine = ENGINES[engineKey];
+
+  if (engine) {
+    engine.apply?.(golem, player);
+
+    if (engine.traits) {
+      golem.traits.push(
+        ...engine.traits.map(fn => fn(player))
+      );
+    }
+
+    if (engine.actions) {
+      golem.actions.push(
+        ...engine.actions.map(fn => fn(player))
+      );
+    }
+  }
+};
 
   // ===== INFUSIONS =====
   getSelectedInfusions(infusionContainer).forEach(key => {
