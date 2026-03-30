@@ -104,6 +104,7 @@ function renderInfusionList() {
   Object.entries(tiers).forEach(([tierKey, tierName]) => {
 
     const section = document.createElement("div");
+
     const header = document.createElement("h2");
     header.textContent = tierName;
     section.appendChild(header);
@@ -147,45 +148,57 @@ function renderInfusionList() {
         });
       }
 
-// DETAILS
-const details = document.createElement("p");
-details.innerHTML = `<strong>Details:</strong> ${infusion.details}`;
-content.appendChild(details);
+      // EFFECT
+      const effect = document.createElement("p");
+      effect.innerHTML = `<strong>Effect:</strong> ${infusion.effect}`;
+      content.appendChild(effect);
 
-// ===== LORE / MECHANICS PANEL =====
-if (infusion.lore || infusion.mechanics) {
+      // DETAILS
+      const details = document.createElement("p");
+      details.innerHTML = `<strong>Details:</strong> ${infusion.details}`;
+      content.appendChild(details);
 
-  const loreButton = document.createElement("button");
-  loreButton.className = "collapsible";
-  loreButton.textContent = "Show Lore & Mechanics";
+      // ===== LORE / MECHANICS PANEL =====
+      if (infusion.lore || infusion.mechanics) {
 
-  const loreContent = document.createElement("div");
-  loreContent.className = "content";
+        const loreButton = document.createElement("button");
+        loreButton.className = "collapsible";
+        loreButton.textContent = "Show Lore & Mechanics";
 
-  if (infusion.lore) {
-    const lore = document.createElement("p");
-    lore.innerHTML = `<strong>Lore:</strong> ${infusion.lore}`;
-    loreContent.appendChild(lore);
-  }
+        const loreContent = document.createElement("div");
+        loreContent.className = "content";
 
-  if (infusion.mechanics) {
-    const mech = document.createElement("p");
-    mech.innerHTML = `<strong>Mechanics:</strong> ${infusion.mechanics}`;
-    loreContent.appendChild(mech);
-  }
+        if (infusion.lore) {
+          const lore = document.createElement("p");
+          lore.innerHTML = `<strong>Lore:</strong> ${infusion.lore}`;
+          loreContent.appendChild(lore);
+        }
 
-  content.appendChild(loreButton);
-  content.appendChild(loreContent);
-}
+        if (infusion.mechanics) {
+          const mech = document.createElement("p");
+          mech.innerHTML = `<strong>Mechanics:</strong> ${infusion.mechanics}`;
+          loreContent.appendChild(mech);
+        }
 
-// NOW finish building the card
-card.appendChild(button);
-card.appendChild(content);
-section.appendChild(card);
+        content.appendChild(loreButton);
+        content.appendChild(loreContent);
+      }
+
+      // BUILD CARD
+      card.appendChild(button);
+      card.appendChild(content);
+      section.appendChild(card);
+
+    });
+
+    // ADD SECTION IF IT HAS CONTENT
+    if (hasContent) {
+      container.appendChild(section);
     }
+
   });
 
-  // COLLAPSIBLE
+  // COLLAPSIBLE HANDLER
   const col = document.getElementsByClassName("collapsible");
   for (let i = 0; i < col.length; i++) {
     col[i].addEventListener("click", function () {
