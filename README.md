@@ -1,69 +1,92 @@
-# Corewright Builder
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Corewright Builder Documentation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="./css/style.css">
+<style>
+  body { font-family: Georgia, serif; background: #fdf6e3; margin: 0; padding: 20px; }
+  h1, h2, h3 { text-align: center; }
+  hr { border: 1px solid #8b7355; margin: 20px 0; }
+  ul { margin-left: 20px; }
+  li { margin-bottom: 5px; }
+</style>
+</head>
+<body>
 
-The Corewright Builder is a web-based interface designed to streamline the creation and management of customizable golems for Questforge games. This builder allows players to:
+<h1>Corewright Builder</h1>
+<p>The Corewright Builder is a web-based interface designed to streamline the creation and management of customizable golems for Questforge games. This builder allows players to assemble golems, assign engines, apply infusions, and generate detailed stat blocks for gameplay. It supports single golems, multiple golems, and fused golem modes, providing a flexible toolkit for both players and game masters.</p>
 
-Assemble golems
-Assign engines
-Apply infusions
-Generate detailed stat blocks for gameplay
+<p>This repository contains the complete HTML, CSS, and JavaScript needed to run the builder locally or via GitHub Pages. All components use relative links for easy deployment and maintenance.</p>
 
-It supports single golems, multiple golems, and fused golem modes, providing a flexible toolkit for both players and game masters.
+<hr>
 
-This repository contains the complete HTML, CSS, and JavaScript needed to run the builder locally or via GitHub Pages. All components use relative links for easy deployment and maintenance.
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-## Features
+<h2>Features</h2>
+<ul>
+  <li><strong>Dynamic Assembly:</strong> Adjust level, Intelligence modifier, and engine type for your golem.</li>
+  <li><strong>Infusion Management:</strong> Select infusions categorized as Tank, DPS, Control, or Utility.</li>
+  <li><strong>Multi-Golem & Fusion Modes:</strong> Build up to two golems and combine stats in fusion mode.</li>
+  <li><strong>Real-Time Stat Block:</strong> View a live, detailed stat block that updates as you tweak settings.</li>
+  <li><strong>Export Options:</strong> Print, save as PDF, or download as a .txt file.</li>
+  <li><strong>Save & Share Builds:</strong> Store builds locally or generate shareable links.</li>
+</ul>
 
-Dynamic Assembly: Adjust level, Intelligence modifier, and engine type for your golem.
+<hr>
 
-Infusion Management: Select infusions categorized as Tank, DPS, Control, or Utility.
+<h2>Getting Started</h2>
+<ol>
+  <li><strong>Open the Builder</strong>
+    <ul>
+      <li>Open <code>index.html</code> in your browser for local use.</li>
+      <li>Or visit the live GitHub Pages link: <a href="https://questforgegamespnw.github.io/corewright-builder/" target="_blank">https://questforgegamespnw.github.io/corewright-builder/</a></li>
+    </ul>
+  </li>
+  <li><strong>Assemble Your Golem</strong>
+    <ul>
+      <li>Set Level and INT Modifier.</li>
+      <li>Choose an Engine Type: Flame, Stone, Frost, Aether, or None.</li>
+      <li>Select Mode: Single, Multi-Golem, or Fusion Mode.</li>
+    </ul>
+  </li>
+  <li><strong>Apply Infusions</strong>
+    <ul>
+      <li>Infusions are organized by category: Tank, DPS, Control, Utility.</li>
+      <li>Click collapsible cards to view each infusion’s Effect and Details.</li>
+      <li>Use checkboxes to select which infusions to apply.</li>
+    </ul>
+  </li>
+  <li><strong>View & Export Stat Block</strong>
+    <ul>
+      <li>The Golem Stat Block updates in real-time.</li>
+      <li>Options include:
+        <ul>
+          <li>Print / Save PDF</li>
+          <li>Download .txt</li>
+          <li>Save / Load Build – local storage</li>
+          <li>Share Build – generate a URL for sharing</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><strong>Multi-Golem / Fusion Mode</strong>
+    <ul>
+      <li>Selecting Multi or Fusion mode shows the second golem panel.</li>
+      <li>Fusion mode combines stats into a single, enhanced golem.</li>
+    </ul>
+  </li>
+  <li><strong>Deployment & Maintenance</strong>
+    <ul>
+      <li>All files use relative links for smooth GitHub Pages deployment.</li>
+      <li>Edit <code>index.html</code>, <code>css/style.css</code>, or files in <code>js/</code>.</li>
+      <li>Commit changes and push to GitHub. GitHub Pages automatically updates the live site.</li>
+    </ul>
+  </li>
+</ol>
 
-Multi-Golem & Fusion Modes: Build up to two golems and combine stats in fusion mode.
+<hr>
 
-Real-Time Stat Block: View a live, detailed stat block that updates as you tweak settings.
-
-Export Options: Print, save as PDF, or download as a .txt file.
-
-Save & Share Builds: Store builds locally or generate shareable links.
-
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-## Getting Started
-1. Open the Builder
-Open index.html in your browser for local use.
-Or visit the live GitHub Pages link: https://questforgegamespnw.github.io/corewright-builder/
-
-2. Assemble Your Golem
-Set Level and INT Modifier.
-Choose an Engine Type: Flame, Stone, Frost, Aether, or None.
-Select Mode: Single, Multi-Golem, or Fusion Mode.
-
-3. Apply Infusions
-Infusions are organized by category: Tank, DPS, Control, Utility.
-Click collapsible cards to view each infusion’s Effect and Details.
-Use checkboxes to select which infusions to apply.
-
-4. View & Export Stat Block
-The Golem Stat Block updates in real-time.
-Options include:
-Print / Save PDF
-Download .txt
-Save / Load Build – local storage
-Share Build – generate a URL for sharing
-
-5. Multi-Golem / Fusion Mode
-Selecting Multi or Fusion mode shows the second golem panel.
-Fusion mode combines stats into a single, enhanced golem.
-
-6. Deployment & Maintenance
-All files use relative links for smooth GitHub Pages deployment.
-To update:
-Edit index.html, css/style.css, or files in js/.
-Commit changes and push to GitHub.
-GitHub Pages automatically updates the live site.
-
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 <h2>Quick Reference / Checklist</h2>
-<p>Use this checklist to ensure the builder is functioning properly before committing changes or deploying updates:</p>
-
 <ul>
   <li><strong>Navigation</strong>
     <ul>
@@ -120,9 +143,11 @@ GitHub Pages automatically updates the live site.
     </ul>
   </li>
 </ul>
---------------------------------------------------------------------------------------------------------------
-## File Structure
 
+<hr>
+
+<h2>File Structure</h2>
+<pre>
 corewright-builder/
 ├─ index.html        # Main builder interface
 ├─ css/
@@ -131,40 +156,43 @@ corewright-builder/
 │  ├─ builder.js     # Main functionality & event handling
 │  └─ infusions.js   # Infusion definitions & render logic
 ├─ README.md
+</pre>
 
+<hr>
 
-------------------------------------------------------------------------------------------------------------
-## Developer Notes
-Adding New Infusions
-Open js/infusions.js.
+<h2>Developer Notes</h2>
 
-Add a new key/value pair to the INFUSIONS object:
-
+<h3>Adding New Infusions</h3>
+<p>Open <code>js/infusions.js</code> and add a new key/value pair to the <code>INFUSIONS</code> object:</p>
+<pre>
 "newInfusion": {
   name: "New Infusion Name",
   effect: "Effect description",
   details: "Additional details",
   tags: ["Tank","Utility"], // optional
-  apply: (golem, player) => {
+  apply: (golem, player) =&gt; {
     // code to modify golem stats
   }
 }
-Save and reload the builder; new infusion should appear automatically.
+</pre>
+<p>Save and reload the builder; new infusion should appear automatically.</p>
 
-Updating Engine Effects
-All engine logic is in js/builder.js within the createGolem() function.
-Modify or add engine effects according to game mechanics.
+<h3>Updating Engine Effects</h3>
+<p>All engine logic is in <code>js/builder.js</code> within the <code>createGolem()</code> function. Modify or add engine effects according to game mechanics.</p>
 
+<h3>Debugging Tips</h3>
+<ul>
+  <li>Use the browser console to inspect golem objects.</li>
+  <li>Ensure all relative links are correct, especially after moving files.</li>
+  <li>Check that collapsible cards function after changes to <code>builder.js</code> or <code>infusions.js</code>.</li>
+</ul>
 
-Debugging Tips
-Use the browser console to inspect golem objects.
-Ensure all relative links are correct, especially after moving files.
-Check that collapsible cards function after changes to builder.js or infusions.js.
+<h3>Deployment</h3>
+<ul>
+  <li>GitHub Pages automatically hosts relative paths.</li>
+  <li>Ensure <code>index.html</code> is at the root of the <code>corewright-builder</code> repository.</li>
+  <li>Confirm CSS and JS paths before committing.</li>
+</ul>
 
-Deployment
-GitHub Pages automatically hosts relative paths.
-Ensure index.html is at the root of the corewright-builder repository.
-Confirm CSS and JS paths before committing.
- Buttons and input fields are styled consistently.
- Collapsible content expands and collapses correctly.
- Responsive layout on different screen sizes.
+</body>
+</html>
