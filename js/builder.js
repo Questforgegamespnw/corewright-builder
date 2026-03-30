@@ -1,15 +1,15 @@
 // builder.js
 
-// Show the main app
+// ====== APP ENTRY ======
 function enterApp() {
   document.getElementById('splash').style.display = 'none';
   document.getElementById('app').style.display = 'block';
 }
 
-// RENDER INFUSIONS AS CARDS
+// ====== INFUSIONS RENDER ======
 function renderInfusions(containerId) {
   const container = document.getElementById(containerId);
-  container.innerHTML = ""; // Clear existing
+  container.innerHTML = ""; // Clear previous content
 
   Object.entries(INFUSIONS).forEach(([key, infusion]) => {
     const card = document.createElement("div");
@@ -26,7 +26,7 @@ function renderInfusions(containerId) {
       infusion.tags.forEach(tag => {
         const span = document.createElement("span");
         span.className = `tag ${tag.toLowerCase()}`;
-        span.textContent = tag.charAt(0).toUpperCase() + tag.slice(1);
+        span.textContent = tag;
         content.appendChild(span);
       });
     }
@@ -39,6 +39,7 @@ function renderInfusions(containerId) {
     details.innerHTML = `<strong>Details:</strong> ${infusion.details}`;
     content.appendChild(details);
 
+    // Checkbox
     const checkboxLabel = document.createElement("label");
     checkboxLabel.style.display = "block";
     checkboxLabel.style.marginTop = "8px";
@@ -46,6 +47,7 @@ function renderInfusions(containerId) {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.value = key;
+
     checkboxLabel.appendChild(checkbox);
     checkboxLabel.appendChild(document.createTextNode(" Select"));
     content.appendChild(checkboxLabel);
@@ -55,31 +57,28 @@ function renderInfusions(containerId) {
     container.appendChild(card);
   });
 
-  // COLLAPSIBLE BEHAVIOR
-  let col = container.getElementsByClassName("collapsible");
-  for (let i = 0; i < col.length; i++) {
-    col[i].addEventListener("click", function() {
+  // Collapsible logic
+  Array.from(container.getElementsByClassName("collapsible")).forEach(col => {
+    col.addEventListener("click", function() {
       this.classList.toggle("active");
-      let content = this.nextElementSibling;
+      const content = this.nextElementSibling;
       content.style.display = content.style.display === "block" ? "none" : "block";
     });
-  }
+  });
 }
 
-// INITIAL RENDER
-renderInfusions("infusions");
-renderInfusions("infusions2");
-
-// GET SELECTED INFUSIONS
-function getSelectedInfusions(container="infusions") {
-  return [...document.querySelectorAll(`#${container} input:checked`)].map(cb => cb.value);
+// ====== INFUSION UTILITIES ======
+function getSelectedInfusions(containerId) {
+  return [...document.querySelectorAll(`#${containerId} input:checked`)]
+    .map(cb => cb.value);
 }
 
-// CREATE GOLEM OBJECT
+// ====== CREATE GOLEM ======
 function createGolem(levelId, intId, engineId, infusionContainer) {
   const level = parseInt(document.getElementById(levelId).value);
   const intMod = parseInt(document.getElementById(intId).value);
-  const pb = Math.ceil((level - 1)/4) + 1;
+
+  const player = { level, intMod, pb: Math.ceil((level - 1)/4) + 1 };
 
   let golem = {
     hp: 50,
@@ -93,45 +92,39 @@ function createGolem(levelId, intId, engineId, infusionContainer) {
 
   const engine = document.getElementById(engineId).value;
   if (engine === "flame") golem.bonusDamage = intMod;
-  if (engine === "stone") golem.damageReduction = pb;
+  if (engine === "stone") golem.damageReduction = player.pb;
   if (engine === "aether") golem.flySpeed = golem.speed;
 
-  getSelectedInfusions(infusionContainer).forEach(key => {
-    INFUSIONS[key]?.apply(golem, { level, intMod, pb });
-  });
+  getSelectedInfusions(infusionContainer)
+    .forEach(key => INFUSIONS[key]?.apply(golem, player));
 
   return golem;
 }
 
-// RENDER STAT BLOCK
+// ====== STAT BLOCK RENDER ======
 function renderStatBlock(golem, name) {
   return `
     <div class="stat-section">
       <div class="stat-name">${name}</div>
       <div><strong>AC</strong> ${golem.ac} | <strong>HP</strong> ${golem.hp}</div>
       <div>STR ${golem.str} DEX ${golem.dex} CON ${golem.con}</div>
-      <div>Speed ${golem.speed} ft${golem.flySpeed ? ", fly " + golem.flySpeed : ""}</div>
+      <div>Speed ${golem.speed} ft${golem.flySpeed ? ", fly "+golem.flySpeed : ""}</div>
     </div>
   `;
 }
 
-// BUILD GOLEM(S)
+// ====== BUILD LOGIC ======
 function buildGolem() {
   const mode = document.getElementById("mode").value;
   const g1 = createGolem("level", "int", "engine", "infusions");
-
   let output = "";
 
-  if (mode === "single") {
-    output = renderStatBlock(g1, "Golem");
-  }
-
-  if (mode === "multi") {
+  if (mode === "single") output = renderStatBlock(g1, "Golem");
+  else if (mode === "multi") {
     const g2 = createGolem("level2", "int2", "engine2", "infusions2");
     output = renderStatBlock(g1, "Golem One") + renderStatBlock(g2, "Golem Two");
   }
-
-  if (mode === "fusion") {
+  else if (mode === "fusion") {
     const g2 = createGolem("level2", "int2", "engine2", "infusions2");
     const fused = {
       hp: g1.hp + g2.hp,
@@ -148,62 +141,78 @@ function buildGolem() {
   document.getElementById("statblock").innerHTML = output;
 }
 
-// MODE TOGGLE
-document.getElementById("mode").addEventListener("change", () => {
-  const mode = document.getElementById("mode").value;
-  document.getElementById("golem2").style.display = (mode === "multi" || mode === "fusion") ? "block" : "none";
-  buildGolem();
-});
+// ====== EVENT HANDLERS ======
+function setupEventListeners() {
+  // Mode toggle
+  document.getElementById("mode").addEventListener("change", () => {
+    const mode = document.getElementById("mode").value;
+    document.getElementById("golem2").style.display =
+      (mode === "multi" || mode === "fusion") ? "block" : "none";
+    buildGolem();
+  });
 
-// DEBOUNCE & AUTO BUILD
-let timeout;
-function triggerBuild() {
-  clearTimeout(timeout);
-  timeout = setTimeout(buildGolem, 100);
+  // Auto update inputs
+  ["level","int","engine"].forEach(id =>
+    document.getElementById(id).addEventListener("input", debounce(buildGolem))
+  );
+  ["level2","int2","engine2"].forEach(id =>
+    document.getElementById(id).addEventListener("input", debounce(buildGolem))
+  );
+
+  ["infusions","infusions2"].forEach(id =>
+    document.getElementById(id).addEventListener("change", buildGolem)
+  );
 }
-["level","int","engine","mode","level2","int2","engine2"].forEach(id => {
-  document.getElementById(id).addEventListener("input", triggerBuild);
-});
-document.getElementById("infusions").addEventListener("change", triggerBuild);
-document.getElementById("infusions2").addEventListener("change", triggerBuild);
 
-// SAVE BUILD
+// ====== DEBOUNCE ======
+function debounce(fn, delay = 100) {
+  let timeout;
+  return function() {
+    clearTimeout(timeout);
+    timeout = setTimeout(fn, delay);
+  };
+}
+
+// ====== SAVE / LOAD / SHARE ======
 function saveBuild() {
   const name = prompt("Name your build:");
   if (!name) return;
+
   const build = {
-    level: document.getElementById("level").value,
-    int: document.getElementById("int").value,
-    engine: document.getElementById("engine").value,
-    infusions: getSelectedInfusions()
+    level: level.value,
+    int: int.value,
+    engine: engine.value,
+    infusions: getSelectedInfusions("infusions")
   };
-  localStorage.setItem("corewright_" + name, JSON.stringify(build));
+
+  localStorage.setItem("corewright_"+name, JSON.stringify(build));
   alert("Saved!");
 }
 
-// LOAD BUILD
 function loadBuild() {
   const keys = Object.keys(localStorage).filter(k => k.startsWith("corewright_"));
   const names = keys.map(k => k.replace("corewright_", "")).join("\n");
-  const choice = prompt("Load build:\n" + names);
+  const choice = prompt("Load build:\n"+names);
   if (!choice) return;
-  const build = JSON.parse(localStorage.getItem("corewright_" + choice));
 
-  document.getElementById("level").value = build.level;
-  document.getElementById("int").value = build.int;
-  document.getElementById("engine").value = build.engine;
+  const build = JSON.parse(localStorage.getItem("corewright_"+choice));
 
-  document.querySelectorAll("#infusions input").forEach(cb => cb.checked = build.infusions.includes(cb.value));
+  level.value = build.level;
+  int.value = build.int;
+  engine.value = build.engine;
+  document.querySelectorAll("#infusions input").forEach(cb => {
+    cb.checked = build.infusions.includes(cb.value);
+  });
+
   buildGolem();
 }
 
-// SHARE BUILD
 function shareBuild() {
   const build = {
-    level: document.getElementById("level").value,
-    int: document.getElementById("int").value,
-    engine: document.getElementById("engine").value,
-    infusions: getSelectedInfusions()
+    level: level.value,
+    int: int.value,
+    engine: engine.value,
+    infusions: getSelectedInfusions("infusions")
   };
   const encoded = btoa(JSON.stringify(build));
   const url = `${location.origin}${location.pathname}?build=${encoded}`;
@@ -211,33 +220,38 @@ function shareBuild() {
   alert("Link copied!");
 }
 
-// LOAD FROM URL
+// ====== LOAD FROM URL ======
 function loadFromURL() {
   const params = new URLSearchParams(location.search);
   const data = params.get("build");
   if (!data) return;
+
   const build = JSON.parse(atob(data));
-
-  document.getElementById("level").value = build.level;
-  document.getElementById("int").value = build.int;
-  document.getElementById("engine").value = build.engine;
-
-  document.querySelectorAll("#infusions input").forEach(cb => cb.checked = build.infusions.includes(cb.value));
+  level.value = build.level;
+  int.value = build.int;
+  engine.value = build.engine;
+  document.querySelectorAll("#infusions input").forEach(cb => {
+    cb.checked = build.infusions.includes(cb.value);
+  });
   buildGolem();
 }
 
-// PRINT & TXT
+// ====== PRINT / TXT ======
 function printGolem() { window.print(); }
+
 function downloadTxt() {
-  const blob = new Blob([document.getElementById("statblock").innerText], { type:'text/plain' });
-  const a = document.createElement('a');
+  let blob = new Blob([document.getElementById("statblock").innerText], {type:'text/plain'});
+  let a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'golem.txt';
   a.click();
 }
 
-// INIT
+// ====== INIT ======
 window.addEventListener("load", () => {
+  renderInfusions("infusions");
+  renderInfusions("infusions2");
+  setupEventListeners();
   loadFromURL();
   buildGolem();
 });
