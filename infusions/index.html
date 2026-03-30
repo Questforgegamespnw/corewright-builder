@@ -4,9 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Corewright Infusion Compendium</title>
+
 <link rel="stylesheet" href="../css/style.css">
+
 <style>
-/* Collapsible Buttons */
 .collapsible {
   cursor: pointer;
   padding: 10px;
@@ -29,19 +30,24 @@
   margin-bottom: 10px;
 }
 
-.tag {
-  display: inline-block;
-  padding: 2px 8px;
-  margin-right: 5px;
-  border-radius: 5px;
-  font-size: 0.8em;
+.filter-bar {
+  text-align: center;
+  margin-bottom: 15px;
 }
-.tank { background: #4CAF50; color: white; }
-.dps { background: #f44336; color: white; }
-.control { background: #2196F3; color: white; }
-.utility { background: #9C27B0; color: white; }
+
+.filter-bar button {
+  margin: 5px;
+}
+
+#search {
+  padding: 8px;
+  width: 60%;
+  max-width: 300px;
+  margin-bottom: 10px;
+}
 </style>
 </head>
+
 <body>
 
 <div class="nav">
@@ -51,125 +57,130 @@
 </div>
 
 <div class="container">
+
 <h1>Corewright Infusion Compendium</h1>
 
-<!-- Example Infusion Card -->
-<div class="card">
-  <button class="collapsible">Reinforced Frame</button>
-  <div class="content">
-    <span class="tag tank">Tank</span>
-    <p><strong>Effect:</strong> The golem’s hit point maximum increases by an amount equal to your artificer level, and it gains a +1 bonus to Armor Class.</p>
-    <p><strong>Details:</strong> Applied at creation and scales automatically with level.</p>
-  </div>
+<!-- SEARCH -->
+<div class="filter-bar">
+  <input type="text" id="search" placeholder="Search infusions..." oninput="renderInfusionList()">
 </div>
 
-<div class="card">
-  <button class="collapsible">War Construct</button>
-  <div class="content">
-    <span class="tag dps">DPS</span>
-    <p><strong>Effect:</strong> When commanded to take the Attack action, the golem can make two attacks instead of one. Each attack deals an additional 1d6 damage.</p>
-    <p><strong>Details:</strong> Damage type matches the attack unless specified otherwise.</p>
-  </div>
+<!-- FILTER BUTTONS -->
+<div class="filter-bar">
+  <button onclick="setFilter('all')">All</button>
+  <button onclick="setFilter('tank')">Tank</button>
+  <button onclick="setFilter('dps')">DPS</button>
+  <button onclick="setFilter('control')">Control</button>
+  <button onclick="setFilter('utility')">Utility</button>
 </div>
 
-<div class="card">
-  <button class="collapsible">Dexterous Manipulators</button>
-  <div class="content">
-    <span class="tag utility">Utility</span>
-    <p><strong>Effect:</strong> The golem’s Dexterity becomes 14 unless higher. Gains proficiency with simple weapons and can manipulate objects.</p>
-    <p><strong>Details:</strong> Can take the Use an Object action without requiring your command.</p>
-  </div>
+<!-- INFUSION LIST -->
+<div id="infusion-list"></div>
+
 </div>
 
-<div class="card">
-  <button class="collapsible">Accelerated Servos</button>
-  <div class="content">
-    <span class="tag utility">Utility</span>
-    <p><strong>Effect:</strong> Golem movement speed increases by 10 feet.</p>
-    <p><strong>Details:</strong> Can take Dash or Disengage as a bonus action.</p>
-  </div>
-</div>
+<script src="../js/infusions.js"></script>
 
-<div class="card">
-  <button class="collapsible">Reactive Plating</button>
-  <div class="content">
-    <span class="tag tank">Tank</span>
-    <p><strong>Effect:</strong> When the golem takes damage, it can use its reaction to reduce that damage by 1d10 + your proficiency bonus.</p>
-    <p><strong>Details:</strong> Use after damage is rolled but before applied.</p>
-  </div>
-</div>
-
-<div class="card">
-  <button class="collapsible">Arcane Conduit</button>
-  <div class="content">
-    <span class="tag utility">Utility</span>
-    <p><strong>Effect:</strong> Your golem can deliver touch-range spells you cast.</p>
-    <p><strong>Details:</strong> Golem must be within 30 feet; spell originates from golem.</p>
-  </div>
-</div>
-
-<!-- Additional Infusions... replicate the same structure -->
-<!-- Advanced Infusions -->
-<h2>Advanced Infusions (9th Level)</h2>
-<div class="card">
-  <button class="collapsible">Self-Repair Matrix</button>
-  <div class="content">
-    <span class="tag tank">Tank</span>
-    <p><strong>Effect:</strong> At the start of each turn, golem regains hit points equal to your Int modifier + proficiency bonus.</p>
-    <p><strong>Details:</strong> Regeneration suppressed until end of next turn if taking acid or fire damage.</p>
-  </div>
-</div>
-
-<div class="card">
-  <button class="collapsible">Siege Engine</button>
-  <div class="content">
-    <span class="tag dps">DPS</span>
-    <p><strong>Effect:</strong> Golem deals double damage to objects and structures.</p>
-    <p><strong>Details:</strong> Attacks deal +1d8 damage; attack rolls against it have advantage until next turn.</p>
-  </div>
-</div>
-
-<div class="card">
-  <button class="collapsible">Reflexive Countermeasures</button>
-  <div class="content">
-    <span class="tag control">Control</span>
-    <p><strong>Effect:</strong> When a creature misses the golem, it can make a melee attack as a reaction.</p>
-    <p><strong>Details:</strong> Can trigger once per round.</p>
-  </div>
-</div>
-
-<!-- Masterwork Infusions (15th Level) -->
-<h2>Masterwork Infusions (15th Level)</h2>
-<div class="card">
-  <button class="collapsible">Cognitive Matrix</button>
-  <div class="content">
-    <span class="tag utility">Utility</span>
-    <p><strong>Effect:</strong> Golem gains proficiency in all saving throws.</p>
-    <p><strong>Details:</strong> Adds your Int modifier to ability checks & saving throws; can take Help action as bonus action.</p>
-  </div>
-</div>
-
-<div class="card">
-  <button class="collapsible">Phase Shifter</button>
-  <div class="content">
-    <span class="tag utility">Utility</span>
-    <p><strong>Effect:</strong> Golem becomes incorporeal as a bonus action until next turn.</p>
-    <p><strong>Details:</strong> Can move through creatures and objects (difficult terrain).</p>
-  </div>
-</div>
-
-<!-- Collapsible Script -->
 <script>
-let col = document.getElementsByClassName("collapsible");
-for (let i = 0; i < col.length; i++) {
-  col[i].addEventListener("click", function() {
-    this.classList.toggle("active");
-    let content = this.nextElementSibling;
-    content.style.display = content.style.display === "block" ? "none" : "block";
-  });
+let currentFilter = "all";
+
+function setFilter(filter) {
+  currentFilter = filter;
+  renderInfusionList();
 }
+
+function renderInfusionList() {
+  const container = document.getElementById("infusion-list");
+  const search = document.getElementById("search").value.toLowerCase();
+
+  container.innerHTML = "";
+
+  const tiers = {
+    base: "Base Infusions",
+    advanced: "Advanced Infusions (9th Level)",
+    masterwork: "Masterwork Infusions (15th Level)"
+  };
+
+  Object.entries(tiers).forEach(([tierKey, tierName]) => {
+
+    const section = document.createElement("div");
+    const header = document.createElement("h2");
+    header.textContent = tierName;
+    section.appendChild(header);
+
+    let hasContent = false;
+
+    Object.entries(INFUSIONS).forEach(([key, infusion]) => {
+
+      // TIER CHECK
+      if (infusion.tier !== tierKey) return;
+
+      // TAG FILTER
+      if (
+        currentFilter !== "all" &&
+        (!infusion.tags || !infusion.tags.map(t => t.toLowerCase()).includes(currentFilter))
+      ) return;
+
+      // SEARCH FILTER
+      const text = (infusion.name + infusion.effect + infusion.details).toLowerCase();
+      if (!text.includes(search)) return;
+
+      hasContent = true;
+
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const button = document.createElement("button");
+      button.className = "collapsible";
+      button.textContent = infusion.name;
+
+      const content = document.createElement("div");
+      content.className = "content";
+
+      // TAGS
+      if (infusion.tags) {
+        infusion.tags.forEach(tag => {
+          const span = document.createElement("span");
+          span.className = `tag ${tag.toLowerCase()}`;
+          span.textContent = tag;
+          content.appendChild(span);
+        });
+      }
+
+      // EFFECT
+      const effect = document.createElement("p");
+      effect.innerHTML = `<strong>Effect:</strong> ${infusion.effect}`;
+      content.appendChild(effect);
+
+      // DETAILS
+      const details = document.createElement("p");
+      details.innerHTML = `<strong>Details:</strong> ${infusion.details}`;
+      content.appendChild(details);
+
+      card.appendChild(button);
+      card.appendChild(content);
+      section.appendChild(card);
+    });
+
+    if (hasContent) {
+      container.appendChild(section);
+    }
+  });
+
+  // COLLAPSIBLE
+  const col = document.getElementsByClassName("collapsible");
+  for (let i = 0; i < col.length; i++) {
+    col[i].addEventListener("click", function () {
+      this.classList.toggle("active");
+      const content = this.nextElementSibling;
+      content.style.display =
+        content.style.display === "block" ? "none" : "block";
+    });
+  }
+}
+
+window.addEventListener("load", renderInfusionList);
 </script>
 
-</div>
 </body>
 </html>
