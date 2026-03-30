@@ -9,6 +9,7 @@ function enterApp() {
   renderTemplates("template");
   renderTemplates("template2");
 
+  setupEventListeners();
   buildGolem();
 }
 
@@ -61,6 +62,7 @@ function renderInfusions(containerId) {
     container.appendChild(card);
   });
 
+  // Collapsible logic
   Array.from(container.getElementsByClassName("collapsible")).forEach(col => {
     col.addEventListener("click", function () {
       this.classList.toggle("active");
@@ -75,6 +77,9 @@ function renderInfusions(containerId) {
 function renderTemplates(selectId) {
   const select = document.getElementById(selectId);
   if (!select) return;
+
+  // prevent duplicate options
+  select.innerHTML = `<option value="none">None</option>`;
 
   Object.entries(TEMPLATES).forEach(([key, template]) => {
     const option = document.createElement("option");
@@ -99,10 +104,14 @@ function createGolem(levelId, intId, engineId, infusionContainer) {
 
   if (!levelEl || !intEl || !engineEl) return {};
 
-  const level = parseInt(levelEl.value);
-  const intMod = parseInt(intEl.value);
+  const level = parseInt(levelEl.value) || 1;
+  const intMod = parseInt(intEl.value) || 0;
 
-  const player = { level, intMod, pb: Math.ceil((level - 1)/4) + 1 };
+  const player = {
+    level,
+    intMod,
+    pb: Math.ceil((level - 1) / 4) + 1
+  };
 
   let golem = {
     hp: 50,
@@ -179,7 +188,7 @@ function createGolem(levelId, intId, engineId, infusionContainer) {
   golem.strMod = Math.floor((golem.str - 10) / 2);
   golem.dexMod = Math.floor((golem.dex - 10) / 2);
   golem.conMod = Math.floor((golem.con - 10) / 2);
-  golem.intMod = Math.floor((golem.int - 10) / 2);
+  golem.intModFinal = Math.floor((golem.int - 10) / 2);
   golem.wisMod = Math.floor((golem.wis - 10) / 2);
   golem.chaMod = Math.floor((golem.cha - 10) / 2);
 
@@ -193,17 +202,75 @@ function createGolem(levelId, intId, engineId, infusionContainer) {
   return golem;
 }
 
+// ====== STAT BLOCK ======
+function renderStatBlock(golem, name) {
+
+  const traitBlock = golem.traits?.length
+    ? `<div class="stat-section"><strong>Traits</strong><br>${golem.traits.join("<br><br>")}</div>`
+    : "";
+
+  let baseAttack = `
+<strong>Slam.</strong> Melee Weapon Attack: +${golem.attackBonus} to hit,
+reach ${golem.reach} ft., one target.
+Hit: ${golem.damageDice} + ${golem.strMod} bludgeoning damage
+${golem.bonusDamage ? `+ ${golem.bonusDamage} fire damage` : ""}.
+`;
+
+  let allActions = [baseAttack];
+
+  if (golem.actions?.length) {
+    allActions.push(...golem.actions);
+  }
+
+  const actionBlock = `
+<div class="stat-section">
+<strong>Actions</strong><br>
+${allActions.join("<br><br>")}
+</div>
+`;
+
+  return `
+    <div>
+
+      <div class="stat-header">
+        <div class="stat-name">${name}</div>
+      </div>
+
+      <div><strong>Armor Class</strong> ${golem.ac}</div>
+      <div><strong>Hit Points</strong> ${golem.hp}</div>
+
+      <div class="stat-section">
+        <strong>Speed</strong> ${golem.speed} ft
+        ${golem.flySpeed ? `, fly ${golem.flySpeed} ft` : ""}
+      </div>
+
+      <div class="stat-section">
+        <strong>STR</strong> ${golem.str}
+        &nbsp; <strong>DEX</strong> ${golem.dex}
+        &nbsp; <strong>CON</strong> ${golem.con}
+      </div>
+
+      <div class="stat-section">
+        <strong>INT</strong> ${golem.int}
+        &nbsp; <strong>WIS</strong> ${golem.wis}
+        &nbsp; <strong>CHA</strong> ${golem.cha}
+      </div>
+
+      ${golem.damageReduction ? `<div><strong>Damage Reduction</strong> ${golem.damageReduction}</div>` : ""}
+      ${golem.bonusDamage ? `<div><strong>Bonus Damage</strong> +${golem.bonusDamage}</div>` : ""}
+
+      ${traitBlock}
+      ${actionBlock}
+
+    </div>
+  `;
+}
+
 // ====== BUILD ======
 function buildGolem() {
-  const modeEl = document.getElementById("mode");
-  if (!modeEl) return;
-
-  const mode = modeEl.value;
   const g1 = createGolem("level", "int", "engine", "infusions");
-
-  let output = renderStatBlock(g1, "Golem");
-
-  document.getElementById("statblock").innerHTML = output;
+  document.getElementById("statblock").innerHTML =
+    renderStatBlock(g1, "Golem");
 }
 
 // ====== EVENTS ======
@@ -220,6 +287,7 @@ function setupEventListeners() {
   });
 }
 
+// ====== DEBOUNCE ======
 function debounce(fn, delay = 100) {
   let timeout;
   return function() {
@@ -227,8 +295,3 @@ function debounce(fn, delay = 100) {
     timeout = setTimeout(fn, delay);
   };
 }
-
-// ====== INIT ======
-window.addEventListener("load", () => {
-  setupEventListeners();
-});
