@@ -8,20 +8,24 @@
 </head>
 <body>
 
+<!-- ===== NAVIGATION ===== -->
 <div class="nav">
   <a href="./">Builder</a>
   <a href="./infusions/">Infusions</a>
   <a href="./corewright/">Subclass</a>
 </div>
 
+<!-- ===== SPLASH SCREEN ===== -->
 <div id="splash">
   <h1>Questforge Corewright Interface</h1>
   <button onclick="enterApp()">Enter Workshop</button>
 </div>
 
+<!-- ===== APP CONTAINER ===== -->
 <div id="app" style="display:none;">
   <div class="container">
 
+    <!-- Assembly Panel -->
     <div class="card">
       <h2>Assembly</h2>
       Level <input id="level" type="number" value="10"><br>
@@ -45,17 +49,12 @@
         <option value="fusion">Fusion Mode</option>
       </select>
 
-      <!-- INFUSIONS -->
+      <!-- Infusions for First Golem -->
       <div id="infusions" class="container">
         <h2>Infusions</h2>
-        <!-- Cards for each infusion will be injected here by JS -->
       </div>
 
-      <div id="infusions2" class="container" style="display:none;">
-        <h2>Second Golem Infusions</h2>
-        <!-- Cards for each infusion will be injected here by JS -->
-      </div>
-
+      <!-- Action Buttons -->
       <br>
       <button onclick="printGolem()">Print / Save PDF</button>
       <button onclick="downloadTxt()">Download .txt</button>
@@ -64,6 +63,7 @@
       <button onclick="shareBuild()">Share Build</button>
     </div>
 
+    <!-- Second Golem Panel -->
     <div id="golem2" class="card" style="display:none;">
       <h2>Second Golem</h2>
       Level <input id="level2" type="number" value="10"><br>
@@ -77,8 +77,14 @@
         <option value="frost">Frost</option>
         <option value="aether">Aether</option>
       </select>
+
+      <!-- Infusions for Second Golem -->
+      <div id="infusions2" class="container">
+        <h2>Second Golem Infusions</h2>
+      </div>
     </div>
 
+    <!-- Golem Stat Block -->
     <div class="card">
       <h2>Golem Stat Block</h2>
       <div id="statblock"></div>
@@ -87,6 +93,7 @@
   </div>
 </div>
 
+<!-- ===== SCRIPTS ===== -->
 <script src="./js/infusions.js"></script>
 <script src="./js/builder.js"></script>
 
