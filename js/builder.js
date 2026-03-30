@@ -317,5 +317,7 @@ function debounce(fn, delay = 100) {
 
 // ====== INIT ======
 window.addEventListener("load", () => {
+    renderTemplates("template");
+  renderTemplates("template2");
   setupEventListeners();
 });
