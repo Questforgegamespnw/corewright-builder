@@ -135,7 +135,17 @@ function createGolem(levelId, intId, engineId, infusionContainer) {
       golem.reactions.push(...infusion.reactions);
     }
   });
+// ====== COMBAT STATS ======
+golem.strMod = Math.floor((golem.str - 10) / 2);
 
+// Damage scaling by level
+if (player.level <= 4) golem.damageDice = "1d8";
+else if (player.level <= 10) golem.damageDice = "2d8";
+else if (player.level <= 16) golem.damageDice = "3d8";
+else golem.damageDice = "4d8";
+// ^^^^^  This above section might need some damage scaling adjustment pending review of combat effectivness//
+// Attack bonus
+golem.attackBonus = player.pb + golem.strMod;
   return golem;
 }
 
@@ -146,9 +156,27 @@ function renderStatBlock(golem, name) {
     ? `<div class="stat-section"><strong>Traits</strong><br>${golem.traits.join("<br><br>")}</div>`
     : "";
 
-  const actionBlock = golem.actions?.length
-    ? `<div class="stat-section"><strong>Actions</strong><br>${golem.actions.join("<br><br>")}</div>`
-    : "";
+// ===== BASE ATTACK =====
+let baseAttack = `
+<strong>Slam.</strong> Melee Weapon Attack: +${golem.attackBonus} to hit,
+reach ${golem.reach} ft., one target.
+Hit: ${golem.damageDice} + ${golem.strMod} bludgeoning damage
+${golem.bonusDamage ? `+ ${golem.bonusDamage} fire damage` : ""}.
+`;
+
+// Combine base + infusion actions
+let allActions = [baseAttack];
+
+if (golem.actions?.length) {
+  allActions.push(...golem.actions);
+}
+
+const actionBlock = `
+<div class="stat-section">
+<strong>Actions</strong><br>
+${allActions.join("<br><br>")}
+</div>
+`;
 
   const reactionBlock = golem.reactions?.length
     ? `<div class="stat-section"><strong>Reactions</strong><br>${golem.reactions.join("<br><br>")}</div>`
