@@ -7,6 +7,10 @@ function enterApp() {
 
   renderInfusions("infusions");
   renderInfusions("infusions2");
+
+  renderTemplates("template");
+  renderTemplates("template2");
+
   buildGolem();
 }
 
@@ -71,9 +75,13 @@ function renderInfusions(containerId) {
     });
   });
 }
+
+// ====== TEMPLATE RENDER ======
 function renderTemplates(selectId) {
   const select = document.getElementById(selectId);
-  if (!select) return;
+  if (!select || typeof TEMPLATES === "undefined") return;
+
+  select.innerHTML = `<option value="none">None</option>`;
 
   Object.entries(TEMPLATES).forEach(([key, template]) => {
     const option = document.createElement("option");
@@ -82,6 +90,7 @@ function renderTemplates(selectId) {
     select.appendChild(option);
   });
 }
+
 // ====== INFUSION UTILITIES ======
 function getSelectedInfusions(containerId) {
   return [...document.querySelectorAll(`#${containerId} input:checked`)]
@@ -90,10 +99,10 @@ function getSelectedInfusions(containerId) {
 
 // ====== CREATE GOLEM ======
 function createGolem(levelId, intId, engineId, infusionContainer) {
+
   const levelEl = document.getElementById(levelId);
   const intEl = document.getElementById(intId);
   const engineEl = document.getElementById(engineId);
-  const templateEl = document.getElementById("template"); // 👈 NEW
 
   if (!levelEl || !intEl || !engineEl) return {};
 
@@ -116,12 +125,14 @@ function createGolem(levelId, intId, engineId, infusionContainer) {
     reactions: []
   };
 
-  // ===== TEMPLATE (NEW SYSTEM) =====
-  if (templateEl && typeof TEMPLATES !== "undefined") {
-    const templateKey = templateEl.value;
-    const template = TEMPLATES[templateKey];
+  // ===== TEMPLATE (CLEAN SYSTEM) =====
+  const templateId = engineId.replace("engine", "template");
+  const templateEl = document.getElementById(templateId);
 
-    if (template && template.apply) {
+  if (templateEl && templateEl.value !== "none") {
+    const template = TEMPLATES[templateEl.value];
+
+    if (template?.apply) {
       template.apply(golem, player);
 
       if (template.traits) {
@@ -130,7 +141,7 @@ function createGolem(levelId, intId, engineId, infusionContainer) {
     }
   }
 
-  // ===== ENGINE EFFECTS =====
+  // ===== ENGINE =====
   const engine = engineEl.value;
   if (engine === "flame") golem.bonusDamage = intMod;
   if (engine === "stone") golem.damageReduction = player.pb;
@@ -143,20 +154,12 @@ function createGolem(levelId, intId, engineId, infusionContainer) {
 
     infusion.apply?.(golem, player);
 
-    if (infusion.traits) {
-      golem.traits.push(...infusion.traits);
-    }
-
-    if (infusion.actions) {
-      golem.actions.push(...infusion.actions);
-    }
-
-    if (infusion.reactions) {
-      golem.reactions.push(...infusion.reactions);
-    }
+    if (infusion.traits) golem.traits.push(...infusion.traits);
+    if (infusion.actions) golem.actions.push(...infusion.actions);
+    if (infusion.reactions) golem.reactions.push(...infusion.reactions);
   });
 
-  // ===== COMBAT STATS =====
+  // ===== COMBAT =====
   golem.strMod = Math.floor((golem.str - 10) / 2);
 
   if (player.level <= 4) golem.damageDice = "1d8";
@@ -169,7 +172,7 @@ function createGolem(levelId, intId, engineId, infusionContainer) {
   return golem;
 }
 
-// ====== STAT BLOCK RENDER ======
+// ====== STAT BLOCK ======
 function renderStatBlock(golem, name) {
 
   const traitBlock = golem.traits?.length
@@ -290,12 +293,12 @@ function setupEventListeners() {
     });
   }
 
-  ["level","int","engine","template"].forEach(id => { // 👈 added template
+  ["level","int","engine","template"].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener("input", debounce(buildGolem));
   });
 
-  ["level2","int2","engine2"].forEach(id => {
+  ["level2","int2","engine2","template2"].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener("input", debounce(buildGolem));
   });
@@ -317,7 +320,5 @@ function debounce(fn, delay = 100) {
 
 // ====== INIT ======
 window.addEventListener("load", () => {
-    renderTemplates("template");
-  renderTemplates("template2");
   setupEventListeners();
 });
