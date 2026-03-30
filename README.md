@@ -95,7 +95,7 @@ Use this checklist to ensure the builder is functioning properly before committi
 ---
 
 ## File Structure
-
+```
 corewright-builder/
 ├─ index.html # Main builder interface
 ├─ css/
@@ -104,7 +104,7 @@ corewright-builder/
 │ ├─ builder.js # Main functionality & event handling
 │ └─ infusions.js # Infusion definitions & render logic
 └─ README.md
-
+```
 
 ---
 
