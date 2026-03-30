@@ -106,12 +106,71 @@ function createGolem(levelId, intId, engineId, infusionContainer) {
 
 // ====== STAT BLOCK RENDER ======
 function renderStatBlock(golem, name) {
+
+  let traits = [];
+
+  if (golem.reactive) {
+    traits.push("<strong>Reactive Plating:</strong> Deals damage to attackers.");
+  }
+
+  if (golem.anchored) {
+    traits.push("<strong>Anchored Frame:</strong> Resistant to forced movement.");
+  }
+
+  if (golem.sentinel) {
+    traits.push("<strong>Sentinel Protocol:</strong> Can react to enemy movement.");
+  }
+
+  if (golem.arcaneBoost) {
+    traits.push("<strong>Arcane Conduit:</strong> Enhanced magical synergy.");
+  }
+
+  if (golem.overcharged) {
+    traits.push("<strong>Overcharged Core:</strong> Increased damage output.");
+  }
+
+  if (golem.regen) {
+    traits.push(`<strong>Self-Repair:</strong> Regains ${golem.regen} HP per turn.`);
+  }
+
+  if (golem.phase) {
+    traits.push("<strong>Phase Shifter:</strong> Can become partially intangible.");
+  }
+
+  if (golem.adaptive) {
+    traits.push("<strong>Adaptive Plating:</strong> Adjusts to incoming damage types.");
+  }
+
+  if (golem.replicate) {
+    traits.push("<strong>Replication Matrix:</strong> Can duplicate effects.");
+  }
+
+  if (golem.elemental) {
+    traits.push("<strong>Elemental Convergence:</strong> Attacks deal elemental damage.");
+  }
+
+  let traitBlock = traits.length
+    ? `<div class="stat-section"><strong>Traits</strong><br>${traits.join("<br>")}</div>`
+    : "";
+
   return `
     <div class="stat-section">
       <div class="stat-name">${name}</div>
+
       <div><strong>AC</strong> ${golem.ac} | <strong>HP</strong> ${golem.hp}</div>
+
       <div>STR ${golem.str} DEX ${golem.dex} CON ${golem.con}</div>
-      <div>Speed ${golem.speed} ft${golem.flySpeed ? ", fly "+golem.flySpeed : ""}</div>
+
+      <div>
+        Speed ${golem.speed} ft
+        ${golem.flySpeed ? `, Fly ${golem.flySpeed} ft` : ""}
+      </div>
+
+      ${golem.damageReduction ? `<div><strong>Damage Reduction:</strong> ${golem.damageReduction}</div>` : ""}
+      ${golem.bonusDamage ? `<div><strong>Bonus Damage:</strong> +${golem.bonusDamage}</div>` : ""}
+
+      ${traitBlock}
+
     </div>
   `;
 }
