@@ -1,196 +1,180 @@
-// infusions.js
-
 const INFUSIONS = {
+
+  // ===== BASE INFUSIONS =====
   reinforced_frame: {
     name: "Reinforced Frame",
+    tier: "base",
     tags: ["Tank"],
-    effect: "The golem’s hit point maximum increases by your artificer level and gains +1 AC.",
-    details: "Applied when the golem is created; scales automatically with level.",
-    apply: function(golem, player) {
-      golem.hp += player.level;
-      golem.ac += 1;
-    }
+    effect: "+2 AC",
+    details: "The golem gains reinforced plating, increasing its AC by 2.",
+    apply: (golem) => { golem.ac += 2; }
   },
 
   war_construct: {
     name: "War Construct",
+    tier: "base",
     tags: ["DPS"],
-    effect: "Golem can make two attacks instead of one when taking the Attack action.",
-    details: "Each attack deals an additional 1d6 damage.",
-    apply: function(golem, player) {
-      golem.extraAttacks = (golem.extraAttacks || 0) + 1;
-      golem.bonusDamage = (golem.bonusDamage || 0) + 1; // adjust with actual damage logic
-    }
+    effect: "+2 attack bonus",
+    details: "The golem is built for combat and gains a +2 bonus to attack rolls.",
+    apply: (golem) => { golem.attackBonus = (golem.attackBonus || 0) + 2; }
   },
 
   dexterous_manipulators: {
     name: "Dexterous Manipulators",
+    tier: "base",
     tags: ["Utility"],
-    effect: "Golem Dexterity becomes 14 unless higher and gains simple weapon proficiency.",
-    details: "Can wield weapons and manipulate objects freely.",
-    apply: function(golem, player) {
-      golem.dex = Math.max(golem.dex, 14);
-      golem.weaponProficiency = true;
-    }
+    effect: "+2 DEX",
+    details: "Improved fine motor control increases Dexterity by 2.",
+    apply: (golem) => { golem.dex += 2; }
   },
 
   accelerated_servos: {
     name: "Accelerated Servos",
+    tier: "base",
     tags: ["Utility"],
-    effect: "Golem movement speed increases by 10 feet.",
-    details: "Can take Dash or Disengage as a bonus action without command.",
-    apply: function(golem, player) {
-      golem.speed += 10;
-    }
+    effect: "+10 ft speed",
+    details: "Enhanced servos increase movement speed by 10 ft.",
+    apply: (golem) => { golem.speed += 10; }
   },
 
   reactive_plating: {
     name: "Reactive Plating",
+    tier: "base",
     tags: ["Tank"],
-    effect: "When the golem takes damage, it can use its reaction to reduce it by 1d10 + proficiency bonus.",
-    details: "Used after damage is rolled but before it is applied.",
-    apply: function(golem, player) {
-      golem.reactivePlating = player.pb; // placeholder for actual damage reduction logic
-    }
+    effect: Retaliation damage,
+    details: "Enemies that strike the golem take minor damage.",
+    apply: (golem) => { golem.reactive = true; }
   },
 
   arcane_conduit: {
     name: "Arcane Conduit",
+    tier: "base",
     tags: ["Utility"],
-    effect: "Your golem can deliver touch-range spells for you.",
-    details: "Golem must be within 30 feet; spell originates from its position.",
-    apply: function(golem, player) {
-      golem.arcaneDelivery = true;
-    }
+    effect: Boosts spell synergy,
+    details: "Improves magical interactions with the golem.",
+    apply: (golem) => { golem.arcaneBoost = true; }
   },
 
   anchored_frame: {
     name: "Anchored Frame",
-    tags: ["Tank", "Control"],
-    effect: "Golem has advantage on saving throws against being knocked prone, pushed, or pulled.",
-    details: "Forced movement affecting the golem is capped at 10 feet.",
-    apply: function(golem, player) {
-      golem.anchored = true;
-    }
+    tier: "base",
+    tags: ["Tank"],
+    effect: Resistance to forced movement,
+    details: "The golem cannot easily be moved against its will.",
+    apply: (golem) => { golem.anchored = true; }
   },
 
   overcharged_core: {
     name: "Overcharged Core",
+    tier: "base",
     tags: ["DPS"],
-    effect: "Once per turn, golem deals an additional 10 force damage on hit.",
-    details: "After using this, golem takes force damage equal to your proficiency bonus.",
-    apply: function(golem, player) {
-      golem.overchargedCore = player.pb; // placeholder for damage logic
-    }
+    effect: Bonus damage output,
+    details: "The golem deals additional damage at the cost of stability.",
+    apply: (golem) => { golem.overcharged = true; }
   },
 
   sentinel_protocol: {
     name: "Sentinel Protocol",
+    tier: "base",
     tags: ["Control"],
-    effect: "When a creature attacks a target other than the golem within 5 feet, golem can use its reaction to attack.",
-    details: "Triggers after the attack is declared.",
-    apply: function(golem, player) {
-      golem.sentinelProtocol = true;
-    }
+    effect: Reaction-based defense,
+    details: "Allows the golem to react to enemy movement.",
+    apply: (golem) => { golem.sentinel = true; }
   },
 
+  // ===== ADVANCED INFUSIONS =====
   self_repair_matrix: {
     name: "Self-Repair Matrix",
+    tier: "advanced",
     tags: ["Tank"],
-    effect: "Golem regains HP at the start of its turn equal to INT modifier + proficiency bonus.",
-    details: "Regeneration suppressed until end of next turn if taking acid or fire damage.",
-    apply: function(golem, player) {
-      golem.regeneration = player.intMod + player.pb;
-    }
+    effect: Regeneration,
+    details: "The golem regains HP each round.",
+    apply: (golem) => { golem.regen = 5; }
   },
 
   siege_engine: {
     name: "Siege Engine",
+    tier: "advanced",
     tags: ["DPS"],
-    effect: "Golem deals double damage to objects and structures.",
-    details: "Its attacks deal 1d8 extra damage; attack rolls against it have advantage until next turn.",
-    apply: function(golem, player) {
-      golem.siege = true;
-    }
+    effect: Structure damage bonus,
+    details: "Deals extra damage to structures and objects.",
+    apply: (golem) => { golem.siege = true; }
   },
 
   reflexive_countermeasures: {
     name: "Reflexive Countermeasures",
+    tier: "advanced",
     tags: ["Control"],
-    effect: "When a creature misses the golem, it can use its reaction to make a melee attack.",
-    details: "Can trigger once per round.",
-    apply: function(golem, player) {
-      golem.reflexiveCounter = true;
-    }
+    effect: Counterattack reactions,
+    details: "The golem can retaliate when attacked.",
+    apply: (golem) => { golem.counter = true; }
   },
 
+  // ===== MASTERWORK INFUSIONS =====
   cognitive_matrix: {
     name: "Cognitive Matrix",
+    tier: "masterwork",
     tags: ["Utility"],
-    effect: "Golem gains proficiency in all saving throws.",
-    details: "Adds INT modifier to ability checks/saves; can use Help action as bonus without command.",
-    apply: function(golem, player) {
-      golem.allSavesProficient = true;
-    }
+    effect: Enhanced intelligence,
+    details: "Grants advanced decision-making capabilities.",
+    apply: (golem) => { golem.intBoost = true; }
   },
 
   phase_shifter: {
     name: "Phase Shifter",
-    tags: ["Utility"],
-    effect: "As a bonus action, golem becomes incorporeal until next turn.",
-    details: "Can move through creatures and objects as difficult terrain.",
-    apply: function(golem, player) {
-      golem.phaseShift = true;
-    }
+    tier: "masterwork",
+    tags: ["Control"],
+    effect: Partial intangibility,
+    details: "Allows the golem to phase through obstacles briefly.",
+    apply: (golem) => { golem.phase = true; }
   },
 
   overdrive_protocol: {
     name: "Overdrive Protocol",
+    tier: "masterwork",
     tags: ["DPS"],
-    effect: "When commanded to attack, golem makes one additional attack.",
-    details: "At the end of its turn, it takes force damage equal to your proficiency bonus.",
-    apply: function(golem, player) {
-      golem.overdrive = true;
-    }
+    effect: Burst damage mode,
+    details: "Temporarily increases attack output significantly.",
+    apply: (golem) => { golem.overdrive = true; }
   },
 
   adaptive_plating: {
     name: "Adaptive Plating",
+    tier: "masterwork",
     tags: ["Tank"],
-    effect: "When golem takes damage, it can use its reaction to gain resistance to that damage type.",
-    details: "Resistance lasts until end of its next turn.",
-    apply: function(golem, player) {
-      golem.adaptivePlating = true;
-    }
+    effect: Dynamic resistance,
+    details: "Adapts to incoming damage types.",
+    apply: (golem) => { golem.adaptive = true; }
   },
 
   replication_matrix: {
     name: "Replication Matrix",
+    tier: "masterwork",
     tags: ["Utility"],
-    effect: "Golem creates a duplicate in an adjacent space.",
-    details: "Duplicate has hit points equal to your artificer level and lasts 1 minute.",
-    apply: function(golem, player) {
-      golem.replication = player.level;
-    }
+    effect: Duplicate effects,
+    details: "Can replicate certain abilities or effects.",
+    apply: (golem) => { golem.replicate = true; }
   },
 
   elemental_convergence: {
     name: "Elemental Convergence",
+    tier: "masterwork",
     tags: ["DPS"],
-    effect: "Golem deals extra damage equal to INT modifier when using Engine Core damage.",
-    details: "If it damages multiple creatures, gains temporary hit points equal to proficiency bonus.",
-    apply: function(golem, player) {
-      golem.elementalConvergence = player.intMod;
-    }
+    effect: Elemental damage boost,
+    details: "Channels elemental energy into attacks.",
+    apply: (golem) => { golem.elemental = true; }
   },
 
   giant_frame: {
     name: "Giant Frame",
-    tags: ["Tank", "DPS"],
-    effect: "Golem size increases by one category (max Huge).",
-    details: "Increases HP, STR, CON, reach, but reduced speed and disadvantage on DEX saves.",
-    apply: function(golem, player) {
-      golem.giant = true;
+    tier: "masterwork",
+    tags: ["Tank"],
+    effect: Increased size and strength,
+    details: "The golem becomes larger and more powerful.",
+    apply: (golem) => {
+      golem.hp += 30;
+      golem.str += 4;
     }
   }
+
 };
