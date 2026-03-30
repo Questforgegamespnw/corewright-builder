@@ -23,10 +23,12 @@ const INFUSIONS = {
     details: "The golem is built for combat and gains a +2 bonus to attack rolls.",
 
     actions: [
-      "<strong>Enhanced Strikes.</strong> The golem gains a +2 bonus to attack rolls."
+      "<strong>War Construct.</strong> This unit is optimized for combat efficiency."
     ],
 
-    apply: (golem) => { golem.attackBonus = (golem.attackBonus || 0) + 2; }
+    apply: (golem) => {
+      golem.attackBonus = (golem.attackBonus || 0) + 2;
+    }
   },
 
   dexterous_manipulators: {
@@ -65,10 +67,12 @@ const INFUSIONS = {
     details: "Enemies that strike the golem take minor damage.",
 
     reactions: [
-      "<strong>Reactive Plating.</strong> When struck, attackers take minor damage."
+      "<strong>Reactive Plating.</strong> When hit by a melee attack, the attacker takes 2 damage."
     ],
 
-    apply: (golem) => {}
+    apply: (golem) => {
+      golem.reactiveDamage = 2;
+    }
   },
 
   arcane_conduit: {
@@ -82,7 +86,9 @@ const INFUSIONS = {
       "<strong>Arcane Conduit.</strong> Enhances magical synergy with its creator."
     ],
 
-    apply: (golem) => {}
+    apply: (golem, player) => {
+      golem.spellBonus = player.intMod;
+    }
   },
 
   anchored_frame: {
@@ -96,7 +102,9 @@ const INFUSIONS = {
       "<strong>Anchored Frame.</strong> Resistant to forced movement."
     ],
 
-    apply: (golem) => {}
+    apply: (golem) => {
+      golem.anchored = true;
+    }
   },
 
   overcharged_core: {
@@ -107,10 +115,12 @@ const INFUSIONS = {
     details: "The golem deals additional damage at the cost of stability.",
 
     actions: [
-      "<strong>Overcharged Strike.</strong> Deals additional bonus damage."
+      "<strong>Overcharged Core.</strong> Attacks deal additional bonus damage."
     ],
 
-    apply: (golem) => {}
+    apply: (golem) => {
+      golem.bonusDamage = (golem.bonusDamage || 0) + 2;
+    }
   },
 
   sentinel_protocol: {
@@ -124,7 +134,9 @@ const INFUSIONS = {
       "<strong>Sentinel Protocol.</strong> Can make opportunity attacks when enemies move nearby."
     ],
 
-    apply: (golem) => {}
+    apply: (golem) => {
+      golem.sentinel = true;
+    }
   },
 
   // ===== ADVANCED INFUSIONS =====
@@ -139,7 +151,9 @@ const INFUSIONS = {
       "<strong>Self-Repair Matrix.</strong> Regains 5 HP at the start of its turn."
     ],
 
-    apply: (golem) => { golem.regen = 5; }
+    apply: (golem) => {
+      golem.regen = 5;
+    }
   },
 
   siege_engine: {
@@ -153,7 +167,9 @@ const INFUSIONS = {
       "<strong>Siege Engine.</strong> Deals double damage to objects and structures."
     ],
 
-    apply: (golem) => {}
+    apply: (golem) => {
+      golem.siege = true;
+    }
   },
 
   reflexive_countermeasures: {
@@ -167,7 +183,9 @@ const INFUSIONS = {
       "<strong>Reflexive Countermeasures.</strong> When hit, the golem can immediately retaliate."
     ],
 
-    apply: (golem) => {}
+    apply: (golem) => {
+      golem.counter = true;
+    }
   },
 
   // ===== MASTERWORK INFUSIONS =====
@@ -182,7 +200,9 @@ const INFUSIONS = {
       "<strong>Cognitive Matrix.</strong> Greatly enhances decision-making capabilities."
     ],
 
-    apply: (golem) => {}
+    apply: (golem, player) => {
+      golem.intelligenceBonus = player.intMod;
+    }
   },
 
   phase_shifter: {
@@ -196,7 +216,9 @@ const INFUSIONS = {
       "<strong>Phase Shifter.</strong> Can move through objects briefly."
     ],
 
-    apply: (golem) => {}
+    apply: (golem) => {
+      golem.phase = true;
+    }
   },
 
   overdrive_protocol: {
@@ -207,10 +229,13 @@ const INFUSIONS = {
     details: "Temporarily increases attack output significantly.",
 
     actions: [
-      "<strong>Overdrive Protocol.</strong> Temporarily increases attack output significantly."
+      "<strong>Overdrive Protocol.</strong> Enter a high-output damage state."
     ],
 
-    apply: (golem) => {}
+    apply: (golem) => {
+      golem.bonusDamage = (golem.bonusDamage || 0) + 4;
+      golem.attackBonus += 1;
+    }
   },
 
   adaptive_plating: {
@@ -221,10 +246,12 @@ const INFUSIONS = {
     details: "Adapts to incoming damage types.",
 
     traits: [
-      "<strong>Adaptive Plating.</strong> Adjusts resistance to incoming damage types."
+      "<strong>Adaptive Plating.</strong> Gains resistance to last damage type taken."
     ],
 
-    apply: (golem) => {}
+    apply: (golem) => {
+      golem.adaptive = true;
+    }
   },
 
   replication_matrix: {
@@ -238,7 +265,9 @@ const INFUSIONS = {
       "<strong>Replication Matrix.</strong> Can duplicate certain abilities or effects."
     ],
 
-    apply: (golem) => {}
+    apply: (golem) => {
+      golem.replicate = true;
+    }
   },
 
   elemental_convergence: {
@@ -252,7 +281,10 @@ const INFUSIONS = {
       "<strong>Elemental Strike.</strong> Attacks deal additional elemental damage."
     ],
 
-    apply: (golem) => {}
+    apply: (golem) => {
+      golem.bonusDamage = (golem.bonusDamage || 0) + 3;
+      golem.damageType = "elemental";
+    }
   },
 
   giant_frame: {
