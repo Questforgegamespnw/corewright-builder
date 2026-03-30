@@ -131,14 +131,23 @@ corewright-builder/
 
 
 
-** Updating Engine Effects **
--All engine logic is in js/builder.js within the createGolem() function.
--Modify or add engine effects according to game mechanics.
-** Debugging Tips **
--Use the browser console to inspect golem objects.
--Ensure all relative links are correct after moving files.
--Check that collapsible cards function after changes to builder.js or infusions.js.
-** Deployment **
--GitHub Pages automatically hosts relative paths.
--Ensure index.html is at the root of the repository.
--Confirm CSS and JS paths before committing.
+## Updating Engine Effects
+
+- All engine logic is in `js/builder.js` within the `createGolem()` function.
+- Modify or add engine effects according to game mechanics.
+
+---
+
+## Debugging Tips
+
+- Use the browser console to inspect golem objects.
+- Ensure all relative links are correct after moving files.
+- Check that collapsible cards function after changes to `builder.js` or `infusions.js`.
+
+---
+
+## Deployment
+
+- GitHub Pages automatically hosts relative paths.
+- Ensure `index.html` is at the root of the repository.
+- Confirm CSS and JS paths before committing.
