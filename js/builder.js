@@ -76,19 +76,29 @@ function renderInfusions(containerId) {
   });
 }
 
-// ====== TEMPLATE RENDER ======
-function renderTemplates(selectId) {
-  const select = document.getElementById(selectId);
-  if (!select || typeof TEMPLATES === "undefined") return;
+// ===== TEMPLATE SYSTEM (NEW PATTERN) =====
+const templateId = engineId.replace("engine", "template");
+const templateEl = document.getElementById(templateId);
+const templateKey = templateEl?.value;
 
-  select.innerHTML = `<option value="none">None</option>`;
+if (templateKey && templateKey !== "none") {
+  const template = TEMPLATES[templateKey];
 
-  Object.entries(TEMPLATES).forEach(([key, template]) => {
-    const option = document.createElement("option");
-    option.value = key;
-    option.textContent = template.name;
-    select.appendChild(option);
-  });
+  if (template) {
+    template.apply?.(golem, player);
+
+    if (template.traits) {
+      golem.traits.push(
+        ...template.traits.map(fn => fn(player))
+      );
+    }
+
+    if (template.actions) {
+      golem.actions.push(
+        ...template.actions.map(fn => fn(player))
+      );
+    }
+  }
 }
 
 // ====== INFUSION UTILITIES ======
