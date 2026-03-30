@@ -20,220 +20,73 @@
 </div>
 
 <div id="app" style="display:none;">
-<div class="container">
+  <div class="container">
 
-<div class="card">
-<h2>Assembly</h2>
-Level <input id="level" type="number" value="10"><br>
-INT Mod <input id="int" type="number" value="4"><br>
+    <div class="card">
+      <h2>Assembly</h2>
+      Level <input id="level" type="number" value="10"><br>
+      INT Mod <input id="int" type="number" value="4"><br>
 
-Engine
-<select id="engine">
-<option value="none">None</option>
-<option value="flame">Flame</option>
-<option value="stone">Stone</option>
-<option value="frost">Frost</option>
-<option value="aether">Aether</option>
-</select>
+      Engine
+      <select id="engine">
+        <option value="none">None</option>
+        <option value="flame">Flame</option>
+        <option value="stone">Stone</option>
+        <option value="frost">Frost</option>
+        <option value="aether">Aether</option>
+      </select>
 
-<br><br>
+      <br><br>
 
-Mode
-<select id="mode">
-<option value="single">Single Golem</option>
-<option value="multi">Multi-Golem</option>
-<option value="fusion">Fusion Mode</option>
-</select>
+      Mode
+      <select id="mode">
+        <option value="single">Single Golem</option>
+        <option value="multi">Multi-Golem</option>
+        <option value="fusion">Fusion Mode</option>
+      </select>
 
-<!-- INFUSIONS -->
-<div id="infusions" class="container">
-  <h2>Infusions</h2>
-  <!-- Cards for each infusion will be injected here by JS -->
-</div>
+      <!-- INFUSIONS -->
+      <div id="infusions" class="container">
+        <h2>Infusions</h2>
+        <!-- Cards for each infusion will be injected here by JS -->
+      </div>
 
-<div id="infusions2" class="container" style="display:none;">
-  <h2>Second Golem Infusions</h2>
-  <!-- Cards for each infusion will be injected here by JS -->
-</div>
+      <div id="infusions2" class="container" style="display:none;">
+        <h2>Second Golem Infusions</h2>
+        <!-- Cards for each infusion will be injected here by JS -->
+      </div>
 
-<script>
-// Render Infusions as Cards
-function renderInfusions(containerId) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = ""; // Clear existing content
+      <br>
+      <button onclick="printGolem()">Print / Save PDF</button>
+      <button onclick="downloadTxt()">Download .txt</button>
+      <button onclick="saveBuild()">Save Build</button>
+      <button onclick="loadBuild()">Load Build</button>
+      <button onclick="shareBuild()">Share Build</button>
+    </div>
 
-  Object.entries(INFUSIONS).forEach(([key, infusion]) => {
-    const card = document.createElement("div");
-    card.className = "card";
+    <div id="golem2" class="card" style="display:none;">
+      <h2>Second Golem</h2>
+      Level <input id="level2" type="number" value="10"><br>
+      INT Mod <input id="int2" type="number" value="4"><br>
 
-    const button = document.createElement("button");
-    button.className = "collapsible";
-    button.textContent = infusion.name;
+      Engine
+      <select id="engine2">
+        <option value="none">None</option>
+        <option value="flame">Flame</option>
+        <option value="stone">Stone</option>
+        <option value="frost">Frost</option>
+        <option value="aether">Aether</option>
+      </select>
 
-    const content = document.createElement("div");
-    content.className = "content";
+      <!-- Second golem infusions are handled by JS -->
+    </div>
 
-    if (infusion.tags) {
-      infusion.tags.forEach(tag => {
-        const span = document.createElement("span");
-        span.className = `tag ${tag.toLowerCase()}`;
-        span.textContent = tag.charAt(0).toUpperCase() + tag.slice(1);
-        content.appendChild(span);
-      });
-    }
+    <div class="card">
+      <h2>Golem Stat Block</h2>
+      <div id="statblock"></div>
+    </div>
 
-    const effect = document.createElement("p");
-    effect.innerHTML = `<strong>Effect:</strong> ${infusion.effect}`;
-    content.appendChild(effect);
-
-    const details = document.createElement("p");
-    details.innerHTML = `<strong>Details:</strong> ${infusion.details}`;
-    content.appendChild(details);
-
-    // Checkbox for selection
-    const checkboxLabel = document.createElement("label");
-    checkboxLabel.style.display = "block";
-    checkboxLabel.style.marginTop = "8px";
-
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.value = key;
-
-    checkboxLabel.appendChild(checkbox);
-    checkboxLabel.appendChild(document.createTextNode(" Select"));
-
-    content.appendChild(checkboxLabel);
-
-    card.appendChild(button);
-    card.appendChild(content);
-    container.appendChild(card);
-  });
-
-  // Collapsible behavior
-  let col = container.getElementsByClassName("collapsible");
-  for (let i = 0; i < col.length; i++) {
-    col[i].addEventListener("click", function() {
-      this.classList.toggle("active");
-      let content = this.nextElementSibling;
-      content.style.display = content.style.display === "block" ? "none" : "block";
-    });
-  }
-}
-
-// Initial render
-renderInfusions("infusions");
-renderInfusions("infusions2");
-</script>
-
-<br>
-<button onclick="printGolem()">Print / Save PDF</button>
-<button onclick="downloadTxt()">Download .txt</button>
-<button onclick="saveBuild()">Save Build</button>
-<button onclick="loadBuild()">Load Build</button>
-<button onclick="shareBuild()">Share Build</button>
-</div>
-
-<div id="golem2" class="card" style="display:none;">
-<h2>Second Golem</h2>
-Level <input id="level2" type="number" value="10"><br>
-INT Mod <input id="int2" type="number" value="4"><br>
-
-Engine
-<select id="engine2">
-<option value="none">None</option>
-<option value="flame">Flame</option>
-<option value="stone">Stone</option>
-<option value="frost">Frost</option>
-<option value="aether">Aether</option>
-</select>
-
-<!-- INFUSIONS -->
-<div id="infusions" class="container">
-  <h2>Infusions</h2>
-  <!-- Cards for each infusion will be injected here by JS -->
-</div>
-
-<div id="infusions2" class="container" style="display:none;">
-  <h2>Second Golem Infusions</h2>
-  <!-- Cards for each infusion will be injected here by JS -->
-</div>
-
-<script>
-// Render Infusions as Cards
-function renderInfusions(containerId) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = ""; // Clear existing content
-
-  Object.entries(INFUSIONS).forEach(([key, infusion]) => {
-    const card = document.createElement("div");
-    card.className = "card";
-
-    const button = document.createElement("button");
-    button.className = "collapsible";
-    button.textContent = infusion.name;
-
-    const content = document.createElement("div");
-    content.className = "content";
-
-    if (infusion.tags) {
-      infusion.tags.forEach(tag => {
-        const span = document.createElement("span");
-        span.className = `tag ${tag.toLowerCase()}`;
-        span.textContent = tag.charAt(0).toUpperCase() + tag.slice(1);
-        content.appendChild(span);
-      });
-    }
-
-    const effect = document.createElement("p");
-    effect.innerHTML = `<strong>Effect:</strong> ${infusion.effect}`;
-    content.appendChild(effect);
-
-    const details = document.createElement("p");
-    details.innerHTML = `<strong>Details:</strong> ${infusion.details}`;
-    content.appendChild(details);
-
-    // Checkbox for selection
-    const checkboxLabel = document.createElement("label");
-    checkboxLabel.style.display = "block";
-    checkboxLabel.style.marginTop = "8px";
-
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.value = key;
-
-    checkboxLabel.appendChild(checkbox);
-    checkboxLabel.appendChild(document.createTextNode(" Select"));
-
-    content.appendChild(checkboxLabel);
-
-    card.appendChild(button);
-    card.appendChild(content);
-    container.appendChild(card);
-  });
-
-  // Collapsible behavior
-  let col = container.getElementsByClassName("collapsible");
-  for (let i = 0; i < col.length; i++) {
-    col[i].addEventListener("click", function() {
-      this.classList.toggle("active");
-      let content = this.nextElementSibling;
-      content.style.display = content.style.display === "block" ? "none" : "block";
-    });
-  }
-}
-
-// Initial render
-renderInfusions("infusions");
-renderInfusions("infusions2");
-</script>
-</div>
-
-<div class="card">
-<h2>Golem Stat Block</h2>
-<div id="statblock"></div>
-</div>
-
-</div>
+  </div>
 </div>
 
 <script src="./js/infusions.js"></script>
