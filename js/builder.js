@@ -124,9 +124,15 @@ function createGolem(levelId, intId, engineId, infusionContainer) {
   let golem = {
     hp: 50,
     ac: 15,
+    
     str: 14,
     con: 14,
     dex: 10,
+
+    int: 6
+    wis: 10
+    cha: 5
+      
     speed: 30,
     reach: 5,
 
