@@ -192,17 +192,26 @@ if (engineKey && engineKey !== "none") {
     if (infusion.reactions) golem.reactions.push(...infusion.reactions);
   });
 
-  // ===== COMBAT =====
-  golem.strMod = Math.floor((golem.str - 10) / 2);
+// ===== COMBAT STATS =====
 
-  if (player.level <= 4) golem.damageDice = "1d8";
-  else if (player.level <= 10) golem.damageDice = "1d10";
-  else if (player.level <= 16) golem.damageDice = "1d12";
-  else golem.damageDice = "2d12";
+// Ability modifiers
+golem.strMod = Math.floor((golem.str - 10) / 2);
+golem.dexMod = Math.floor((golem.dex - 10) / 2);
+golem.conMod = Math.floor((golem.con - 10) / 2);
+golem.intMod = Math.floor((golem.int - 10) / 2);
+golem.wisMod = Math.floor((golem.wis - 10) / 2);
+golem.chaMod = Math.floor((golem.cha - 10) / 2);
 
-  golem.attackBonus = player.pb + golem.strMod;
+// Damage scaling
+if (player.level <= 4) golem.damageDice = "1d8";
+else if (player.level <= 10) golem.damageDice = "1d10";
+else if (player.level <= 16) golem.damageDice = "1d12";
+else golem.damageDice = "2d12";
 
-  return golem;
+// Attack bonus
+golem.attackBonus = player.pb + golem.strMod;
+
+return golem;
 }
 
 // ====== STAT BLOCK ======
