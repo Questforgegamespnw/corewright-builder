@@ -14,6 +14,9 @@ body {
   text-align:center;
   background:#5a4a32;
   padding:10px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 .nav a {
   color:#fdf6e3;
@@ -55,7 +58,6 @@ th, td {
 </head>
 <body>
 
-<!-- NAVIGATION -->
 <div class="nav">
   <a href="../">Builder</a>
   <a href="../infusions/">Infusions</a>
@@ -64,141 +66,118 @@ th, td {
 
 <div class="container">
 
-<!-- HEADER -->
 <div class="card">
-  <h1>Artificer Specialist: Corewright</h1>
-  <p>
-    Corewrights are artificers who pierce the boundary between construct and life, crafting bodies of stone, metal, and sinew, and animating them with arcane cores of immense power. These constructs are evolving engines of will, shaped by their creator’s design.
-  </p>
+<h1>Artificer Specialist: Corewright</h1>
+<p>
+Corewrights are artificers who pierce the boundary between construct and life, crafting bodies of stone, metal, and sinew, and animating them with arcane cores of immense power. These constructs are evolving engines of will, shaped by their creator’s design.
+</p>
 </div>
 
-<!-- FEATURE TABLE -->
 <div class="card">
-  <h2>Corewright Features</h2>
-  <table>
-    <tr><th>Level</th><th>Feature</th></tr>
-    <tr><td>3rd</td><td>Golem Core Creation</td></tr>
-    <tr><td>5th</td><td>Golem Infusions</td></tr>
-    <tr><td>9th</td><td>Golem Templates</td></tr>
-    <tr><td>15th</td><td>Living Engine Core</td></tr>
-    <tr><td>17th</td><td>Master Golemmancy</td></tr>
-  </table>
+<h2>Corewright Features</h2>
+<table>
+<tr><th>Level</th><th>Feature</th></tr>
+<tr><td>3rd</td><td>Golem Core Creation</td></tr>
+<tr><td>5th</td><td>Golem Infusions</td></tr>
+<tr><td>9th</td><td>Golem Templates</td></tr>
+<tr><td>15th</td><td>Living Engine Core</td></tr>
+<tr><td>17th</td><td>Master Golemmancy</td></tr>
+</table>
 </div>
 
-<!-- SPELL LIST -->
 <div class="card">
-  <h2>Corewright Spells</h2>
-  <p>You always have the following spells prepared. They don’t count against your normal prepared spells.</p>
-  <ul>
-    <li><b>1st Level:</b> <i>Alarm</i>, <i>Tenser’s Floating Disk</i>, <i>Unseen Servant</i></li>
-    <li><b>2nd Level:</b> <i>Enlarge/Reduce</i>, <i>Heat Metal</i>, <i>Locate Object</i></li>
-    <li><b>3rd Level:</b> <i>Protection from Energy</i>, <i>Tiny Servant</i>, <i>Conjure Constructs*</i></li>
-    <li><b>4th Level:</b> <i>Stone Shape</i>, <i>Elemental Bane</i>, <i>Summon Construct</i></li>
-    <li><b>5th Level:</b> <i>Transmute Rock</i>, <i>Animate Objects</i></li>
-  </ul>
-  <p><i>*Conjure Constructs is a homebrew spell.</i></p>
+<h2>Corewright Spells</h2>
+<p>You always have the following spells prepared, and they don’t count against the number of spells you can prepare.</p>
+<ul>
+<li><b>1st Level:</b> <i>Alarm</i>, <i>Tenser’s Floating Disk</i>, <i>Unseen Servant</i></li>
+<li><b>2nd Level:</b> <i>Enlarge/Reduce</i>, <i>Heat Metal</i>, <i>Locate Object</i></li>
+<li><b>3rd Level:</b> <i>Protection from Energy</i>, <i>Tiny Servant</i>, <i>Conjure Constructs*</i></li>
+<li><b>4th Level:</b> <i>Stone Shape</i>, <i>Elemental Bane</i>, <i>Summon Construct</i></li>
+<li><b>5th Level:</b> <i>Transmute Rock</i>, <i>Animate Objects</i></li>
+</ul>
+<p><i>*Conjure Constructs is a homebrew spell.</i></p>
 </div>
 
-<!-- 3RD LEVEL -->
 <div class="card">
-  <h2>Golem Core Creation (3rd Level)</h2>
-  <p>You construct a magical core that animates a golem.</p>
-  <ul>
-    <li>Create or rebuild during a long rest</li>
-    <li>Only one active golem</li>
-    <li>Acts on your initiative</li>
-    <li>Bonus action to command</li>
-    <li>Takes Dodge if not commanded</li>
-  </ul>
+<h2>Golem Core Creation (3rd Level)</h2>
+<ul>
+<li>Create or rebuild during a long rest</li>
+<li>Only one active golem</li>
+<li>Acts on your initiative</li>
+<li>Bonus action to command</li>
+<li>Takes Dodge if not commanded</li>
+</ul>
 </div>
 
-<!-- 5TH LEVEL -->
 <div class="card">
-  <h2>Golem Infusions (5th Level)</h2>
-  <p>You learn specialized modifications for your golem.</p>
-  <ul>
-    <li>Apply during creation</li>
-    <li>Persist until changed</li>
-    <li>Multiple infusions can be active</li>
-  </ul>
+<h2>Golem Infusions (5th Level)</h2>
+<ul>
+<li>Apply during creation</li>
+<li>Persist until changed</li>
+<li>Multiple infusions can be active</li>
+</ul>
 </div>
 
-<!-- 9TH LEVEL -->
 <div class="card">
-  <h2>Golem Templates (9th Level)</h2>
-  <p>Choose a material form such as stone, metal, wood, or more exotic types.</p>
-  <ul>
-    <li>Defines base defenses</li>
-    <li>Grants passive traits</li>
-  </ul>
+<h2>Golem Templates (9th Level)</h2>
+<ul>
+<li>Defines base defenses</li>
+<li>Grants passive traits</li>
+</ul>
 </div>
 
-<!-- 15TH LEVEL -->
 <div class="card">
-  <h2>Living Engine Core (15th Level)</h2>
-  <p>Your golem gains an elemental engine.</p>
-  <ul>
-    <li><b>Flame:</b> Fire damage and aura</li>
-    <li><b>Stone:</b> Damage reduction and stability</li>
-    <li><b>Frost:</b> Slows enemies</li>
-    <li><b>Aether:</b> Mobility and flight</li>
-  </ul>
+<h2>Living Engine Core (15th Level)</h2>
+<ul>
+<li><b>Flame:</b> Fire damage and aura</li>
+<li><b>Stone:</b> Damage reduction and stability</li>
+<li><b>Frost:</b> Slows enemies</li>
+<li><b>Aether:</b> Mobility and flight</li>
+</ul>
 </div>
 
-<!-- 17TH LEVEL PENULTIMATE -->
 <div class="card">
-  <h2>17th-Level Feature: Penultimate Golemmancy</h2>
-  <p>At 17th level, you achieve the pinnacle of your craft, unlocking the ultimate potential of your Golem Core. Choose one of the following options:</p>
-  <ul>
-    <li>Core Fusion</li>
-    <li>Awakened Core</li>
-    <li>Dual Core Convergence</li>
-  </ul>
-  <p><strong>Once you make this choice, it cannot be changed.</strong></p>
+<h2>17th-Level Feature: Penultimate Golemmancy</h2>
+<p>Choose one final evolution for your construct:</p>
+<ul>
+<li>Core Fusion</li>
+<li>Awakened Core</li>
+<li>Dual Core Convergence</li>
+</ul>
+<p><strong>Once chosen, it cannot be changed.</strong></p>
 </div>
 
-<!-- CORE FUSION -->
 <div class="card">
-  <h3>🔥 Core Fusion</h3>
-  <p>You can merge with your golem, becoming a single, empowered construct.</p>
-  <p><strong>Bonus Action:</strong> Merge with your golem. This lasts 1 minute, until you end it, or until you are reduced to 0 hit points.</p>
-  <ul>
-    <li>You gain temporary hit points equal to your golem’s current hit points.</li>
-    <li>You retain your own statistics but gain your golem’s Golem Infusions, Material Template, and Living Engine Core.</li>
-    <li>Melee attacks deal an extra 1d8 damage of your Engine Core type.</li>
-    <li>Speed increases by 10 feet and you gain any special movement your golem possesses.</li>
-    <li>When you take the Attack action, you can make one additional weapon attack.</li>
-  </ul>
-  <p>When the transformation ends, your golem reappears in an unoccupied space within 5 feet of you with hit points equal to half its maximum.</p>
-  <p><strong>Recharge:</strong> Long rest.</p>
+<h3>🔥 Core Fusion</h3>
+<ul>
+<li>Merge with your golem, becoming a single empowered construct.</li>
+<li>Bonus Action: Merge (lasts 1 minute or until 0 HP)</li>
+<li>While fused: gain temporary HP equal to golem, retain stats, gain Golem Infusions, Material Template, and Engine Core, extra 1d8 damage on melee, +10 ft speed, extra weapon attack.</li>
+<li>When ended, golem reappears with half max HP.</li>
+<li>Recharge: Long rest</li>
+</ul>
 </div>
 
-<!-- AWAKENED CORE -->
 <div class="card">
-  <h3>🧠 Awakened Core</h3>
-  <ul>
-    <li>Your golem rolls its own initiative and takes its turns independently.</li>
-    <li>It no longer requires your bonus action to take actions but still follows your commands.</li>
-    <li>Gains a bonus to all saving throws equal to your Intelligence modifier.</li>
-    <li>Can take reactions normally.</li>
-    <li>Once per turn, can add your Intelligence modifier to one attack or damage roll.</li>
-    <li>If you are incapacitated, the golem continues defending allies automatically.</li>
-  </ul>
+<h3>🧠 Awakened Core</h3>
+<ul>
+<li>Golem acts independently, rolls initiative, and follows commands without bonus action.</li>
+<li>Bonus to saving throws equal to your INT modifier.</li>
+<li>Once per turn, add INT modifier to one attack or damage roll.</li>
+<li>If incapacitated, golem continues defending allies.</li>
+</ul>
 </div>
 
-<!-- DUAL CORE CONVERGENCE -->
 <div class="card">
-  <h3>⚙️ Dual Core Convergence</h3>
-  <ul>
-    <li>When creating a golem, you may instead create two golems, each with half normal hit points.</li>
-    <li>Both golems act on the same initiative, taking their turns immediately after yours.</li>
-    <li>You command both golems with the same bonus action.</li>
-    <li>When taking the Attack action, each golem can make one attack.</li>
-    <li>If one golem is destroyed, the other regains hit points equal to your artificer level.</li>
-    <li>Whenever you create a golem, you choose to make one or two.</li>
-  </ul>
+<h3>⚙️ Dual Core Convergence</h3>
+<ul>
+<li>Create two golems with half HP each.</li>
+<li>Both act on same initiative; command both with one bonus action.</li>
+<li>Each can make one attack per Attack action.</li>
+<li>If one is destroyed, other regains HP equal to your artificer level.</li>
+</ul>
 </div>
 
-</div> <!-- container -->
+</div>
 </body>
 </html>
