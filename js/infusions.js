@@ -7,6 +7,11 @@ const INFUSIONS = {
     tags: ["Tank"],
     effect: "+2 AC",
     details: "The golem gains reinforced plating, increasing its AC by 2.",
+
+    traits: [
+      "<strong>Reinforced Frame.</strong> The golem’s armor is enhanced, granting +2 AC."
+    ],
+
     apply: (golem) => { golem.ac += 2; }
   },
 
@@ -16,6 +21,11 @@ const INFUSIONS = {
     tags: ["DPS"],
     effect: "+2 attack bonus",
     details: "The golem is built for combat and gains a +2 bonus to attack rolls.",
+
+    actions: [
+      "<strong>Enhanced Strikes.</strong> The golem gains a +2 bonus to attack rolls."
+    ],
+
     apply: (golem) => { golem.attackBonus = (golem.attackBonus || 0) + 2; }
   },
 
@@ -25,6 +35,11 @@ const INFUSIONS = {
     tags: ["Utility"],
     effect: "+2 DEX",
     details: "Improved fine motor control increases Dexterity by 2.",
+
+    traits: [
+      "<strong>Dexterous Manipulators.</strong> The golem gains +2 Dexterity."
+    ],
+
     apply: (golem) => { golem.dex += 2; }
   },
 
@@ -34,6 +49,11 @@ const INFUSIONS = {
     tags: ["Utility"],
     effect: "+10 ft speed",
     details: "Enhanced servos increase movement speed by 10 ft.",
+
+    traits: [
+      "<strong>Accelerated Servos.</strong> Speed increases by 10 ft."
+    ],
+
     apply: (golem) => { golem.speed += 10; }
   },
 
@@ -43,7 +63,12 @@ const INFUSIONS = {
     tags: ["Tank"],
     effect: "Retaliation damage",
     details: "Enemies that strike the golem take minor damage.",
-    apply: (golem) => { golem.reactive = true; }
+
+    reactions: [
+      "<strong>Reactive Plating.</strong> When struck, attackers take minor damage."
+    ],
+
+    apply: (golem) => {}
   },
 
   arcane_conduit: {
@@ -52,7 +77,12 @@ const INFUSIONS = {
     tags: ["Utility"],
     effect: "Boosts spell synergy",
     details: "Improves magical interactions with the golem.",
-    apply: (golem) => { golem.arcaneBoost = true; }
+
+    traits: [
+      "<strong>Arcane Conduit.</strong> Enhances magical synergy with its creator."
+    ],
+
+    apply: (golem) => {}
   },
 
   anchored_frame: {
@@ -61,7 +91,12 @@ const INFUSIONS = {
     tags: ["Tank"],
     effect: "Resistance to forced movement",
     details: "The golem cannot easily be moved against its will.",
-    apply: (golem) => { golem.anchored = true; }
+
+    traits: [
+      "<strong>Anchored Frame.</strong> Resistant to forced movement."
+    ],
+
+    apply: (golem) => {}
   },
 
   overcharged_core: {
@@ -70,7 +105,12 @@ const INFUSIONS = {
     tags: ["DPS"],
     effect: "Bonus damage output",
     details: "The golem deals additional damage at the cost of stability.",
-    apply: (golem) => { golem.overcharged = true; }
+
+    actions: [
+      "<strong>Overcharged Strike.</strong> Deals additional bonus damage."
+    ],
+
+    apply: (golem) => {}
   },
 
   sentinel_protocol: {
@@ -79,7 +119,12 @@ const INFUSIONS = {
     tags: ["Control"],
     effect: "Reaction-based defense",
     details: "Allows the golem to react to enemy movement.",
-    apply: (golem) => { golem.sentinel = true; }
+
+    reactions: [
+      "<strong>Sentinel Protocol.</strong> Can make opportunity attacks when enemies move nearby."
+    ],
+
+    apply: (golem) => {}
   },
 
   // ===== ADVANCED INFUSIONS =====
@@ -89,6 +134,11 @@ const INFUSIONS = {
     tags: ["Tank"],
     effect: "Regeneration",
     details: "The golem regains HP each round.",
+
+    traits: [
+      "<strong>Self-Repair Matrix.</strong> Regains 5 HP at the start of its turn."
+    ],
+
     apply: (golem) => { golem.regen = 5; }
   },
 
@@ -98,7 +148,12 @@ const INFUSIONS = {
     tags: ["DPS"],
     effect: "Structure damage bonus",
     details: "Deals extra damage to structures and objects.",
-    apply: (golem) => { golem.siege = true; }
+
+    actions: [
+      "<strong>Siege Engine.</strong> Deals double damage to objects and structures."
+    ],
+
+    apply: (golem) => {}
   },
 
   reflexive_countermeasures: {
@@ -107,7 +162,12 @@ const INFUSIONS = {
     tags: ["Control"],
     effect: "Counterattack reactions",
     details: "The golem can retaliate when attacked.",
-    apply: (golem) => { golem.counter = true; }
+
+    reactions: [
+      "<strong>Reflexive Countermeasures.</strong> When hit, the golem can immediately retaliate."
+    ],
+
+    apply: (golem) => {}
   },
 
   // ===== MASTERWORK INFUSIONS =====
@@ -117,7 +177,12 @@ const INFUSIONS = {
     tags: ["Utility"],
     effect: "Enhanced intelligence",
     details: "Grants advanced decision-making capabilities.",
-    apply: (golem) => { golem.intBoost = true; }
+
+    traits: [
+      "<strong>Cognitive Matrix.</strong> Greatly enhances decision-making capabilities."
+    ],
+
+    apply: (golem) => {}
   },
 
   phase_shifter: {
@@ -126,7 +191,12 @@ const INFUSIONS = {
     tags: ["Control"],
     effect: "Partial intangibility",
     details: "Allows the golem to phase through obstacles briefly.",
-    apply: (golem) => { golem.phase = true; }
+
+    traits: [
+      "<strong>Phase Shifter.</strong> Can move through objects briefly."
+    ],
+
+    apply: (golem) => {}
   },
 
   overdrive_protocol: {
@@ -135,7 +205,12 @@ const INFUSIONS = {
     tags: ["DPS"],
     effect: "Burst damage mode",
     details: "Temporarily increases attack output significantly.",
-    apply: (golem) => { golem.overdrive = true; }
+
+    actions: [
+      "<strong>Overdrive Protocol.</strong> Temporarily increases attack output significantly."
+    ],
+
+    apply: (golem) => {}
   },
 
   adaptive_plating: {
@@ -144,7 +219,12 @@ const INFUSIONS = {
     tags: ["Tank"],
     effect: "Dynamic resistance",
     details: "Adapts to incoming damage types.",
-    apply: (golem) => { golem.adaptive = true; }
+
+    traits: [
+      "<strong>Adaptive Plating.</strong> Adjusts resistance to incoming damage types."
+    ],
+
+    apply: (golem) => {}
   },
 
   replication_matrix: {
@@ -153,7 +233,12 @@ const INFUSIONS = {
     tags: ["Utility"],
     effect: "Duplicate effects",
     details: "Can replicate certain abilities or effects.",
-    apply: (golem) => { golem.replicate = true; }
+
+    traits: [
+      "<strong>Replication Matrix.</strong> Can duplicate certain abilities or effects."
+    ],
+
+    apply: (golem) => {}
   },
 
   elemental_convergence: {
@@ -162,7 +247,12 @@ const INFUSIONS = {
     tags: ["DPS"],
     effect: "Elemental damage boost",
     details: "Channels elemental energy into attacks.",
-    apply: (golem) => { golem.elemental = true; }
+
+    actions: [
+      "<strong>Elemental Strike.</strong> Attacks deal additional elemental damage."
+    ],
+
+    apply: (golem) => {}
   },
 
   giant_frame: {
@@ -171,6 +261,11 @@ const INFUSIONS = {
     tags: ["Tank"],
     effect: "Increased size and strength",
     details: "The golem becomes larger and more powerful.",
+
+    traits: [
+      "<strong>Giant Frame.</strong> Gains +30 HP and +4 STR."
+    ],
+
     apply: (golem) => {
       golem.hp += 30;
       golem.str += 4;
