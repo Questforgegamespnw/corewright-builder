@@ -8,6 +8,9 @@ const INFUSIONS = {
     effect: "+2 AC",
     details: "The golem gains reinforced plating, increasing its AC by 2.",
 
+    lore: "Originally designed for siege constructs, reinforced frames allow a golem to endure tremendous punishment on the battlefield.",
+    mechanics: "+2 bonus to Armor Class. Applied after base AC calculation.",
+
     traits: [
       "<strong>Reinforced Frame.</strong> The golem’s armor is enhanced, granting +2 AC."
     ],
@@ -21,6 +24,9 @@ const INFUSIONS = {
     tags: ["DPS"],
     effect: "+2 attack bonus",
     details: "The golem is built for combat and gains a +2 bonus to attack rolls.",
+
+    lore: "War constructs are engineered with precision targeting systems and aggressive combat routines.",
+    mechanics: "+2 bonus to attack rolls. Stacks with proficiency and STR modifier.",
 
     actions: [
       "<strong>War Construct.</strong> This unit is optimized for combat efficiency."
@@ -38,6 +44,9 @@ const INFUSIONS = {
     effect: "+2 DEX",
     details: "Improved fine motor control increases Dexterity by 2.",
 
+    lore: "Miniaturized servos and precision joints allow delicate and complex movements.",
+    mechanics: "+2 Dexterity. Increases DEX modifier and related calculations.",
+
     traits: [
       "<strong>Dexterous Manipulators.</strong> The golem gains +2 Dexterity."
     ],
@@ -51,6 +60,9 @@ const INFUSIONS = {
     tags: ["Utility"],
     effect: "+10 ft speed",
     details: "Enhanced servos increase movement speed by 10 ft.",
+
+    lore: "High-speed servo motors push the golem beyond standard mobility limits.",
+    mechanics: "+10 ft to movement speed.",
 
     traits: [
       "<strong>Accelerated Servos.</strong> Speed increases by 10 ft."
@@ -66,8 +78,11 @@ const INFUSIONS = {
     effect: "Retaliation damage",
     details: "Enemies that strike the golem take minor damage.",
 
+    lore: "This plating stores kinetic energy and releases it back upon impact.",
+    mechanics: "When hit by a melee attack, attacker takes 2 damage.",
+
     reactions: [
-      "<strong>Reactive Plating.</strong> When hit by a melee attack, the attacker takes 2 damage."
+      "<strong>Reactive Plating.</strong> When hit, attacker takes 2 damage."
     ],
 
     apply: (golem) => {
@@ -82,8 +97,11 @@ const INFUSIONS = {
     effect: "Boosts spell synergy",
     details: "Improves magical interactions with the golem.",
 
+    lore: "Arcane channels woven into the golem amplify magical resonance.",
+    mechanics: "Grants bonus equal to INT modifier for spell interactions.",
+
     traits: [
-      "<strong>Arcane Conduit.</strong> Enhances magical synergy with its creator."
+      "<strong>Arcane Conduit.</strong> Enhances magical synergy."
     ],
 
     apply: (golem, player) => {
@@ -98,13 +116,14 @@ const INFUSIONS = {
     effect: "Resistance to forced movement",
     details: "The golem cannot easily be moved against its will.",
 
+    lore: "Heavy stabilizers lock the golem firmly into position.",
+    mechanics: "Advantage or resistance vs forced movement effects.",
+
     traits: [
       "<strong>Anchored Frame.</strong> Resistant to forced movement."
     ],
 
-    apply: (golem) => {
-      golem.anchored = true;
-    }
+    apply: (golem) => { golem.anchored = true; }
   },
 
   overcharged_core: {
@@ -114,8 +133,11 @@ const INFUSIONS = {
     effect: "Bonus damage output",
     details: "The golem deals additional damage at the cost of stability.",
 
+    lore: "The core runs beyond safe limits, producing volatile power surges.",
+    mechanics: "+2 bonus damage to all attacks.",
+
     actions: [
-      "<strong>Overcharged Core.</strong> Attacks deal additional bonus damage."
+      "<strong>Overcharged Core.</strong> Attacks deal additional damage."
     ],
 
     apply: (golem) => {
@@ -130,13 +152,14 @@ const INFUSIONS = {
     effect: "Reaction-based defense",
     details: "Allows the golem to react to enemy movement.",
 
+    lore: "Advanced targeting protocols allow immediate response to threats.",
+    mechanics: "Can make opportunity attacks when enemies move nearby.",
+
     reactions: [
-      "<strong>Sentinel Protocol.</strong> Can make opportunity attacks when enemies move nearby."
+      "<strong>Sentinel Protocol.</strong> Can react to enemy movement."
     ],
 
-    apply: (golem) => {
-      golem.sentinel = true;
-    }
+    apply: (golem) => { golem.sentinel = true; }
   },
 
   // ===== ADVANCED INFUSIONS =====
@@ -147,13 +170,14 @@ const INFUSIONS = {
     effect: "Regeneration",
     details: "The golem regains HP each round.",
 
+    lore: "Nanoscopic repair units continuously rebuild damaged components.",
+    mechanics: "Regains 5 HP at the start of its turn.",
+
     traits: [
-      "<strong>Self-Repair Matrix.</strong> Regains 5 HP at the start of its turn."
+      "<strong>Self-Repair Matrix.</strong> Regains 5 HP per turn."
     ],
 
-    apply: (golem) => {
-      golem.regen = 5;
-    }
+    apply: (golem) => { golem.regen = 5; }
   },
 
   siege_engine: {
@@ -163,13 +187,14 @@ const INFUSIONS = {
     effect: "Structure damage bonus",
     details: "Deals extra damage to structures and objects.",
 
+    lore: "Designed to break fortifications and siege defenses.",
+    mechanics: "Deals double damage to objects and structures.",
+
     actions: [
-      "<strong>Siege Engine.</strong> Deals double damage to objects and structures."
+      "<strong>Siege Engine.</strong> Deals double damage to objects."
     ],
 
-    apply: (golem) => {
-      golem.siege = true;
-    }
+    apply: (golem) => { golem.siege = true; }
   },
 
   reflexive_countermeasures: {
@@ -179,13 +204,14 @@ const INFUSIONS = {
     effect: "Counterattack reactions",
     details: "The golem can retaliate when attacked.",
 
+    lore: "Automated defense routines trigger instant retaliation.",
+    mechanics: "When hit, the golem can immediately counterattack.",
+
     reactions: [
-      "<strong>Reflexive Countermeasures.</strong> When hit, the golem can immediately retaliate."
+      "<strong>Reflexive Countermeasures.</strong> Immediate retaliation."
     ],
 
-    apply: (golem) => {
-      golem.counter = true;
-    }
+    apply: (golem) => { golem.counter = true; }
   },
 
   // ===== MASTERWORK INFUSIONS =====
@@ -196,8 +222,11 @@ const INFUSIONS = {
     effect: "Enhanced intelligence",
     details: "Grants advanced decision-making capabilities.",
 
+    lore: "A near-sentient processing core enables tactical reasoning.",
+    mechanics: "Improves intelligence-based calculations and abilities.",
+
     traits: [
-      "<strong>Cognitive Matrix.</strong> Greatly enhances decision-making capabilities."
+      "<strong>Cognitive Matrix.</strong> Enhanced intelligence."
     ],
 
     apply: (golem, player) => {
@@ -212,13 +241,14 @@ const INFUSIONS = {
     effect: "Partial intangibility",
     details: "Allows the golem to phase through obstacles briefly.",
 
+    lore: "Shifting between planes allows partial intangibility.",
+    mechanics: "Can move through objects for short durations.",
+
     traits: [
-      "<strong>Phase Shifter.</strong> Can move through objects briefly."
+      "<strong>Phase Shifter.</strong> Can phase through objects."
     ],
 
-    apply: (golem) => {
-      golem.phase = true;
-    }
+    apply: (golem) => { golem.phase = true; }
   },
 
   overdrive_protocol: {
@@ -228,8 +258,11 @@ const INFUSIONS = {
     effect: "Burst damage mode",
     details: "Temporarily increases attack output significantly.",
 
+    lore: "Pushes the golem into a dangerous but powerful combat state.",
+    mechanics: "+4 damage and +1 attack bonus.",
+
     actions: [
-      "<strong>Overdrive Protocol.</strong> Enter a high-output damage state."
+      "<strong>Overdrive Protocol.</strong> High-output combat mode."
     ],
 
     apply: (golem) => {
@@ -245,13 +278,14 @@ const INFUSIONS = {
     effect: "Dynamic resistance",
     details: "Adapts to incoming damage types.",
 
+    lore: "Smart materials shift composition to resist incoming threats.",
+    mechanics: "Gains resistance to last damage type taken.",
+
     traits: [
-      "<strong>Adaptive Plating.</strong> Gains resistance to last damage type taken."
+      "<strong>Adaptive Plating.</strong> Adapts to damage types."
     ],
 
-    apply: (golem) => {
-      golem.adaptive = true;
-    }
+    apply: (golem) => { golem.adaptive = true; }
   },
 
   replication_matrix: {
@@ -261,13 +295,14 @@ const INFUSIONS = {
     effect: "Duplicate effects",
     details: "Can replicate certain abilities or effects.",
 
+    lore: "Experimental matrix allows duplication of abilities.",
+    mechanics: "Can copy certain effects depending on context.",
+
     traits: [
-      "<strong>Replication Matrix.</strong> Can duplicate certain abilities or effects."
+      "<strong>Replication Matrix.</strong> Can duplicate effects."
     ],
 
-    apply: (golem) => {
-      golem.replicate = true;
-    }
+    apply: (golem) => { golem.replicate = true; }
   },
 
   elemental_convergence: {
@@ -277,8 +312,11 @@ const INFUSIONS = {
     effect: "Elemental damage boost",
     details: "Channels elemental energy into attacks.",
 
+    lore: "Harnesses raw elemental forces to enhance offensive output.",
+    mechanics: "+3 bonus damage and adds elemental damage type.",
+
     actions: [
-      "<strong>Elemental Strike.</strong> Attacks deal additional elemental damage."
+      "<strong>Elemental Strike.</strong> Deals elemental damage."
     ],
 
     apply: (golem) => {
@@ -293,6 +331,9 @@ const INFUSIONS = {
     tags: ["Tank"],
     effect: "Increased size and strength",
     details: "The golem becomes larger and more powerful.",
+
+    lore: "Massive structural expansion grants overwhelming physical power.",
+    mechanics: "+30 HP and +4 STR (affects attack and damage).",
 
     traits: [
       "<strong>Giant Frame.</strong> Gains +30 HP and +4 STR."
