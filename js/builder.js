@@ -140,9 +140,9 @@ golem.strMod = Math.floor((golem.str - 10) / 2);
 
 // Damage scaling by level
 if (player.level <= 4) golem.damageDice = "1d8";
-else if (player.level <= 10) golem.damageDice = "2d8";
-else if (player.level <= 16) golem.damageDice = "3d8";
-else golem.damageDice = "4d8";
+else if (player.level <= 10) golem.damageDice = "1d10";
+else if (player.level <= 16) golem.damageDice = "1d12";
+else golem.damageDice = "2d12";
 // ^^^^^  This above section might need some damage scaling adjustment pending review of combat effectivness//
 // Attack bonus
 golem.attackBonus = player.pb + golem.strMod;
