@@ -1,4 +1,4 @@
-const ENGINES = {
+export const ENGINES = {
 
   flame: {
     name: "Flame Engine",
