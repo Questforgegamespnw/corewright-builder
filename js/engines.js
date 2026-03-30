@@ -4,11 +4,11 @@ const ENGINES = {
     name: "Flame Engine",
 
     apply: (golem, player) => {
-      golem.bonusDamage = (golem.bonusDamage || 0) + player.intMod;
+      golem.bonusDamage = player.intMod;
     },
 
     traits: [
-      () => "Flame Core. Attacks deal additional fire damage equal to INT modifier."
+      () => "Flame Core. Attacks deal additional fire damage."
     ]
   },
 
@@ -20,17 +20,15 @@ const ENGINES = {
     },
 
     traits: [
-      (player) => `Reinforced Core. Reduces incoming damage by ${player.pb}.`
+      (p) => `Reinforced Core. Reduces damage by ${p.pb}.`
     ]
   },
 
   frost: {
     name: "Frost Engine",
 
-    apply: () => {},
-
     traits: [
-      () => "Cryo Core. Movement speed of struck enemies reduced (flavor, expand later)."
+      () => "Freezing Aura. Creatures hit have reduced speed."
     ]
   },
 
@@ -42,7 +40,7 @@ const ENGINES = {
     },
 
     traits: [
-      () => "Aether Core. Gains a flying speed equal to walking speed."
+      () => "Aether Lift. Gains a flying speed."
     ]
   }
 
