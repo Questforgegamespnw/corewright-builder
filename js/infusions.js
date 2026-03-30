@@ -41,7 +41,7 @@ const INFUSIONS = {
     name: "Reactive Plating",
     tier: "base",
     tags: ["Tank"],
-    effect: Retaliation damage,
+    effect: Retaliation damage",
     details: "Enemies that strike the golem take minor damage.",
     apply: (golem) => { golem.reactive = true; }
   },
