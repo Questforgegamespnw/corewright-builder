@@ -71,7 +71,17 @@ function renderInfusions(containerId) {
     });
   });
 }
+function renderTemplates(selectId) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
 
+  Object.entries(TEMPLATES).forEach(([key, template]) => {
+    const option = document.createElement("option");
+    option.value = key;
+    option.textContent = template.name;
+    select.appendChild(option);
+  });
+}
 // ====== INFUSION UTILITIES ======
 function getSelectedInfusions(containerId) {
   return [...document.querySelectorAll(`#${containerId} input:checked`)]
