@@ -29,23 +29,22 @@
     <div class="card">
       <h2>Assembly</h2>
       Level <input id="level" type="number" value="10"><br>
-      INT Mod <input id="int" type="number" value="4"><br>
+      INT Mod <input id="int" type="number" value="4"><br><br>
 
-Engine
-<select id="engine">
-  <option value="none">None</option>
-  <option value="flame">Flame</option>
-  <option value="stone">Stone</option>
-  <option value="frost">Frost</option>
-  <option value="aether">Aether</option>
-</select>
+      <!-- Engine cards -->
+      <div id="engines" class="container">
+        <h2>Engine</h2>
+      </div>
+      <input id="engine" type="hidden" value="none">
 
-<br><br>
+      <br><br>
 
-Template
-<select id="template">
-  <option value="none">None</option>
-</select>
+      Template
+      <select id="template">
+        <option value="none">None</option>
+      </select>
+
+      <br><br>
 
       Mode
       <select id="mode">
@@ -72,23 +71,20 @@ Template
     <div id="golem2" class="card" style="display:none;">
       <h2>Second Golem</h2>
       Level <input id="level2" type="number" value="10"><br>
-      INT Mod <input id="int2" type="number" value="4"><br>
+      INT Mod <input id="int2" type="number" value="4"><br><br>
 
-    Engine
-<select id="engine2">
-  <option value="none">None</option>
-  <option value="flame">Flame</option>
-  <option value="stone">Stone</option>
-  <option value="frost">Frost</option>
-  <option value="aether">Aether</option>
-</select>
+      <!-- Second engine cards -->
+      <div id="engines2" class="container">
+        <h2>Second Golem Engine</h2>
+      </div>
+      <input id="engine2" type="hidden" value="none">
 
-<br><br>
+      <br><br>
 
-Template
-<select id="template2">
-  <option value="none">None</option>
-</select>
+      Template
+      <select id="template2">
+        <option value="none">None</option>
+      </select>
 
       <!-- Infusions for Second Golem -->
       <div id="infusions2" class="container">
