@@ -5,8 +5,11 @@ import { TEMPLATES } from "./data/templates.js";
 
 // ====== APP ENTRY ======
 function enterApp() {
-  document.getElementById('splash').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
+  document.getElementById("splash").style.display = "none";
+  document.getElementById("app").style.display = "block";
+
+  renderEngines("engines", "engine", "Engine");
+  renderEngines("engines2", "engine2", "Second Golem Engine");
 
   renderInfusions("infusions");
   renderInfusions("infusions2");
@@ -21,12 +24,95 @@ function enterApp() {
 // expose to HTML
 window.enterApp = enterApp;
 
+// ====== ENGINE RENDER ======
+function renderEngines(containerId, inputId, title = "Engine") {
+  const container = document.getElementById(containerId);
+  const hiddenInput = document.getElementById(inputId);
+
+  if (!container || !hiddenInput) return;
+
+  container.innerHTML = `<h2>${title}</h2>`;
+
+  // "None" option
+  const noneCard = document.createElement("div");
+  noneCard.className = "card engine-card selected";
+  noneCard.dataset.value = "none";
+
+  const noneButton = document.createElement("button");
+  noneButton.className = "collapsible active";
+  noneButton.textContent = "No Engine";
+
+  const noneContent = document.createElement("div");
+  noneContent.className = "content";
+  noneContent.style.display = "block";
+  noneContent.innerHTML = `<p><strong>Effect:</strong> No engine selected.</p>`;
+
+  noneCard.appendChild(noneButton);
+  noneCard.appendChild(noneContent);
+  container.appendChild(noneCard);
+
+  Object.entries(ENGINES).forEach(([key, engine]) => {
+    const card = document.createElement("div");
+    card.className = "card engine-card";
+    card.dataset.value = key;
+
+    const button = document.createElement("button");
+    button.className = "collapsible";
+    button.textContent = engine.name;
+
+    const content = document.createElement("div");
+    content.className = "content";
+
+    if (engine.traits?.length) {
+      engine.traits.forEach((fn) => {
+        const p = document.createElement("p");
+        p.innerHTML = `<strong>Trait:</strong> ${fn({ pb: 4, intMod: 4 })}`;
+        content.appendChild(p);
+      });
+    } else {
+      const p = document.createElement("p");
+      p.innerHTML = `<strong>Effect:</strong> No passive trait text listed.`;
+      content.appendChild(p);
+    }
+
+    card.appendChild(button);
+    card.appendChild(content);
+    container.appendChild(card);
+  });
+
+  Array.from(container.getElementsByClassName("collapsible")).forEach((button) => {
+    button.addEventListener("click", function () {
+      const card = this.parentElement;
+      const selectedValue = card.dataset.value;
+
+      Array.from(container.getElementsByClassName("engine-card")).forEach((engineCard) => {
+        engineCard.classList.remove("selected");
+
+        const btn = engineCard.querySelector(".collapsible");
+        const content = engineCard.querySelector(".content");
+
+        if (btn) btn.classList.remove("active");
+        if (content) content.style.display = "none";
+      });
+
+      card.classList.add("selected");
+      this.classList.add("active");
+
+      const content = this.nextElementSibling;
+      if (content) content.style.display = "block";
+
+      hiddenInput.value = selectedValue;
+      buildGolem();
+    });
+  });
+}
+
 // ====== INFUSIONS RENDER ======
 function renderInfusions(containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  container.innerHTML = "";
+  container.innerHTML = "<h2>Infusions</h2>";
 
   Object.entries(INFUSIONS).forEach(([key, infusion]) => {
     const card = document.createElement("div");
@@ -40,7 +126,7 @@ function renderInfusions(containerId) {
     content.className = "content";
 
     if (infusion.tags) {
-      infusion.tags.forEach(tag => {
+      infusion.tags.forEach((tag) => {
         const span = document.createElement("span");
         span.className = `tag ${tag.toLowerCase()}`;
         span.textContent = tag;
@@ -70,13 +156,11 @@ function renderInfusions(containerId) {
     container.appendChild(card);
   });
 
-  // Collapsible logic
-  Array.from(container.getElementsByClassName("collapsible")).forEach(col => {
+  Array.from(container.getElementsByClassName("collapsible")).forEach((col) => {
     col.addEventListener("click", function () {
-      this.classList.toggle("active");
       const content = this.nextElementSibling;
-      content.style.display =
-        content.style.display === "block" ? "none" : "block";
+      this.classList.toggle("active");
+      content.style.display = content.style.display === "block" ? "none" : "block";
     });
   });
 }
@@ -98,13 +182,11 @@ function renderTemplates(selectId) {
 
 // ====== INFUSION UTIL ======
 function getSelectedInfusions(containerId) {
-  return [...document.querySelectorAll(`#${containerId} input:checked`)]
-    .map(cb => cb.value);
+  return [...document.querySelectorAll(`#${containerId} input:checked`)].map((cb) => cb.value);
 }
 
 // ====== CREATE GOLEM ======
 function createGolem(levelId, intId, engineId, infusionContainer) {
-
   const levelEl = document.getElementById(levelId);
   const intEl = document.getElementById(intId);
   const engineEl = document.getElementById(engineId);
@@ -151,11 +233,11 @@ function createGolem(levelId, intId, engineId, infusionContainer) {
       template.apply?.(golem, player);
 
       if (template.traits) {
-        golem.traits.push(...template.traits.map(fn => fn(player)));
+        golem.traits.push(...template.traits.map((fn) => fn(player)));
       }
 
       if (template.actions) {
-        golem.actions.push(...template.actions.map(fn => fn(player)));
+        golem.actions.push(...template.actions.map((fn) => fn(player)));
       }
     }
   }
@@ -170,17 +252,17 @@ function createGolem(levelId, intId, engineId, infusionContainer) {
       engine.apply?.(golem, player);
 
       if (engine.traits) {
-        golem.traits.push(...engine.traits.map(fn => fn(player)));
+        golem.traits.push(...engine.traits.map((fn) => fn(player)));
       }
 
       if (engine.actions) {
-        golem.actions.push(...engine.actions.map(fn => fn(player)));
+        golem.actions.push(...engine.actions.map((fn) => fn(player)));
       }
     }
   }
 
   // ===== INFUSIONS =====
-  getSelectedInfusions(infusionContainer).forEach(key => {
+  getSelectedInfusions(infusionContainer).forEach((key) => {
     const infusion = INFUSIONS[key];
     if (!infusion) return;
 
@@ -211,7 +293,6 @@ function createGolem(levelId, intId, engineId, infusionContainer) {
 
 // ====== STAT BLOCK ======
 function renderStatBlock(golem, name) {
-
   const traitBlock = golem.traits?.length
     ? `<div class="stat-section"><strong>Traits</strong><br>${golem.traits.join("<br><br>")}</div>`
     : "";
@@ -238,7 +319,6 @@ ${allActions.join("<br><br>")}
 
   return `
     <div>
-
       <div class="stat-header">
         <div class="stat-name">${name}</div>
       </div>
@@ -268,7 +348,6 @@ ${allActions.join("<br><br>")}
 
       ${traitBlock}
       ${actionBlock}
-
     </div>
   `;
 }
@@ -276,19 +355,17 @@ ${allActions.join("<br><br>")}
 // ====== BUILD ======
 function buildGolem() {
   const g1 = createGolem("level", "int", "engine", "infusions");
-  document.getElementById("statblock").innerHTML =
-    renderStatBlock(g1, "Golem");
+  document.getElementById("statblock").innerHTML = renderStatBlock(g1, "Golem");
 }
 
 // ====== EVENTS ======
 function setupEventListeners() {
-  ["level","int","engine","template","level2","int2","engine2","template2"]
-    .forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.addEventListener("input", debounce(buildGolem));
-    });
+  ["level", "int", "template", "level2", "int2", "template2"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("input", debounce(buildGolem));
+  });
 
-  ["infusions","infusions2"].forEach(id => {
+  ["infusions", "infusions2"].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.addEventListener("change", buildGolem);
   });
@@ -297,7 +374,7 @@ function setupEventListeners() {
 // ====== DEBOUNCE ======
 function debounce(fn, delay = 100) {
   let timeout;
-  return function() {
+  return function () {
     clearTimeout(timeout);
     timeout = setTimeout(fn, delay);
   };
