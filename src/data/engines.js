@@ -153,10 +153,6 @@ export const ENGINES = [
         }
       });
 
-      golem.traits.push(
-        `Earth Engine. The golem has resistance to nonmagical bludgeoning, piercing, and slashing damage.`
-      );
-
       golem.onHitEffects = golem.onHitEffects || [];
       golem.onHitEffects.push(
         `Once on each of its turns, the golem deals an extra 1d8 bludgeoning damage when it hits with an attack.`

@@ -1,216 +1,557 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Corewright Infusion Compendium</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Corewright Infusion Compendium</title>
+  <link rel="stylesheet" href="../css/style.css">
 
-<link rel="stylesheet" href="../css/style.css">
-
-<style>
-.collapsible {
-  cursor: pointer;
-  padding: 10px;
-  background: #8b7355;
-  color: white;
-  border: none;
-  width: 100%;
-  text-align: left;
-  font-size: 1em;
-  border-radius: 6px;
-  margin-top: 10px;
-}
-
-.content {
-  display: none;
-  padding: 10px 15px;
-  background: #fffaf0;
-  border: 1px solid #8b7355;
-  border-radius: 6px;
-  margin-bottom: 10px;
-}
-
-.filter-bar {
-  text-align: center;
-  margin-bottom: 15px;
-}
-
-.filter-bar button {
-  margin: 5px;
-}
-
-#search {
-  padding: 8px;
-  width: 60%;
-  max-width: 300px;
-  margin-bottom: 10px;
-}
-</style>
-</head>
-
-<body>
-
-<div class="nav">
-  <a href="../">Builder</a>
-  <a href="./">Infusions</a>
-  <a href="../corewright/">Subclass</a>
-</div>
-
-<div class="container">
-
-<h1>Corewright Infusion Compendium</h1>
-
-<!-- SEARCH -->
-<div class="filter-bar">
-  <input type="text" id="search" placeholder="Search infusions..." oninput="renderInfusionList()">
-</div>
-
-<!-- FILTER BUTTONS -->
-<div class="filter-bar">
-  <button onclick="setFilter('all')">All</button>
-  <button onclick="setFilter('tank')">Tank</button>
-  <button onclick="setFilter('dps')">DPS</button>
-  <button onclick="setFilter('control')">Control</button>
-  <button onclick="setFilter('utility')">Utility</button>
-</div>
-
-<!-- INFUSION LIST -->
-<div id="infusion-list"></div>
-
-</div>
-
-<script src="../js/infusions.js"></script>
-
-<script>
-let currentFilter = "all";
-
-function setFilter(filter) {
-  currentFilter = filter;
-  renderInfusionList();
-}
-
-function renderInfusionList() {
-  const container = document.getElementById("infusion-list");
-  const search = document.getElementById("search").value.toLowerCase();
-
-  container.innerHTML = "";
-
-  const tiers = {
-    base: "Base Infusions",
-    advanced: "Advanced Infusions (9th Level)",
-    masterwork: "Masterwork Infusions (15th Level)"
-  };
-
-  Object.entries(tiers).forEach(([tierKey, tierName]) => {
-
-    const section = document.createElement("div");
-
-    const header = document.createElement("h2");
-    header.textContent = tierName;
-    section.appendChild(header);
-
-    let hasContent = false;
-
-    Object.entries(INFUSIONS).forEach(([key, infusion]) => {
-
-      // TIER CHECK
-      if (infusion.tier !== tierKey) return;
-
-      // TAG FILTER
-      if (
-        currentFilter !== "all" &&
-        (!infusion.tags || !infusion.tags.map(t => t.toLowerCase()).includes(currentFilter))
-      ) return;
-
-      // ✅ FUTURE-PROOF SEARCH (THIS IS THE FIX)
-      const text = JSON.stringify(infusion).toLowerCase();
-      if (!text.includes(search)) return;
-
-      hasContent = true;
-
-      const card = document.createElement("div");
-      card.className = "card";
-
-      const button = document.createElement("button");
-      button.className = "collapsible";
-      button.textContent = infusion.name;
-
-      const content = document.createElement("div");
-      content.className = "content";
-
-      // TAGS
-      if (infusion.tags) {
-        infusion.tags.forEach(tag => {
-          const span = document.createElement("span");
-          span.className = `tag ${tag.toLowerCase()}`;
-          span.textContent = tag;
-          content.appendChild(span);
-        });
-      }
-
-      // EFFECT
-      const effect = document.createElement("p");
-      effect.innerHTML = `<strong>Effect:</strong> ${infusion.effect || ""}`;
-      content.appendChild(effect);
-
-      // DETAILS
-      const details = document.createElement("p");
-      details.innerHTML = `<strong>Details:</strong> ${infusion.details || ""}`;
-      content.appendChild(details);
-
-      // ===== LORE / MECHANICS PANEL =====
-      if (infusion.lore || infusion.mechanics) {
-
-        const loreButton = document.createElement("button");
-        loreButton.className = "collapsible";
-        loreButton.textContent = "Show Lore & Mechanics";
-
-        const loreContent = document.createElement("div");
-        loreContent.className = "content";
-
-        if (infusion.lore) {
-          const lore = document.createElement("p");
-          lore.innerHTML = `<strong>Lore:</strong> ${infusion.lore}`;
-          loreContent.appendChild(lore);
-        }
-
-        if (infusion.mechanics) {
-          const mech = document.createElement("p");
-          mech.innerHTML = `<strong>Mechanics:</strong> ${infusion.mechanics}`;
-          loreContent.appendChild(mech);
-        }
-
-        content.appendChild(loreButton);
-        content.appendChild(loreContent);
-      }
-
-      // BUILD CARD
-      card.appendChild(button);
-      card.appendChild(content);
-      section.appendChild(card);
-
-    });
-
-    if (hasContent) {
-      container.appendChild(section);
+  <style>
+    .compendium-shell {
+      width: min(100%, 1200px);
+      margin: 0 auto;
+      padding: 24px 20px 40px;
     }
 
-  });
+    .compendium-hero,
+    .compendium-controls,
+    .tier-section,
+    .empty-state {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
 
-  // COLLAPSIBLE HANDLER
-  const col = document.getElementsByClassName("collapsible");
-  for (let i = 0; i < col.length; i++) {
-    col[i].addEventListener("click", function () {
-      this.classList.toggle("active");
-      const content = this.nextElementSibling;
-      content.style.display =
-        content.style.display === "block" ? "none" : "block";
-    });
-  }
-}
+    .compendium-hero {
+      padding: 22px;
+      margin-bottom: 20px;
+    }
 
-window.addEventListener("load", renderInfusionList);
-</script>
+    .compendium-hero h1 {
+      margin: 0 0 8px;
+      color: var(--muted);
+    }
 
+    .compendium-hero p {
+      margin: 0;
+    }
+
+    .compendium-controls {
+      padding: 16px;
+      margin-bottom: 20px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .compendium-search label,
+    .compendium-filters h2 {
+      display: block;
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .compendium-search input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fffaf0;
+      color: var(--ink);
+    }
+
+    .results-meta {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .filter-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-chip {
+      border: 1px solid var(--border);
+      background: #efe4cf;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .filter-chip.active {
+      background: var(--nav);
+      color: var(--nav-ink);
+      border-color: var(--nav);
+    }
+
+    .compendium-results {
+      display: grid;
+      gap: 18px;
+    }
+
+    .tier-section {
+      overflow: hidden;
+    }
+
+    .tier-header {
+      padding: 16px 18px;
+      background: var(--panel-alt);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tier-header h2 {
+      margin: 0 0 4px;
+      color: var(--muted);
+      font-size: 1.15rem;
+    }
+
+    .tier-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .tier-body {
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .infusion-entry {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fffaf0;
+      overflow: hidden;
+    }
+
+    .infusion-toggle {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .infusion-toggle:hover {
+      background: #fcf4e6;
+    }
+
+    .infusion-toggle-main {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .infusion-title-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .infusion-title-row strong {
+      font-size: 1rem;
+      color: var(--ink);
+    }
+
+    .infusion-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .prereq-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #f7eddc;
+      font-size: 0.78rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .infusion-preview {
+      color: #3f3425;
+      font-size: 0.95rem;
+    }
+
+    .infusion-toggle-icon {
+      font-size: 1.25rem;
+      line-height: 1;
+      color: var(--muted);
+      padding-top: 2px;
+    }
+
+    .infusion-content {
+      display: none;
+      border-top: 1px solid var(--border-soft);
+      padding: 0 16px 16px;
+      background: #fffdf8;
+    }
+
+    .infusion-content.open {
+      display: block;
+    }
+
+    .infusion-detail-block {
+      padding-top: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .infusion-detail-block p {
+      margin: 0;
+    }
+
+    .detail-list {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .detail-list li + li {
+      margin-top: 6px;
+    }
+
+    .empty-state {
+      padding: 20px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 700px) {
+      .compendium-shell {
+        padding: 16px 12px 28px;
+      }
+
+      .tier-body {
+        padding: 12px;
+      }
+
+      .infusion-toggle {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="nav">
+    <a href="../">Builder</a>
+    <a href="./">Infusions</a>
+    <a href="../corewright/">Subclass</a>
+  </div>
+
+  <main class="compendium-shell">
+    <section class="compendium-hero">
+      <h1>Corewright Infusion Compendium</h1>
+      <p>
+        Browse the current Corewright infusion suite by tier, role, and function.
+        This compendium is aligned to the live builder data model.
+      </p>
+    </section>
+
+    <section class="compendium-controls">
+      <div class="compendium-search">
+        <label for="search">Search infusions</label>
+        <input
+          type="text"
+          id="search"
+          placeholder="Search by name, tag, effect, details, mechanics, or lore..."
+        >
+        <div class="results-meta" id="resultsMeta">Showing all infusions.</div>
+      </div>
+
+      <div class="compendium-filters">
+        <h2>Filter by tag</h2>
+        <div class="filter-chip-row" id="filterChips"></div>
+      </div>
+    </section>
+
+    <section class="compendium-results" id="infusionList"></section>
+  </main>
+
+  <script type="module">
+    import { INFUSIONS } from "../src/data/infusions.js";
+
+    const searchInput = document.getElementById("search");
+    const resultsMeta = document.getElementById("resultsMeta");
+    const infusionList = document.getElementById("infusionList");
+    const filterChipsContainer = document.getElementById("filterChips");
+
+    let currentFilter = "all";
+
+    const TIER_CONFIG = [
+      {
+        key: "base",
+        title: "Base Infusions",
+        subtitle: "Core upgrades available from the start of your specialization."
+      },
+      {
+        key: "advanced",
+        title: "Advanced Infusions",
+        subtitle: "Higher-tier systems that come online at 9th level and beyond."
+      },
+      {
+        key: "masterwork",
+        title: "Masterwork Infusions",
+        subtitle: "Capstone-grade augmentations available at 15th level and beyond."
+      }
+    ];
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function normalizeText(value) {
+      return String(value ?? "").toLowerCase().trim();
+    }
+
+    function titleCase(value) {
+      return String(value ?? "")
+        .split(" ")
+        .filter(Boolean)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(" ");
+    }
+
+    function getAllTags() {
+      const tags = new Set(["all"]);
+
+      INFUSIONS.forEach((infusion) => {
+        (infusion.tags || []).forEach((tag) => tags.add(normalizeText(tag)));
+      });
+
+      return Array.from(tags);
+    }
+
+    function buildSearchBlob(infusion) {
+      return [
+        infusion.name,
+        infusion.effect,
+        infusion.details,
+        infusion.mechanics,
+        infusion.lore,
+        infusion.prerequisiteLevel,
+        ...(infusion.tags || [])
+      ]
+        .join(" ")
+        .toLowerCase();
+    }
+
+    function getPreviewText(infusion) {
+      return infusion.effect || infusion.details || infusion.mechanics || "";
+    }
+
+    function getInfusionMatches(infusion, search, filter) {
+      const text = buildSearchBlob(infusion);
+
+      const matchesSearch = !search || text.includes(search);
+      const matchesFilter =
+        filter === "all" ||
+        (infusion.tags || []).some((tag) => normalizeText(tag) === filter);
+
+      return matchesSearch && matchesFilter;
+    }
+
+    function buildTagHtml(tags = []) {
+      return tags
+        .map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`)
+        .join("");
+    }
+
+    function buildRulesList(infusion) {
+      const items = [];
+
+      if (Array.isArray(infusion.traits) && infusion.traits.length) {
+        items.push(`<li><strong>Trait entries:</strong> ${infusion.traits.length}</li>`);
+      }
+
+      if (Array.isArray(infusion.actions) && infusion.actions.length) {
+        items.push(`<li><strong>Action entries:</strong> ${infusion.actions.length}</li>`);
+      }
+
+      if (Array.isArray(infusion.reactions) && infusion.reactions.length) {
+        items.push(`<li><strong>Reaction entries:</strong> ${infusion.reactions.length}</li>`);
+      }
+
+      if (!items.length) return "";
+
+      return `
+        <div>
+          <p><strong>Builder hooks:</strong></p>
+          <ul class="detail-list">
+            ${items.join("")}
+          </ul>
+        </div>
+      `;
+    }
+
+    function renderInfusionCard(infusion) {
+      const tagsHtml = buildTagHtml(infusion.tags || []);
+      const preview = getPreviewText(infusion);
+      const prereqHtml = infusion.prerequisiteLevel
+        ? `<span class="prereq-badge">${escapeHtml(infusion.prerequisiteLevel)}th-level prerequisite</span>`
+        : `<span class="prereq-badge">No level prerequisite</span>`;
+
+      const detailParts = [];
+
+      if (infusion.effect) {
+        detailParts.push(`<p><strong>Effect:</strong> ${escapeHtml(infusion.effect)}</p>`);
+      }
+
+      if (infusion.details) {
+        detailParts.push(`<p><strong>Details:</strong> ${escapeHtml(infusion.details)}</p>`);
+      }
+
+      if (infusion.mechanics) {
+        detailParts.push(`<p><strong>Mechanics:</strong> ${escapeHtml(infusion.mechanics)}</p>`);
+      }
+
+      if (infusion.lore) {
+        detailParts.push(`<p><strong>Lore:</strong> ${escapeHtml(infusion.lore)}</p>`);
+      }
+
+      const builderHooks = buildRulesList(infusion);
+
+      return `
+        <article class="infusion-entry">
+          <button class="infusion-toggle" type="button">
+            <div class="infusion-toggle-main">
+              <div class="infusion-title-row">
+                <strong>${escapeHtml(infusion.name)}</strong>
+                ${prereqHtml}
+              </div>
+
+              <div class="infusion-meta-row">
+                ${tagsHtml}
+              </div>
+
+              ${preview ? `<div class="infusion-preview">${escapeHtml(preview)}</div>` : ""}
+            </div>
+
+            <span class="infusion-toggle-icon">+</span>
+          </button>
+
+          <div class="infusion-content">
+            <div class="infusion-detail-block">
+              ${detailParts.join("")}
+              ${builderHooks}
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderTierSection(tierConfig, infusions) {
+      if (!infusions.length) return "";
+
+      return `
+        <section class="tier-section">
+          <div class="tier-header">
+            <h2>${escapeHtml(tierConfig.title)}</h2>
+            <p>${escapeHtml(tierConfig.subtitle)}</p>
+          </div>
+          <div class="tier-body">
+            ${infusions.map(renderInfusionCard).join("")}
+          </div>
+        </section>
+      `;
+    }
+
+    function bindToggles() {
+      document.querySelectorAll(".infusion-toggle").forEach((button) => {
+        button.addEventListener("click", () => {
+          const content = button.nextElementSibling;
+          const icon = button.querySelector(".infusion-toggle-icon");
+          const isOpen = content.classList.contains("open");
+
+          content.classList.toggle("open", !isOpen);
+          if (icon) icon.textContent = isOpen ? "+" : "−";
+        });
+      });
+    }
+
+    function renderFilterChips() {
+      const tags = getAllTags();
+
+      filterChipsContainer.innerHTML = tags
+        .map((tag) => {
+          const label = tag === "all" ? "All" : titleCase(tag);
+          const activeClass = currentFilter === tag ? "active" : "";
+          return `
+            <button
+              class="filter-chip ${activeClass}"
+              type="button"
+              data-filter="${escapeHtml(tag)}"
+            >
+              ${escapeHtml(label)}
+            </button>
+          `;
+        })
+        .join("");
+
+      filterChipsContainer.querySelectorAll(".filter-chip").forEach((button) => {
+        button.addEventListener("click", () => {
+          currentFilter = button.dataset.filter || "all";
+          renderFilterChips();
+          renderInfusionList();
+        });
+      });
+    }
+
+    function renderInfusionList() {
+      const search = normalizeText(searchInput.value);
+
+      const filtered = INFUSIONS.filter((infusion) =>
+        getInfusionMatches(infusion, search, currentFilter)
+      );
+
+      const html = TIER_CONFIG.map((tier) => {
+        const tierItems = filtered.filter((infusion) => infusion.tier === tier.key);
+        return renderTierSection(tier, tierItems);
+      })
+        .filter(Boolean)
+        .join("");
+
+      if (!filtered.length) {
+        infusionList.innerHTML = `
+          <div class="empty-state">
+            No infusions matched your current search or selected tag.
+          </div>
+        `;
+      } else {
+        infusionList.innerHTML = html;
+      }
+
+      const filterLabel =
+        currentFilter === "all" ? "all tags" : titleCase(currentFilter);
+
+      resultsMeta.textContent =
+        `Showing ${filtered.length} infusion${filtered.length === 1 ? "" : "s"} for ${filterLabel}.`;
+
+      bindToggles();
+    }
+
+    searchInput.addEventListener("input", renderInfusionList);
+
+    renderFilterChips();
+    renderInfusionList();
+  </script>
 </body>
 </html>

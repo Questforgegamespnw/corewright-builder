@@ -49,6 +49,51 @@ function suffix(n) {
   return n === 2 ? "2" : "";
 }
 
+function getAttackAbility(golem) {
+  return golem.attackAbility === "dex" ? "dex" : "str";
+}
+
+function getAttackModifier(golem) {
+  const ability = getAttackAbility(golem);
+  return getMod(golem[ability] || 10);
+}
+
+function formatHeaderLine(label, value) {
+  if (!value || (Array.isArray(value) && value.length === 0)) return "";
+
+  if (Array.isArray(value)) {
+    return `<p><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value.join(", "))}</p>`;
+  }
+
+  return `<p><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value)}</p>`;
+}
+
+function getPreviewText(item, player = null) {
+  if (!item) return "";
+
+  if (typeof item.preview === "function") {
+    try {
+      return item.preview(player || { level: 3, intMod: 3, pb: proficiencyBonus(3) }) || "";
+    } catch {
+      return "";
+    }
+  }
+
+  if (typeof item.preview === "string") return item.preview;
+  if (typeof item.summary === "string") return item.summary;
+  if (typeof item.effect === "string") return item.effect;
+  if (typeof item.details === "string") return item.details;
+  if (typeof item.mechanics === "string") return item.mechanics;
+
+  return "";
+}
+
+function getModeDisplayText(mode) {
+  if (mode === "multi") return "Multi-Golem";
+  if (mode === "fusion") return "Fusion Mode";
+  return "Single Golem";
+}
+
 /* =========================
    Data lookup
 ========================= */
@@ -131,6 +176,10 @@ function createBaseGolem(player) {
 
     hardness: 0,
     hardnessBonus: 0,
+    damageReductionAll: 0,
+    attackAbility: "str",
+
+    selectedInfusionNames: [],
   };
 }
 
@@ -144,22 +193,26 @@ function getMode() {
 
 function getSelectedTemplateId(index = 1) {
   const s = suffix(index);
-  return $(`#template${s}`)?.value || "stone";
+  return $(`#template${s}`)?.value || "none";
+}
+
+function setSelectedTemplateId(index = 1, id) {
+  const s = suffix(index);
+  const select = $(`#template${s}`);
+  if (!select) return;
+  select.value = id || "none";
 }
 
 function getSelectedEngineId(index = 1) {
   const s = suffix(index);
+  return $(`#engine${s}`)?.value || "none";
+}
 
-  const checkedCard = $(`#engines${s} input[type="radio"]:checked`);
-  if (checkedCard) return checkedCard.value;
-
-  const checkedGeneric = $(`input[name="engine${s || ""}"]:checked`);
-  if (checkedGeneric) return checkedGeneric.value;
-
+function setSelectedEngineId(index = 1, id) {
+  const s = suffix(index);
   const select = $(`#engine${s}`);
-  if (select) return select.value;
-
-  return "none";
+  if (!select) return;
+  select.value = id || "none";
 }
 
 function getSelectedFormId(index = 1) {
@@ -175,22 +228,13 @@ function setSelectedFormId(index = 1, id) {
 }
 
 function getInfusionInputSelector(index = 1) {
-  const s = suffix(index);
-  if (index === 2) {
-    return 'input[name="infusions2"]:checked, input.infusion-checkbox-2:checked';
-  }
-  return 'input[name="infusions"]:checked, input.infusion-checkbox:checked';
-}
-
-function getInfusionAllSelector(index = 1) {
-  if (index === 2) {
-    return 'input[name="infusions2"], input.infusion-checkbox-2';
-  }
-  return 'input[name="infusions"], input.infusion-checkbox';
+  return index === 2
+    ? 'input[name="infusions2"]'
+    : 'input[name="infusions"]';
 }
 
 function getSelectedInfusionIds(player, index = 1) {
-  const checked = $all(getInfusionInputSelector(index));
+  const checked = $all(getInfusionInputSelector(index)).filter((el) => el.checked);
 
   const ids = checked
     .map((el) => el.value)
@@ -207,6 +251,13 @@ function getSelectedInfusionIds(player, index = 1) {
   return ids.slice(0, capacity);
 }
 
+function setSelectedInfusions(index = 1, ids = []) {
+  const allowed = new Set(ids);
+  $all(getInfusionInputSelector(index)).forEach((box) => {
+    box.checked = allowed.has(box.value);
+  });
+}
+
 function toggleInfusionSelection(id, index = 1) {
   const player = createPlayer(index);
   const infusion = getInfusionById(id);
@@ -216,12 +267,8 @@ function toggleInfusionSelection(id, index = 1) {
     return;
   }
 
-  const checkboxClass = index === 2 ? ".infusion-checkbox-2" : ".infusion-checkbox";
-  const nameAttr = index === 2 ? "infusions2" : "infusions";
-
-  const box = $(
-    `input[name="${nameAttr}"][value="${CSS.escape(id)}"], ${checkboxClass}[value="${CSS.escape(id)}"]`
-  );
+  const boxes = $all(getInfusionInputSelector(index));
+  const box = boxes.find((el) => el.value === id);
   if (!box) return;
 
   if (box.checked) {
@@ -237,6 +284,23 @@ function toggleInfusionSelection(id, index = 1) {
   }
 
   box.checked = true;
+}
+
+function normalizeInfusionsForCapacity(index = 1) {
+  const player = createPlayer(index);
+  const capacity = Math.max(0, player.intMod);
+  const selected = getSelectedInfusionIds(player, index);
+  const trimmed = selected.slice(0, capacity);
+  setSelectedInfusions(index, trimmed);
+}
+
+function enforceEngineRestrictions(index = 1) {
+  const player = createPlayer(index);
+  const selected = getSelectedEngineId(index);
+
+  if (player.level < 15 && selected !== "none") {
+    setSelectedEngineId(index, "none");
+  }
 }
 
 /* =========================
@@ -277,14 +341,9 @@ function createGolem(
   const form = getConstructFormById(selectedFormId);
   const infusions = selectedInfusionIds.map(getInfusionById).filter(Boolean);
 
-  if (template) {
+  if (template && selectedTemplateId !== "none") {
     template.apply(golem, player);
     golem.templateName = template.name;
-  }
-
-  if (engine) {
-    engine.apply(golem, player);
-    golem.engineName = engine.name;
   }
 
   if (form && selectedFormId !== "none") {
@@ -292,14 +351,27 @@ function createGolem(
     golem.formName = form.name;
   }
 
+  if (engine && selectedEngineId !== "none") {
+    engine.apply(golem, player);
+    golem.engineName = engine.name;
+  }
+
   for (const infusion of infusions) {
     infusion.apply(golem, player);
   }
 
+  golem.selectedInfusionNames = infusions.map((i) => i.name);
+
   const totalHardness = (golem.hardness || 0) + (golem.hardnessBonus || 0);
   if (totalHardness > 0) {
     golem.traits.push(
-      `Hardness. Reduce nonmagical bludgeoning, piercing, and slashing damage the golem takes by ${totalHardness}.`
+      `Hardness ${totalHardness}. If the golem takes nonmagical bludgeoning, piercing, or slashing damage from a single source and that damage is equal to or less than ${totalHardness}, it takes no damage instead.`
+    );
+  }
+
+  if ((golem.damageReductionAll || 0) > 0) {
+    golem.traits.push(
+      `Damage Reduction. Reduce all incoming damage by ${golem.damageReductionAll}.`
     );
   }
 
@@ -311,13 +383,18 @@ function createGolem(
 ========================= */
 
 function buildSlamText(golem, player) {
-  const attackBonus = player.pb + getMod(golem.str);
-  const damageBonus = getMod(golem.str);
+  const attackAbility = getAttackAbility(golem);
+  const attackMod = getAttackModifier(golem);
+  const attackBonus = player.pb + attackMod;
 
-  let text = `Slam. Melee Weapon Attack: +${attackBonus} to hit, reach ${golem.reach} ft., one target. Hit: 1d8 ${damageBonus >= 0 ? "+" : "-"}${Math.abs(damageBonus)} bludgeoning damage.`;
+  let text = `Slam. Melee Weapon Attack: +${attackBonus} to hit, reach ${golem.reach} ft., one target. Hit: 1d8 ${attackMod >= 0 ? "+" : "-"}${Math.abs(attackMod)} bludgeoning damage.`;
 
   if (golem.onHitEffects.length) {
     text += ` ${golem.onHitEffects.join(" ")}`;
+  }
+
+  if (attackAbility === "dex") {
+    text += ` This attack uses Dexterity for its attack and damage rolls.`;
   }
 
   return text;
@@ -395,12 +472,19 @@ function renderStatBlock(golem, player, title = "Arcane Golem") {
     ? reactions.map((r) => `<p>${escapeHtml(r)}</p>`).join("")
     : `<p>—</p>`;
 
+  const headerSection = `
+    ${formatHeaderLine("Template", golem.templateName !== "None" ? golem.templateName : null)}
+    ${formatHeaderLine("Construct Form", golem.formName !== "None" ? golem.formName : null)}
+    ${formatHeaderLine("Infusions", golem.selectedInfusionNames)}
+    ${formatHeaderLine("Engine Core", golem.engineName !== "None" ? golem.engineName : null)}
+  `;
+
   return `
     <div class="stat-block">
       <div class="stat-block-header">
-        <h2>${escapeHtml(title)}</h2>
-        <p><em>${creatureSize} construct</em></p>
-        <p><strong>Template:</strong> ${escapeHtml(golem.templateName)} &nbsp;|&nbsp; <strong>Engine:</strong> ${escapeHtml(golem.engineName)} &nbsp;|&nbsp; <strong>Form:</strong> ${escapeHtml(golem.formName)}</p>
+        <div class="creature-name">${escapeHtml(title)}</div>
+        <div class="creature-meta"><em>${creatureSize} construct</em></div>
+        ${headerSection}
       </div>
 
       <hr>
@@ -411,28 +495,14 @@ function renderStatBlock(golem, player, title = "Arcane Golem") {
 
       <hr>
 
-      <table class="ability-table">
-        <thead>
-          <tr>
-            <th>STR</th>
-            <th>DEX</th>
-            <th>CON</th>
-            <th>INT</th>
-            <th>WIS</th>
-            <th>CHA</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>${golem.str} (${strMod})</td>
-            <td>${golem.dex} (${dexMod})</td>
-            <td>${golem.con} (${conMod})</td>
-            <td>${golem.int} (${intMod})</td>
-            <td>${golem.wis} (${wisMod})</td>
-            <td>${golem.cha} (${chaMod})</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="ability-grid">
+        <div class="ability-box"><strong>STR</strong>${golem.str} (${strMod})</div>
+        <div class="ability-box"><strong>DEX</strong>${golem.dex} (${dexMod})</div>
+        <div class="ability-box"><strong>CON</strong>${golem.con} (${conMod})</div>
+        <div class="ability-box"><strong>INT</strong>${golem.int} (${intMod})</div>
+        <div class="ability-box"><strong>WIS</strong>${golem.wis} (${wisMod})</div>
+        <div class="ability-box"><strong>CHA</strong>${golem.cha} (${chaMod})</div>
+      </div>
 
       <hr>
 
@@ -445,14 +515,20 @@ function renderStatBlock(golem, player, title = "Arcane Golem") {
 
       <hr>
 
-      <h3>Traits</h3>
-      ${traitsHtml}
+      <div class="trait-block">
+        <h4>Traits</h4>
+        ${traitsHtml}
+      </div>
 
-      <h3>Actions</h3>
-      ${actionsHtml}
+      <div class="action-block">
+        <h4>Actions</h4>
+        ${actionsHtml}
+      </div>
 
-      <h3>Reactions</h3>
-      ${reactionsHtml}
+      <div class="reaction-block">
+        <h4>Reactions</h4>
+        ${reactionsHtml}
+      </div>
     </div>
   `;
 }
@@ -464,16 +540,15 @@ function renderSelectionSummaryBlock(player, templateId, engineId, formId, infus
   const infusions = infusionIds.map(getInfusionById).filter(Boolean);
 
   return `
-    <div class="selection-summary-card">
-      <h3>${escapeHtml(title)}</h3>
-      <p><strong>Level:</strong> ${player.level}</p>
-      <p><strong>INT Mod:</strong> ${player.intMod}</p>
-      <p><strong>Template:</strong> ${escapeHtml(template?.name || "None")}</p>
-      <p><strong>Engine:</strong> ${escapeHtml(engine?.name || "None")}</p>
-      <p><strong>Form:</strong> ${escapeHtml(form?.name || "None")}</p>
-      <p><strong>Infusions:</strong> ${
+    <div class="summary-line">
+      <strong>${escapeHtml(title)}</strong><br>
+      Level ${player.level} | INT Mod ${player.intMod}<br>
+      <strong>Template:</strong> ${escapeHtml(template?.name || "None")}<br>
+      <strong>Construct Form:</strong> ${escapeHtml(form?.name || "None")}<br>
+      <strong>Infusions:</strong> ${
         infusions.length ? infusions.map((i) => escapeHtml(i.name)).join(", ") : "None"
-      }</p>
+      }<br>
+      <strong>Engine Core:</strong> ${escapeHtml(engine?.name || "None")}
     </div>
   `;
 }
@@ -482,17 +557,66 @@ function renderSelectionSummaryBlock(player, templateId, engineId, formId, infus
    UI Rendering
 ========================= */
 
-function renderTemplateOptions(index = 1) {
-  const s = suffix(index);
-  const select = $(`#template${s}`);
+function populateCompatibilitySelect(selectId, items, includeNone = true) {
+  const select = $(`#${selectId}`);
   if (!select) return;
 
-  const current = select.value || "none";
+  const currentValue = select.value || "none";
 
-  select.innerHTML = TEMPLATES.map((template) => {
-    const selected = template.id === current ? "selected" : "";
-    return `<option value="${escapeHtml(template.id)}" ${selected}>${escapeHtml(template.name)}</option>`;
-  }).join("");
+  const options = [];
+  if (includeNone) {
+    options.push(`<option value="none">None</option>`);
+  }
+
+  for (const item of items) {
+    if (includeNone && item.id === "none") continue;
+    options.push(`<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`);
+  }
+
+  select.innerHTML = options.join("");
+
+  const hasMatch = [...select.options].some((opt) => opt.value === currentValue);
+  select.value = hasMatch ? currentValue : "none";
+}
+
+function renderTemplateCards(index = 1) {
+  const s = suffix(index);
+  const container = $(`#templates${s}`);
+  if (!container) return;
+
+  const player = createPlayer(index);
+  const selectedId = getSelectedTemplateId(index);
+  const radioName = index === 2 ? "templateCard2" : "templateCard";
+
+  const allTemplates = [
+    { id: "none", name: "None", tags: ["Base"], summary: "No material template applied." },
+    ...TEMPLATES.filter((t) => t.id !== "none"),
+  ];
+
+  container.innerHTML = allTemplates
+    .map((template) => {
+      const checked = template.id === selectedId ? "checked" : "";
+      const selectedClass = template.id === selectedId ? "selected" : "";
+      const tags = (template.tags || [])
+        .map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`)
+        .join("");
+
+      const preview = getPreviewText(template, player);
+
+      return `
+        <label class="select-card template-card ${selectedClass}">
+          <input type="radio" name="${radioName}" value="${escapeHtml(template.id)}" ${checked}>
+          <div class="select-card-header">
+            <strong>${escapeHtml(template.name)}</strong>
+            <div class="card-tags">${tags}</div>
+          </div>
+          <div class="select-card-body">
+            ${preview ? `<p>${escapeHtml(preview)}</p>` : ""}
+          </div>
+        </label>
+      `;
+    })
+    .join("");
 }
 
 function renderConstructFormOptions(index = 1) {
@@ -500,35 +624,39 @@ function renderConstructFormOptions(index = 1) {
   const container = $(`#constructForms${s}`);
   if (!container) return;
 
+  const player = createPlayer(index);
   const selectedId = getSelectedFormId(index);
+  const radioName = index === 2 ? "constructFormCard2" : "constructFormCard";
 
-  container.innerHTML = CONSTRUCT_FORMS.map((form) => {
-    const selectedClass = form.id === selectedId ? "selected" : "";
-    const tags = (form.tags || [])
-      .map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`)
-      .join("");
+  const forms = [
+    { id: "none", name: "None", tags: ["Base"], summary: "No specialized construct form applied." },
+    ...CONSTRUCT_FORMS.filter((f) => f.id !== "none"),
+  ];
 
-    const bodyText = form.effect || form.details || form.mechanics || "";
+  container.innerHTML = forms
+    .map((form) => {
+      const checked = form.id === selectedId ? "checked" : "";
+      const selectedClass = form.id === selectedId ? "selected" : "";
+      const tags = (form.tags || [])
+        .map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`)
+        .join("");
 
-    return `
-      <div
-        class="form-card ${selectedClass}"
-        data-form-id="${escapeHtml(form.id)}"
-        data-form-index="${index}"
-        tabindex="0"
-        role="button"
-        aria-pressed="${form.id === selectedId ? "true" : "false"}"
-      >
-        <div class="form-card-inner">
-          <div class="form-card-header">
+      const bodyText = getPreviewText(form, player);
+
+      return `
+        <label class="select-card form-card ${selectedClass}">
+          <input type="radio" name="${radioName}" value="${escapeHtml(form.id)}" ${checked}>
+          <div class="select-card-header">
             <strong>${escapeHtml(form.name)}</strong>
+            <div class="card-tags">${tags}</div>
           </div>
-          <div class="form-card-tags">${tags}</div>
-          <p>${escapeHtml(bodyText)}</p>
-        </div>
-      </div>
-    `;
-  }).join("");
+          <div class="select-card-body">
+            ${bodyText ? `<p>${escapeHtml(bodyText)}</p>` : ""}
+          </div>
+        </label>
+      `;
+    })
+    .join("");
 }
 
 function renderEngineCards(index = 1) {
@@ -536,31 +664,52 @@ function renderEngineCards(index = 1) {
   const container = $(`#engines${s}`);
   if (!container) return;
 
+  const player = createPlayer(index);
   const selectedId = getSelectedEngineId(index);
-  const radioName = index === 2 ? "engine2" : "engine";
+  const radioName = index === 2 ? "engineCard2" : "engineCard";
+  const enginesUnlocked = player.level >= 15;
 
-  container.innerHTML = ENGINES.map((engine) => {
+  const cards = ENGINES.map((engine) => {
+    const isNone = engine.id === "none";
+    const selectable = isNone || enginesUnlocked;
     const checked = engine.id === selectedId ? "checked" : "";
     const selectedClass = engine.id === selectedId ? "selected" : "";
-    const damageType = engine.damageType ? `<span class="tag">${escapeHtml(engine.damageType)}</span>` : "";
-    const role = engine.role ? `<span class="tag">${escapeHtml(engine.role)}</span>` : "";
+    const lockedClass = selectable ? "" : "locked";
+
+    const tags = [
+      engine.damageType ? `<span class="tag">${escapeHtml(engine.damageType)}</span>` : "",
+      engine.role ? `<span class="tag">${escapeHtml(engine.role)}</span>` : "",
+    ].join("");
+
+    const preview = getPreviewText(engine, player);
 
     return `
-      <label class="engine-card ${selectedClass}">
-        <input type="radio" name="${radioName}" value="${escapeHtml(engine.id)}" ${checked}>
-        <div class="engine-card-inner">
-          <div class="engine-card-header">
-            <strong>${escapeHtml(engine.name)}</strong>
+      <label class="select-card engine-card ${selectedClass} ${lockedClass}">
+        <input
+          type="radio"
+          name="${radioName}"
+          value="${escapeHtml(engine.id)}"
+          ${checked}
+          ${!selectable ? "disabled" : ""}
+        >
+        <div class="select-card-header">
+          <strong>${escapeHtml(engine.name)}</strong>
+          <div class="card-tags">
+            ${tags}
+            ${!selectable ? `<span class="lock-note">Unlocks at 15</span>` : ""}
           </div>
-          <div class="engine-card-tags">
-            ${damageType}
-            ${role}
-          </div>
-          <p>${escapeHtml(engine.summary || "")}</p>
+        </div>
+        <div class="select-card-body">
+          ${preview ? `<p>${escapeHtml(preview)}</p>` : ""}
         </div>
       </label>
     `;
   }).join("");
+
+  container.innerHTML = `
+    ${!enginesUnlocked ? `<div class="section-note">Engine Cores unlock at level 17. Until then, only None is available.</div>` : ""}
+    ${cards}
+  `;
 }
 
 function renderInfusionOptions(index = 1) {
@@ -579,7 +728,6 @@ function renderInfusionOptions(index = 1) {
   ];
 
   const checkboxName = index === 2 ? "infusions2" : "infusions";
-  const checkboxClass = index === 2 ? "infusion-checkbox-2" : "infusion-checkbox";
 
   container.innerHTML = tiers
     .map(({ key, label }) => {
@@ -601,7 +749,7 @@ function renderInfusionOptions(index = 1) {
             .map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`)
             .join("");
 
-          const bodyText = infusion.effect || infusion.details || infusion.mechanics || "";
+          const bodyText = getPreviewText(infusion, player);
 
           const prereq = infusion.prerequisiteLevel
             ? `<p class="prereq"><strong>Prerequisite:</strong> ${infusion.prerequisiteLevel}th level</p>`
@@ -609,26 +757,25 @@ function renderInfusionOptions(index = 1) {
 
           return `
             <label
-              class="infusion-card ${selectedClass} ${lockedClass}"
+              class="select-card infusion-card ${selectedClass} ${lockedClass}"
               data-infusion-index="${index}"
               tabindex="0"
               role="button"
               aria-pressed="${checked ? "true" : "false"}"
             >
               <input
-                class="${checkboxClass}"
                 type="checkbox"
                 name="${checkboxName}"
                 value="${escapeHtml(infusion.id)}"
                 ${checked ? "checked" : ""}
                 ${disabledAttr}
               >
-              <div class="infusion-card-inner">
-                <div class="infusion-card-header">
-                  <strong>${escapeHtml(infusion.name)}</strong>
-                </div>
-                <div class="infusion-card-tags">${tags}</div>
-                <p>${escapeHtml(bodyText)}</p>
+              <div class="select-card-header">
+                <strong>${escapeHtml(infusion.name)}</strong>
+                <div class="card-tags">${tags}</div>
+              </div>
+              <div class="select-card-body">
+                ${bodyText ? `<p>${escapeHtml(bodyText)}</p>` : ""}
                 ${prereq}
               </div>
             </label>
@@ -637,8 +784,8 @@ function renderInfusionOptions(index = 1) {
         .join("");
 
       return `
-        <section class="infusion-tier">
-          <h3>${escapeHtml(label)}</h3>
+        <section class="infusion-group">
+          <h3 class="infusion-group-title">${escapeHtml(label)}</h3>
           <div class="infusion-grid">
             ${cards}
           </div>
@@ -652,13 +799,18 @@ function renderInfusionOptions(index = 1) {
 
 function updateInfusionCapacityDisplay(capacity, used, index = 1) {
   const s = suffix(index);
-  const slotCounter = $(`#infusionSlots${s}`);
+
+  const slotCounter =
+    $(`#infusionSlotCounter${s}`) ||
+    $(`#infusionSlots${s}`) ||
+    (index === 1 ? $("#infusionSlotCounter") : null);
+
   if (slotCounter) {
     slotCounter.textContent = `Infusion Slots: ${used} / ${capacity}`;
   }
 
   const player = createPlayer(index);
-  const boxes = $all(getInfusionAllSelector(index));
+  const boxes = $all(getInfusionInputSelector(index));
   const checkedCount = boxes.filter((b) => b.checked).length;
 
   boxes.forEach((box) => {
@@ -679,35 +831,14 @@ function updateInfusionCapacityDisplay(capacity, used, index = 1) {
   });
 }
 
-function updateCardSelectedStates() {
-  $all(".engine-card").forEach((card) => {
-    const input = card.querySelector('input[type="radio"]');
-    card.classList.toggle("selected", !!input?.checked);
-  });
-
-  $all(".infusion-card").forEach((card) => {
-    const input = card.querySelector('input[type="checkbox"]');
-    const isSelected = !!input?.checked;
-    card.classList.toggle("selected", isSelected);
-    card.setAttribute("aria-pressed", isSelected ? "true" : "false");
-  });
-
-  $all(".form-card").forEach((card) => {
-    const index = Number(card.dataset.formIndex || "1");
-    const selectedFormId = getSelectedFormId(index);
-    const isSelected = card.dataset.formId === selectedFormId;
-    card.classList.toggle("selected", isSelected);
-    card.setAttribute("aria-pressed", isSelected ? "true" : "false");
-  });
-}
-
 function updateModeUI() {
   const mode = getMode();
+  const showSecond = mode === "multi" || mode === "fusion";
+
   const golem2 = $("#golem2");
   const secondarySummary = $("#secondarySummary");
   const secondaryStatBlock = $("#secondaryStatBlock");
-
-  const showSecond = mode === "multi" || mode === "fusion";
+  const modeDisplay = $("#mode-display");
 
   if (golem2) {
     golem2.style.display = showSecond ? "block" : "none";
@@ -720,6 +851,62 @@ function updateModeUI() {
   if (secondaryStatBlock) {
     secondaryStatBlock.style.display = showSecond ? "block" : "none";
   }
+
+  if (modeDisplay) {
+    modeDisplay.value = getModeDisplayText(mode);
+  }
+}
+
+function syncSelectedCardsFromHiddenInputs(index = 1) {
+  const selectedTemplateId = getSelectedTemplateId(index);
+  const selectedFormId = getSelectedFormId(index);
+  const selectedEngineId = getSelectedEngineId(index);
+  const selectedInfusions = new Set(getSelectedInfusionIds(createPlayer(index), index));
+
+  const s = suffix(index);
+
+  $all(`#templates${s} input[type="radio"]`).forEach((input) => {
+    input.checked = input.value === selectedTemplateId;
+    input.closest(".template-card")?.classList.toggle("selected", input.checked);
+  });
+
+  $all(`#constructForms${s} input[type="radio"]`).forEach((input) => {
+    input.checked = input.value === selectedFormId;
+    input.closest(".form-card")?.classList.toggle("selected", input.checked);
+  });
+
+  $all(`#engines${s} input[type="radio"]`).forEach((input) => {
+    input.checked = input.value === selectedEngineId;
+    input.closest(".engine-card")?.classList.toggle("selected", input.checked);
+  });
+
+  $all(`#infusions${s} input[type="checkbox"]`).forEach((input) => {
+    input.checked = selectedInfusions.has(input.value);
+    const card = input.closest(".infusion-card");
+    if (card) {
+      card.classList.toggle("selected", input.checked);
+      card.setAttribute("aria-pressed", input.checked ? "true" : "false");
+    }
+  });
+}
+
+function setupAssemblyToggles() {
+  $all(".assembly-toggle").forEach((button) => {
+    if (button.dataset.bound === "true") return;
+    button.dataset.bound = "true";
+
+    const targetId = button.dataset.target;
+    const content = targetId ? document.getElementById(targetId) : null;
+    const icon = button.querySelector(".toggle-icon");
+
+    if (!content) return;
+
+    button.addEventListener("click", () => {
+      content.classList.toggle("is-collapsed");
+      const collapsed = content.classList.contains("is-collapsed");
+      if (icon) icon.textContent = collapsed ? "+" : "−";
+    });
+  });
 }
 
 /* =========================
@@ -772,6 +959,10 @@ function applyBuildState(state) {
     setSelectedFormId(1, state.form);
   }
 
+  if ($("#engine") && typeof state.engine !== "undefined") {
+    $("#engine").value = state.engine;
+  }
+
   if ($("#level2") && typeof state.level2 !== "undefined") {
     $("#level2").value = state.level2;
   }
@@ -788,32 +979,17 @@ function applyBuildState(state) {
     setSelectedFormId(2, state.form2);
   }
 
-  const engineValue1 = state.engine || "none";
-  const engineRadio1 = $(`input[name="engine"][value="${CSS.escape(engineValue1)}"]`);
-  if (engineRadio1) {
-    engineRadio1.checked = true;
-  } else if ($("#engine")) {
-    $("#engine").value = engineValue1;
+  if ($("#engine2") && typeof state.engine2 !== "undefined") {
+    $("#engine2").value = state.engine2;
   }
 
-  const engineValue2 = state.engine2 || "none";
-  const engineRadio2 = $(`input[name="engine2"][value="${CSS.escape(engineValue2)}"]`);
-  if (engineRadio2) {
-    engineRadio2.checked = true;
-  } else if ($("#engine2")) {
-    $("#engine2").value = engineValue2;
-  }
-
-  const infusionSet1 = new Set(state.infusions || []);
-  $all('input[name="infusions"], input.infusion-checkbox').forEach((box) => {
-    box.checked = infusionSet1.has(box.value);
-  });
-
-  const infusionSet2 = new Set(state.infusions2 || []);
-  $all('input[name="infusions2"], input.infusion-checkbox-2').forEach((box) => {
-    box.checked = infusionSet2.has(box.value);
-  });
+  setSelectedInfusions(1, state.infusions || []);
+  setSelectedInfusions(2, state.infusions2 || []);
 }
+
+/* =========================
+   Persistence
+========================= */
 
 function saveBuild() {
   localStorage.setItem("corewright-build", JSON.stringify(getBuildState()));
@@ -890,13 +1066,31 @@ function loadFromQueryString() {
 }
 
 /* =========================
-   Main update cycle
+   Render pipeline
 ========================= */
 
-function updateBuilder() {
-  const mode = getMode();
-  updateModeUI();
+function populateAllCompatibilitySelects() {
+  populateCompatibilitySelect("template", TEMPLATES, true);
+  populateCompatibilitySelect("constructForm", CONSTRUCT_FORMS, true);
+  populateCompatibilitySelect("engine", ENGINES, false);
 
+  populateCompatibilitySelect("template2", TEMPLATES, true);
+  populateCompatibilitySelect("constructForm2", CONSTRUCT_FORMS, true);
+  populateCompatibilitySelect("engine2", ENGINES, false);
+}
+
+function renderSelectionPanels(index = 1) {
+  normalizeInfusionsForCapacity(index);
+  enforceEngineRestrictions(index);
+
+  renderTemplateCards(index);
+  renderConstructFormOptions(index);
+  renderInfusionOptions(index);
+  renderEngineCards(index);
+  syncSelectedCardsFromHiddenInputs(index);
+}
+
+function renderPrimaryOutputs(mode) {
   const player1 = createPlayer(1);
   const templateId1 = getSelectedTemplateId(1);
   const engineId1 = getSelectedEngineId(1);
@@ -907,7 +1101,7 @@ function updateBuilder() {
 
   const golem1 = createGolem(player1, templateId1, engineId1, formId1, infusionIds1);
 
-  const statBlock1 = $("#statBlock");
+  const statBlock1 = $("#statBlockOutput") || $("#statBlock");
   if (statBlock1) {
     statBlock1.innerHTML = renderStatBlock(
       golem1,
@@ -928,54 +1122,75 @@ function updateBuilder() {
     );
   }
 
+  return { player1, templateId1, engineId1, formId1, infusionIds1 };
+}
+
+function renderSecondaryOutputs(mode) {
   const secondarySummary = $("#secondarySummary");
   const secondaryStatBlock = $("#secondaryStatBlock");
 
-  if (mode === "multi" || mode === "fusion") {
-    const player2 = createPlayer(2);
-    const templateId2 = getSelectedTemplateId(2);
-    const engineId2 = getSelectedEngineId(2);
-    const formId2 = getSelectedFormId(2);
-    const infusionIds2 = getSelectedInfusionIds(player2, 2);
-
-    updateInfusionCapacityDisplay(Math.max(0, player2.intMod), infusionIds2.length, 2);
-
-    const golem2 = createGolem(player2, templateId2, engineId2, formId2, infusionIds2);
-
-    if (secondarySummary) {
-      secondarySummary.innerHTML = renderSelectionSummaryBlock(
-        player2,
-        templateId2,
-        engineId2,
-        formId2,
-        infusionIds2,
-        mode === "fusion" ? "Fusion Component B" : "Second Golem"
-      );
-    }
-
-    if (secondaryStatBlock) {
-      secondaryStatBlock.innerHTML = renderStatBlock(
-        golem2,
-        player2,
-        mode === "fusion" ? "Fusion Component B" : "Second Golem"
-      );
-    }
-
-    if (mode === "fusion" && summary1) {
-      summary1.innerHTML += `
-        <div class="selection-summary-card">
-          <h3>Fusion Mode</h3>
-          <p><strong>Status:</strong> Fusion mode is active.</p>
-          <p>This currently preserves both component builds side-by-side so you can compare and stage a future fused stat block cleanly.</p>
-        </div>
-      `;
-    }
-  } else {
+  if (mode !== "multi" && mode !== "fusion") {
     if (secondarySummary) secondarySummary.innerHTML = "";
     if (secondaryStatBlock) secondaryStatBlock.innerHTML = "";
+    return null;
   }
 
-  updateCardSelectedStates();
+  const player2 = createPlayer(2);
+  const templateId2 = getSelectedTemplateId(2);
+  const engineId2 = getSelectedEngineId(2);
+  const formId2 = getSelectedFormId(2);
+  const infusionIds2 = getSelectedInfusionIds(player2, 2);
+
+  updateInfusionCapacityDisplay(Math.max(0, player2.intMod), infusionIds2.length, 2);
+
+  const golem2 = createGolem(player2, templateId2, engineId2, formId2, infusionIds2);
+
+  if (secondarySummary) {
+    secondarySummary.innerHTML = renderSelectionSummaryBlock(
+      player2,
+      templateId2,
+      engineId2,
+      formId2,
+      infusionIds2,
+      mode === "fusion" ? "Fusion Component B" : "Second Golem"
+    );
+  }
+
+  if (secondaryStatBlock) {
+    secondaryStatBlock.innerHTML = renderStatBlock(
+      golem2,
+      player2,
+      mode === "fusion" ? "Fusion Component B" : "Second Golem"
+    );
+  }
+
+  return { player2, templateId2, engineId2, formId2, infusionIds2 };
+}
+
+function appendFusionSummaryNote(mode) {
+  if (mode !== "fusion") return;
+
+  const summary1 = $("#selectionSummary");
+  if (!summary1) return;
+
+  summary1.innerHTML += `
+    <div class="summary-line">
+      <strong>Fusion Mode</strong><br>
+      Status: Fusion mode is active.<br>
+      This currently preserves both component builds side-by-side so you can compare and stage a future fused stat block cleanly.
+    </div>
+  `;
+}
+
+function updateBuilder() {
+  const mode = getMode();
+
+  updateModeUI();
+  renderSelectionPanels(1);
+  renderSelectionPanels(2);
+  renderPrimaryOutputs(mode);
+  renderSecondaryOutputs(mode);
+  appendFusionSummaryNote(mode);
   updateShareLink();
   saveBuild();
 }
@@ -984,26 +1199,68 @@ function updateBuilder() {
    Events
 ========================= */
 
+function handleCardRadioChange(target) {
+  if (target.closest("#templates2")) {
+    setSelectedTemplateId(2, target.value);
+    updateBuilder();
+    return true;
+  }
+
+  if (target.closest("#templates")) {
+    setSelectedTemplateId(1, target.value);
+    updateBuilder();
+    return true;
+  }
+
+  if (target.closest("#constructForms2")) {
+    setSelectedFormId(2, target.value);
+    updateBuilder();
+    return true;
+  }
+
+  if (target.closest("#constructForms")) {
+    setSelectedFormId(1, target.value);
+    updateBuilder();
+    return true;
+  }
+
+  if (target.closest("#engines2")) {
+    setSelectedEngineId(2, target.value);
+    updateBuilder();
+    return true;
+  }
+
+  if (target.closest("#engines")) {
+    setSelectedEngineId(1, target.value);
+    updateBuilder();
+    return true;
+  }
+
+  return false;
+}
+
 function bindEvents() {
   document.addEventListener("change", (event) => {
     const target = event.target;
+
+    if (target.matches('#templates input[type="radio"], #templates2 input[type="radio"], #constructForms input[type="radio"], #constructForms2 input[type="radio"], #engines input[type="radio"], #engines2 input[type="radio"]')) {
+      if (handleCardRadioChange(target)) return;
+    }
 
     if (
       target.matches("#mode") ||
       target.matches("#level") ||
       target.matches("#intMod") ||
       target.matches("#template") ||
+      target.matches("#constructForm") ||
+      target.matches("#engine") ||
       target.matches("#level2") ||
       target.matches("#intMod2") ||
       target.matches("#template2") ||
-      target.matches('input[name="engine"]') ||
-      target.matches('input[name="engine2"]') ||
-      target.matches("#engine") ||
+      target.matches("#constructForm2") ||
       target.matches("#engine2") ||
       target.matches('input[name="infusions"]') ||
-      target.matches('input[name="infusions2"]') ||
-      target.matches(".infusion-checkbox") ||
-      target.matches(".infusion-checkbox-2")
+      target.matches('input[name="infusions2"]')
     ) {
       updateBuilder();
     }
@@ -1023,73 +1280,32 @@ function bindEvents() {
   });
 
   document.addEventListener("click", (event) => {
-    const formCard = event.target.closest(".form-card");
-    if (formCard) {
-      const clickedId = formCard.dataset.formId;
-      const index = Number(formCard.dataset.formIndex || "1");
-      const currentId = getSelectedFormId(index);
-
-      if (clickedId === currentId) {
-        setSelectedFormId(index, "none");
-      } else {
-        setSelectedFormId(index, clickedId);
-      }
-
-      renderConstructFormOptions(index);
-      updateBuilder();
-      return;
-    }
-
     const infusionCard = event.target.closest(".infusion-card");
-    if (infusionCard) {
-      const checkbox = infusionCard.querySelector('input[type="checkbox"]');
-      if (!checkbox) return;
+    if (!infusionCard) return;
 
-      const index = Number(infusionCard.dataset.infusionIndex || "1");
+    const checkbox = infusionCard.querySelector('input[type="checkbox"]');
+    if (!checkbox) return;
 
-      event.preventDefault();
-      toggleInfusionSelection(checkbox.value, index);
-      renderInfusionOptions(index);
-      updateBuilder();
-    }
+    const index = Number(infusionCard.dataset.infusionIndex || "1");
+
+    event.preventDefault();
+    toggleInfusionSelection(checkbox.value, index);
+    updateBuilder();
   });
 
   document.addEventListener("keydown", (event) => {
-    const formCard = event.target.closest(".form-card");
-    if (formCard) {
-      if (event.key !== "Enter" && event.key !== " ") return;
-
-      event.preventDefault();
-
-      const clickedId = formCard.dataset.formId;
-      const index = Number(formCard.dataset.formIndex || "1");
-      const currentId = getSelectedFormId(index);
-
-      if (clickedId === currentId) {
-        setSelectedFormId(index, "none");
-      } else {
-        setSelectedFormId(index, clickedId);
-      }
-
-      renderConstructFormOptions(index);
-      updateBuilder();
-      return;
-    }
-
     const infusionCard = event.target.closest(".infusion-card");
-    if (infusionCard) {
-      if (event.key !== "Enter" && event.key !== " ") return;
+    if (!infusionCard) return;
+    if (event.key !== "Enter" && event.key !== " ") return;
 
-      const checkbox = infusionCard.querySelector('input[type="checkbox"]');
-      if (!checkbox) return;
+    const checkbox = infusionCard.querySelector('input[type="checkbox"]');
+    if (!checkbox) return;
 
-      const index = Number(infusionCard.dataset.infusionIndex || "1");
+    const index = Number(infusionCard.dataset.infusionIndex || "1");
 
-      event.preventDefault();
-      toggleInfusionSelection(checkbox.value, index);
-      renderInfusionOptions(index);
-      updateBuilder();
-    }
+    event.preventDefault();
+    toggleInfusionSelection(checkbox.value, index);
+    updateBuilder();
   });
 
   const saveBtn = $("#saveBuild");
@@ -1104,14 +1320,6 @@ function bindEvents() {
   if (loadBtn) {
     loadBtn.addEventListener("click", () => {
       loadBuild();
-      renderTemplateOptions(1);
-      renderTemplateOptions(2);
-      renderConstructFormOptions(1);
-      renderConstructFormOptions(2);
-      renderEngineCards(1);
-      renderEngineCards(2);
-      renderInfusionOptions(1);
-      renderInfusionOptions(2);
       updateBuilder();
     });
   }
@@ -1126,6 +1334,7 @@ function bindEvents() {
     copyBtn.addEventListener("click", async () => {
       const shareEl = $("#shareLink");
       if (!shareEl) return;
+
       shareEl.select();
       shareEl.setSelectionRange(0, shareEl.value.length);
 
@@ -1140,7 +1349,7 @@ function bindEvents() {
   const downloadBtn = $("#downloadTxt");
   if (downloadBtn) {
     downloadBtn.addEventListener("click", () => {
-      const statBlock = $("#statBlock");
+      const statBlock = $("#statBlockOutput") || $("#statBlock");
       const statBlock2 = $("#secondaryStatBlock");
       if (!statBlock) return;
 
@@ -1170,33 +1379,11 @@ function bindEvents() {
 ========================= */
 
 function initBuilder() {
-  renderTemplateOptions(1);
-  renderTemplateOptions(2);
-
-  renderConstructFormOptions(1);
-  renderConstructFormOptions(2);
-
-  renderEngineCards(1);
-  renderEngineCards(2);
-
-  renderInfusionOptions(1);
-  renderInfusionOptions(2);
-
+  populateAllCompatibilitySelects();
   loadFromQueryString();
   loadBuild();
-
-  renderTemplateOptions(1);
-  renderTemplateOptions(2);
-
-  renderConstructFormOptions(1);
-  renderConstructFormOptions(2);
-
-  renderEngineCards(1);
-  renderEngineCards(2);
-
-  renderInfusionOptions(1);
-  renderInfusionOptions(2);
-
+  populateAllCompatibilitySelects();
+  setupAssemblyToggles();
   updateModeUI();
   bindEvents();
   updateBuilder();

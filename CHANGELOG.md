@@ -101,6 +101,7 @@ A major architectural and gameplay-focused release that formalizes the builder i
     - multiattack
     - form-based combat behaviors
 
+
 - **Stat block fidelity improvements**
   - Added clearer creature-style support for:
     - Damage Immunities
@@ -124,6 +125,42 @@ A major architectural and gameplay-focused release that formalizes the builder i
     - Forms
   - Added gold-highlight selected states across the system
   - Infusions now support click-on / click-off card behavior without requiring direct checkbox interaction
+
+### Balance & Math Refinement Pass
+- Updated **Stone Template**
+  - AC corrected to **16 + PB**
+  - retains Hardness identity
+  - now grants **+2 STR / +2 CON**
+
+- Updated **Metal Template**
+  - AC corrected to **18 + PB**
+  - now gains flat **Damage Reduction = PB**
+  - now grants **+4 STR**
+
+- Added formal **template stat bias** system
+  - Templates now define physical stat identity more clearly
+  - Supports stronger niche-building and clearer role pairing
+
+- Added formal **construct form stat bias** system
+  - Forms now contribute light-touch stat specialization
+  - Preserves the rule that Forms define behavior/playstyle rather than durability layers
+
+- Corrected **Hardness** rules text
+  - Hardness no longer functions as damage subtraction
+  - If qualifying nonmagical bludgeoning, piercing, or slashing damage from a single source is **equal to or less than Hardness**, the golem takes **no damage**
+
+- Corrected attack math display
+  - Slam now uses:
+    - **to hit = PB + attack stat modifier**
+    - **damage = 1d8 + attack stat modifier**
+  - Predator and Glider forms now use **Dexterity** for attack and damage rolls
+
+- Updated role-specialization math across Templates and Forms
+  - Enables deeper niche builds and cleaner 18–20 stat endpoints through body + form pairing
+
+- Corrected **Earth Engine** display behavior
+  - mundane weapon resistances now display in **Damage Resistances**
+  - redundant resistance trait text removed from the trait section
 
 ### Fixed
 - Fixed schema mismatch between builder rendering and infusion data fields
