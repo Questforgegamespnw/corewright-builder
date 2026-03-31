@@ -167,3 +167,16 @@ button:hover {
   #statblock { position: absolute; top: 0; left: 0; width: 100%; border: none; }
   button { display: none; }
 }
+/* ===== Engine Card Selection ===== */
+.engine-card {
+  cursor: pointer;
+}
+
+.engine-card.selected {
+  outline: 2px solid #c9b37e;
+  box-shadow: 0 0 10px rgba(201, 179, 126, 0.35);
+}
+
+.engine-card .content {
+  display: none;
+}
