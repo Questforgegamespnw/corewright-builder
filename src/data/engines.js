@@ -1,47 +1,166 @@
-export const ENGINES = {
+export const ENGINES = [
+  {
+    id: "none",
+    name: "None",
+    damageType: "None",
+    role: "Neutral",
+    summary: "No engine core installed.",
+    description: "A baseline golem with no specialized elemental engine.",
+    apply() {},
+  },
 
-  flame: {
+  {
+    id: "flame",
     name: "Flame Engine",
+    damageType: "Fire",
+    role: "DPS",
+    summary: "Burning aura and explosive offensive output.",
+    description:
+      "A blazing core that radiates heat, ignites the battlefield, and adds fire to its strikes.",
+    apply(golem, player) {
+      const { pb } = player;
 
-    apply: (golem, player) => {
-      golem.bonusDamage = player.intMod;
+      golem.damageResistances = golem.damageResistances || [];
+      if (!golem.damageResistances.includes("fire")) {
+        golem.damageResistances.push("fire");
+      }
+
+      golem.traits.push(`Flame Engine. The golem has resistance to fire damage.`);
+      golem.traits.push(
+        `Burning Aura. A creature that starts its turn within 5 feet of the golem takes ${pb} fire damage.`
+      );
+      golem.traits.push(
+        `Illumination. The golem sheds bright light in a 20-foot radius and dim light for an additional 20 feet.`
+      );
+      golem.traits.push(
+        `Kindle. The golem can ignite unattended flammable objects that aren't being worn or carried.`
+      );
+
+      golem.onHitEffects = golem.onHitEffects || [];
+      golem.onHitEffects.push(
+        `Once on each of its turns, the golem deals an extra 1d8 fire damage when it hits with an attack.`
+      );
     },
-
-    traits: [
-      () => "Flame Core. Attacks deal additional fire damage."
-    ]
   },
 
-  stone: {
-    name: "Stone Engine",
-
-    apply: (golem, player) => {
-      golem.damageReduction = (golem.damageReduction || 0) + player.pb;
-    },
-
-    traits: [
-      (p) => `Reinforced Core. Reduces damage by ${p.pb}.`
-    ]
-  },
-
-  frost: {
+  {
+    id: "frost",
     name: "Frost Engine",
+    damageType: "Cold",
+    role: "Control",
+    summary: "Freezing strikes that slow enemy movement.",
+    description:
+      "A cold core that dampens motion and punishes enemies that try to advance.",
+    apply(golem) {
+      golem.damageResistances = golem.damageResistances || [];
+      if (!golem.damageResistances.includes("cold")) {
+        golem.damageResistances.push("cold");
+      }
 
-    traits: [
-      () => "Freezing Aura. Creatures hit have reduced speed."
-    ]
+      golem.traits.push(`Frost Engine. The golem has resistance to cold damage.`);
+
+      golem.onHitEffects = golem.onHitEffects || [];
+      golem.onHitEffects.push(
+        `Once on each of its turns, the golem deals an extra 1d8 cold damage when it hits with an attack, and the target's speed is reduced by 10 feet until the start of the golem's next turn.`
+      );
+    },
   },
 
-  aether: {
-    name: "Aether Engine",
+  {
+    id: "storm",
+    name: "Storm Engine",
+    damageType: "Lightning/Thunder",
+    role: "Mobility",
+    summary: "Fast-moving core that arcs damage between enemies.",
+    description:
+      "A volatile engine of lightning and thunder that drives speed and battlefield pressure.",
+    apply(golem, player) {
+      const { pb } = player;
 
-    apply: (golem) => {
-      golem.flySpeed = golem.speed;
+      golem.damageResistances = golem.damageResistances || [];
+      if (!golem.damageResistances.includes("lightning")) {
+        golem.damageResistances.push("lightning");
+      }
+      if (!golem.damageResistances.includes("thunder")) {
+        golem.damageResistances.push("thunder");
+      }
+
+      golem.speed += 10;
+
+      golem.traits.push(
+        `Storm Engine. The golem has resistance to lightning and thunder damage.`
+      );
+      golem.traits.push(`Charged Motion. The golem's speed increases by 10 feet.`);
+      golem.traits.push(
+        `Surging Advance. The golem can take the Dash action as a bonus action without requiring your command.`
+      );
+
+      golem.onHitEffects = golem.onHitEffects || [];
+      golem.onHitEffects.push(
+        `Once on each of its turns, the golem deals an extra 1d8 lightning damage when it hits with an attack. That energy can arc to up to ${pb} other creatures of your choice within 10 feet of the original target, dealing ${pb} lightning damage to each.`
+      );
     },
+  },
 
-    traits: [
-      () => "Aether Lift. Gains a flying speed."
-    ]
-  }
+  {
+    id: "aether",
+    name: "Aether Engine",
+    damageType: "Force",
+    role: "Utility",
+    summary: "Hovering, agile engine with force-infused strikes.",
+    description:
+      "An arcane lift core that grants aerial mobility and refined force projection.",
+    apply(golem) {
+      golem.damageResistances = golem.damageResistances || [];
+      if (!golem.damageResistances.includes("force")) {
+        golem.damageResistances.push("force");
+      }
 
-};
+      golem.flySpeed = golem.speed;
+
+      golem.traits.push(`Aether Engine. The golem has resistance to force damage.`);
+      golem.traits.push(
+        `Levitation Matrix. The golem gains a flying speed equal to its walking speed.`
+      );
+
+      golem.onHitEffects = golem.onHitEffects || [];
+      golem.onHitEffects.push(
+        `Once on each of its turns, the golem deals an extra 1d8 force damage when it hits with an attack.`
+      );
+    },
+  },
+
+  {
+    id: "earth",
+    name: "Earth Engine",
+    damageType: "Earth",
+    role: "Tank",
+    summary: "Grounded engine that grants mundane durability and crushing stability.",
+    description:
+      "A dense, earthen core that reinforces structure and grants resistance against mundane weapon damage.",
+    apply(golem) {
+      golem.damageResistances = golem.damageResistances || [];
+
+      const mundaneTypes = [
+        "nonmagical bludgeoning",
+        "nonmagical piercing",
+        "nonmagical slashing",
+      ];
+
+      mundaneTypes.forEach((type) => {
+        if (!golem.damageResistances.includes(type)) {
+          golem.damageResistances.push(type);
+        }
+      });
+
+      golem.traits.push(
+        `Earth Engine. The golem has resistance to nonmagical bludgeoning, piercing, and slashing damage.`
+      );
+
+      golem.onHitEffects = golem.onHitEffects || [];
+      golem.onHitEffects.push(
+        `Once on each of its turns, the golem deals an extra 1d8 bludgeoning damage when it hits with an attack.`
+      );
+    },
+  },
+];

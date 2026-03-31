@@ -3,6 +3,7 @@ body {
   font-family: Georgia, serif;
   background: #e8dcc3;
   margin: 0;
+  color: #2f2418;
 }
 
 /* ===== Navigation Bar ===== */
@@ -14,32 +15,52 @@ body {
   top: 0;
   z-index: 1000;
 }
+
 .nav a {
   color: #fdf6e3;
   margin: 0 10px;
   text-decoration: none;
   font-weight: bold;
 }
+
 .nav a:hover {
   text-decoration: underline;
 }
 
-/* ===== Container & Cards ===== */
+/* ===== Main Layout ===== */
 .container {
-  max-width: 1000px;
+  max-width: 1400px;
   margin: auto;
   padding: 20px;
+  box-sizing: border-box;
 }
+
+.app-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.builder-column,
+.stat-column {
+  min-width: 0;
+}
+
+/* ===== Cards ===== */
 .card {
   background: #fdf6e3;
   border: 2px solid #8b7355;
   border-radius: 10px;
   padding: 20px;
   margin-bottom: 20px;
+  box-sizing: border-box;
 }
 
 /* ===== Headings ===== */
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   text-align: center;
   margin: 10px 0;
 }
@@ -49,10 +70,48 @@ table {
   width: 100%;
   border-collapse: collapse;
 }
-th, td {
+
+th,
+td {
   border: 1px solid #8b7355;
   padding: 8px;
   text-align: center;
+}
+
+/* ===== Inputs / Selects ===== */
+input,
+select {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  padding: 6px 8px;
+  border: 1px solid #8b7355;
+  border-radius: 5px;
+  background: #fffaf0;
+  color: #2f2418;
+  box-sizing: border-box;
+}
+
+/* ===== Buttons ===== */
+button {
+  margin: 5px;
+  padding: 10px;
+  font-size: 1em;
+  cursor: pointer;
+  border-radius: 5px;
+  border: none;
+  background: #8b7355;
+  color: #fdf6e3;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: #7a623e;
+}
+
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 /* ===== Collapsible Buttons ===== */
@@ -68,10 +127,13 @@ th, td {
   margin-top: 10px;
   border-radius: 5px;
   transition: background 0.3s ease;
+  box-sizing: border-box;
 }
+
 .collapsible:hover {
   background: #7a623e;
 }
+
 .content {
   display: none;
   padding: 10px;
@@ -80,13 +142,20 @@ th, td {
   border-radius: 5px;
   margin-top: 5px;
   animation: fadeIn 0.3s ease-in-out;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
 }
+
+.content p {
+  margin: 8px 0;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-/* ===== Infusion Tags ===== */
+/* ===== Shared Tags ===== */
 .tag {
   display: inline-block;
   padding: 2px 8px;
@@ -95,24 +164,334 @@ th, td {
   font-size: 0.8em;
   margin-bottom: 5px;
 }
-.tank { background: #4CAF50; color: white; }
-.dps { background: #f44336; color: white; }
-.control { background: #2196F3; color: white; }
-.utility { background: #9C27B0; color: white; }
 
-/* ===== Stat Block ===== */
-#statblock {
+.tank {
+  background: #4caf50;
+  color: white;
+}
+
+.dps {
+  background: #f44336;
+  color: white;
+}
+
+.control {
+  background: #2196f3;
+  color: white;
+}
+
+.utility {
+  background: #9c27b0;
+  color: white;
+}
+
+/* ===== Grid Layouts ===== */
+#engines,
+#engines2,
+#constructForms,
+#constructForms2,
+#infusions,
+#infusions2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  align-items: start;
+  padding: 0;
+}
+
+#engines h2,
+#engines2 h2,
+#constructForms h2,
+#constructForms2 h2,
+#infusions h2,
+#infusions2 h2 {
+  grid-column: 1 / -1;
+  margin-bottom: 0;
+}
+
+/* ===== Shared Selectable Card System ===== */
+.engine-card,
+.infusion-card,
+.form-card {
+  position: relative;
+  display: block;
+  margin-bottom: 0;
+  border: 2px solid #8b7355;
+  border-radius: 12px;
+  background: #fdf6e3;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease,
+    background 0.2s ease;
+  box-sizing: border-box;
+}
+
+.engine-card:hover,
+.infusion-card:hover,
+.form-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.engine-card.selected,
+.infusion-card.selected,
+.form-card.selected {
+  border: 2px solid #d4af37;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.45);
+  background: #fff8df;
+}
+
+.engine-card.locked,
+.infusion-card.locked,
+.form-card.locked {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.engine-card:focus-visible,
+.infusion-card:focus-visible,
+.form-card:focus-visible {
+  outline: 3px solid rgba(212, 175, 55, 0.7);
+  outline-offset: 2px;
+}
+
+.engine-card-inner,
+.infusion-card-inner,
+.form-card-inner {
+  padding: 14px 16px;
+}
+
+.engine-card-header,
+.infusion-card-header,
+.form-card-header {
+  margin-bottom: 8px;
+}
+
+.engine-card-tags,
+.infusion-card-tags,
+.form-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.engine-card .tag,
+.infusion-card .tag,
+.form-card .tag {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  background: #e8dcc3;
+  color: #4a3b28;
+  border: 1px solid #c9b38d;
+  margin: 0;
+}
+
+.engine-card p,
+.infusion-card p,
+.form-card p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Hide native controls inside clickable cards */
+.engine-card input[type="radio"],
+.infusion-card input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ===== Legacy Engine Card Support ===== */
+.engine-card .content {
+  display: none;
+}
+
+/* ===== Summary Areas ===== */
+#buildSummary,
+#selectionSummary,
+#secondarySummary {
+  background: #fffaf0;
+  border: 1px solid #8b7355;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  overflow-wrap: anywhere;
+}
+
+.selection-summary-card,
+.summary-card-block {
+  background: #fdf6e3;
+  border: 1px solid #8b7355;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+
+.selection-summary-card:last-child,
+.summary-card-block:last-child {
+  margin-bottom: 0;
+}
+
+.summary-section {
+  margin-bottom: 10px;
+}
+
+.summary-tags {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.summary-pill {
+  display: inline-block;
+  padding: 4px 8px;
+  background: #8b7355;
+  color: #fdf6e3;
+  border-radius: 999px;
+  font-size: 0.85em;
+}
+
+.summary-pill.removable-pill {
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  line-height: 1;
+}
+
+.summary-pill.removable-pill:hover {
+  background: #7a623e;
+}
+
+.pill-x {
+  font-weight: bold;
+  line-height: 1;
+}
+
+/* ===== Infusion Support ===== */
+.slot-counter,
+#infusionSlots,
+#infusionSlots2 {
+  margin: 10px 0 14px;
+  font-weight: bold;
+  color: #5a4a32;
+}
+
+.infusion-status {
+  min-height: 1.1em;
+  margin: 6px 0 8px;
+  font-size: 0.85em;
+  color: #7a1f1f;
+  font-style: italic;
+}
+
+.infusion-card-disabled {
+  opacity: 0.6;
+}
+
+.infusion-card-disabled .collapsible {
+  background: #9a8c77;
+}
+
+.infusion-card-locked {
+  border-color: #a94442;
+  box-shadow: inset 0 0 0 1px rgba(169, 68, 66, 0.15);
+}
+
+.infusion-checkbox-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.infusion-tier-section {
+  grid-column: 1 / -1;
+}
+
+.infusion-tier-heading {
+  text-align: left;
+  margin: 8px 0 10px;
+  border-bottom: 1px solid #8b7355;
+  padding-bottom: 4px;
+}
+
+.infusion-tier,
+.infusion-tier-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.prereq {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #6a5840;
+}
+
+/* ===== Field Flow ===== */
+#template,
+#template2,
+#mode,
+#shareLink {
+  width: 100%;
+  max-width: 320px;
+}
+
+/* ===== Stat Blocks ===== */
+#statblock,
+#statBlock,
+#secondaryStatBlock {
   background: #fdf1dc;
   border: 2px solid #3b2f1b;
   border-radius: 6px;
   padding: 16px;
+  overflow-wrap: anywhere;
+  margin-top: 12px;
 }
-.stat-header { border-bottom: 3px solid #3b2f1b; margin-bottom: 8px; }
-.stat-name { font-size: 1.6em; font-weight: bold; }
+
+.stat-header {
+  border-bottom: 3px solid #3b2f1b;
+  margin-bottom: 8px;
+}
+
+.stat-name {
+  font-size: 1.6em;
+  font-weight: bold;
+}
+
 .stat-section {
   border-top: 2px solid #3b2f1b;
   margin-top: 10px;
   padding-top: 6px;
+}
+
+#statblock .stat-section strong,
+#statBlock .stat-section strong,
+#secondaryStatBlock .stat-section strong {
+  letter-spacing: 0.01em;
+}
+
+#statblock hr,
+#statBlock hr,
+#secondaryStatBlock hr {
+  border: 0;
+  border-top: 2px solid #8b7355;
+  margin: 18px 0;
+}
+
+/* ===== Sticky Stat Card ===== */
+.sticky-stat-card {
+  position: sticky;
+  top: 70px;
 }
 
 /* ===== Splash Page ===== */
@@ -126,10 +505,12 @@ th, td {
   background: linear-gradient(#2f2a24, #5a4a32);
   color: #fdf6e3;
 }
+
 #splash h1 {
   font-size: 2.5em;
   margin-bottom: 20px;
 }
+
 #splash button {
   font-size: 1.2em;
   padding: 12px 20px;
@@ -140,43 +521,81 @@ th, td {
   color: #fdf6e3;
   transition: background 0.3s ease;
 }
+
 #splash button:hover {
   background: #7a623e;
 }
 
-/* ===== Buttons ===== */
-button {
-  margin: 5px;
-  padding: 10px;
-  font-size: 1em;
-  cursor: pointer;
-  border-radius: 5px;
-  border: none;
-  background: #8b7355;
-  color: #fdf6e3;
-  transition: background 0.3s ease;
+/* ===== Responsive Tweaks ===== */
+@media (max-width: 1000px) {
+  .app-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sticky-stat-card {
+    position: static;
+  }
 }
-button:hover {
-  background: #7a623e;
+
+@media (max-width: 768px) {
+  .container {
+    padding: 12px;
+  }
+
+  #engines,
+  #engines2,
+  #constructForms,
+  #constructForms2,
+  #infusions,
+  #infusions2 {
+    grid-template-columns: 1fr;
+  }
+
+  .action-row {
+    flex-direction: column;
+  }
+
+  #template,
+  #template2,
+  #mode,
+  #shareLink {
+    max-width: 100%;
+  }
 }
 
 /* ===== Print Styles ===== */
 @media print {
-  body * { visibility: hidden; }
-  #statblock, #statblock * { visibility: visible; }
-  #statblock { position: absolute; top: 0; left: 0; width: 100%; border: none; }
-  button { display: none; }
-}
-/* ===== Engine Card Selection ===== */
-.engine-card {
-  cursor: pointer;
-}
+  body * {
+    visibility: hidden;
+  }
 
-.engine-card.selected {
-  outline: 2px solid #c9b37e;
-  box-shadow: 0 0 10px rgba(201, 179, 126, 0.35);
-}
+  #statblock,
+  #statblock *,
+  #statBlock,
+  #statBlock *,
+  #secondaryStatBlock,
+  #secondaryStatBlock * {
+    visibility: visible;
+  }
 
-.engine-card .content {
-  display: none;
+  #statblock,
+  #statBlock,
+  #secondaryStatBlock {
+    position: static;
+    width: 100%;
+    border: none;
+    box-shadow: none;
+  }
+
+  button {
+    display: none;
+  }
+
+  .nav,
+  #splash,
+  #buildSummary,
+  #selectionSummary,
+  #secondarySummary {
+    display: none !important;
+  }
 }

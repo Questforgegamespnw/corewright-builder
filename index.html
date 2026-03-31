@@ -1,108 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Questforge Corewright Interface</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="./css/style.css">
+  <meta charset="UTF-8">
+  <title>Questforge Corewright Interface</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
 
-<!-- ===== NAVIGATION ===== -->
-<div class="nav">
-  <a href="./">Builder</a>
-  <a href="./infusions/">Infusions</a>
-  <a href="./corewright/">Subclass</a>
-</div>
-
-<!-- ===== SPLASH SCREEN ===== -->
-<div id="splash">
-  <h1>Questforge Corewright Interface</h1>
-  <button onclick="enterApp()">Enter Workshop</button>
-</div>
-
-<!-- ===== APP CONTAINER ===== -->
-<div id="app" style="display:none;">
-  <div class="container">
-
-    <!-- Assembly Panel -->
-    <div class="card">
-      <h2>Assembly</h2>
-      Level <input id="level" type="number" value="10"><br>
-      INT Mod <input id="int" type="number" value="4"><br><br>
-
-      <!-- Engine cards -->
-      <div id="engines" class="container">
-        <h2>Engine</h2>
-      </div>
-      <input id="engine" type="hidden" value="none">
-
-      <br><br>
-
-      Template
-      <select id="template">
-        <option value="none">None</option>
-      </select>
-
-      <br><br>
-
-      Mode
-      <select id="mode">
-        <option value="single">Single Golem</option>
-        <option value="multi">Multi-Golem</option>
-        <option value="fusion">Fusion Mode</option>
-      </select>
-
-      <!-- Infusions for First Golem -->
-      <div id="infusions" class="container">
-        <h2>Infusions</h2>
-      </div>
-
-      <!-- Action Buttons -->
-      <br>
-      <button onclick="printGolem()">Print / Save PDF</button>
-      <button onclick="downloadTxt()">Download .txt</button>
-      <button onclick="saveBuild()">Save Build</button>
-      <button onclick="loadBuild()">Load Build</button>
-      <button onclick="shareBuild()">Share Build</button>
-    </div>
-
-    <!-- Second Golem Panel -->
-    <div id="golem2" class="card" style="display:none;">
-      <h2>Second Golem</h2>
-      Level <input id="level2" type="number" value="10"><br>
-      INT Mod <input id="int2" type="number" value="4"><br><br>
-
-      <!-- Second engine cards -->
-      <div id="engines2" class="container">
-        <h2>Second Golem Engine</h2>
-      </div>
-      <input id="engine2" type="hidden" value="none">
-
-      <br><br>
-
-      Template
-      <select id="template2">
-        <option value="none">None</option>
-      </select>
-
-      <!-- Infusions for Second Golem -->
-      <div id="infusions2" class="container">
-        <h2>Second Golem Infusions</h2>
-      </div>
-    </div>
-
-    <!-- Golem Stat Block -->
-    <div class="card">
-      <h2>Golem Stat Block</h2>
-      <div id="statblock"></div>
-    </div>
-
+  <!-- ===== NAVIGATION ===== -->
+  <div class="nav">
+    <a href="./">Builder</a>
+    <a href="./infusions/">Infusions</a>
+    <a href="./corewright/">Subclass</a>
   </div>
-</div>
 
-<!-- ===== NEW MODULE SCRIPT ===== -->
-<script type="module" src="./src/builder.js"></script>
+  <!-- ===== SPLASH SCREEN ===== -->
+  <div id="splash">
+    <h1>Questforge Corewright Interface</h1>
+    <button onclick="enterApp()">Enter Workshop</button>
+  </div>
 
+  <!-- ===== APP CONTAINER ===== -->
+  <div id="app" style="display:none;">
+    <div class="container app-layout">
+
+      <!-- LEFT COLUMN -->
+      <div class="builder-column">
+
+        <!-- ===== PRIMARY GOLEM ===== -->
+        <div class="card">
+          <h2>Assembly</h2>
+
+          <label for="level">Level</label>
+          <input id="level" type="number" value="10" min="1" max="20">
+
+          <br><br>
+
+          <label for="intMod">INT Mod</label>
+          <input id="intMod" type="number" value="4" min="-5" max="10">
+
+          <br><br>
+
+          <!-- Engine cards -->
+          <div id="engines">
+            <h2>Engine</h2>
+          </div>
+          <input id="engine" type="hidden" value="none">
+
+          <br><br>
+
+          <label for="template">Template</label>
+          <select id="template">
+            <option value="none">None</option>
+          </select>
+
+          <br><br>
+
+          <h2>Construct Form</h2>
+          <div id="constructForms"></div>
+          <input id="constructForm" type="hidden" value="brawler">
+
+          <br><br>
+
+          <label for="mode">Mode</label>
+          <select id="mode">
+            <option value="single">Single Golem</option>
+            <option value="multi">Multi-Golem</option>
+            <option value="fusion">Fusion Mode</option>
+          </select>
+
+          <br><br>
+
+          <div id="infusionSlots" class="slot-counter"></div>
+
+          <!-- Primary infusions -->
+          <div id="infusions">
+            <h2>Infusions</h2>
+          </div>
+
+          <br>
+
+          <div class="action-row">
+            <button id="printBuild" type="button">Print / Save PDF</button>
+            <button id="downloadTxt" type="button">Download .txt</button>
+            <button id="saveBuild" type="button">Save Build</button>
+            <button id="loadBuildBtn" type="button">Load Build</button>
+            <button id="copyShareLink" type="button">Share Build</button>
+          </div>
+
+          <br>
+
+          <input id="shareLink" type="text" readonly style="width:100%;">
+        </div>
+
+        <!-- ===== SECOND GOLEM ===== -->
+        <div id="golem2" class="card" style="display:none;">
+          <h2>Second Golem</h2>
+
+          <label for="level2">Level</label>
+          <input id="level2" type="number" value="10" min="1" max="20">
+
+          <br><br>
+
+          <label for="intMod2">INT Mod</label>
+          <input id="intMod2" type="number" value="4" min="-5" max="10">
+
+          <br><br>
+
+          <!-- Second engine cards -->
+          <div id="engines2">
+            <h2>Second Golem Engine</h2>
+          </div>
+          <input id="engine2" type="hidden" value="none">
+
+          <br><br>
+
+          <label for="template2">Template</label>
+          <select id="template2">
+            <option value="none">None</option>
+          </select>
+
+          <br><br>
+
+          <h2>Second Golem Form</h2>
+          <div id="constructForms2"></div>
+          <input id="constructForm2" type="hidden" value="brawler">
+
+          <br><br>
+
+          <div id="infusionSlots2" class="slot-counter"></div>
+
+          <!-- Second infusions -->
+          <div id="infusions2">
+            <h2>Second Golem Infusions</h2>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="stat-column">
+        <div class="card sticky-stat-card">
+          <h2>Golem Summary</h2>
+          <div id="selectionSummary"></div>
+
+          <h2>Golem Stat Block</h2>
+          <div id="statBlock"></div>
+
+          <!-- Optional future multi/fusion support -->
+          <div id="secondarySummary" style="display:none;"></div>
+          <div id="secondaryStatBlock" style="display:none;"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== SPLASH HELPER ===== -->
+  <script>
+    function enterApp() {
+      document.getElementById("splash").style.display = "none";
+      document.getElementById("app").style.display = "block";
+    }
+  </script>
+
+  <!-- ===== MODULE SCRIPT ===== -->
+  <script type="module" src="./src/builder.js"></script>
 </body>
 </html>
