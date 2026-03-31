@@ -1,112 +1,244 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Questforge Corewright Interface</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="./css/style.css">
+  <meta charset="UTF-8">
+  <title>Questforge Corewright Interface</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
 
-<!-- ===== NAVIGATION ===== -->
-<div class="nav">
-  <a href="./">Builder</a>
-  <a href="./infusions/">Infusions</a>
-  <a href="./corewright/">Subclass</a>
-</div>
-
-<!-- ===== SPLASH SCREEN ===== -->
-<div id="splash">
-  <h1>Questforge Corewright Interface</h1>
-  <button onclick="enterApp()">Enter Workshop</button>
-</div>
-
-<!-- ===== APP CONTAINER ===== -->
-<div id="app" style="display:none;">
-  <div class="container">
-
-    <!-- Assembly Panel -->
-    <div class="card">
-      <h2>Assembly</h2>
-      Level <input id="level" type="number" value="10"><br>
-      INT Mod <input id="int" type="number" value="4"><br>
-
-Engine
-<select id="engine">
-  <option value="none">None</option>
-  <option value="flame">Flame</option>
-  <option value="stone">Stone</option>
-  <option value="frost">Frost</option>
-  <option value="aether">Aether</option>
-</select>
-
-<br><br>
-
-Template
-<select id="template">
-  <option value="none">None</option>
-</select>
-
-      Mode
-      <select id="mode">
-        <option value="single">Single Golem</option>
-        <option value="multi">Multi-Golem</option>
-        <option value="fusion">Fusion Mode</option>
-      </select>
-
-      <!-- Infusions for First Golem -->
-      <div id="infusions" class="container">
-        <h2>Infusions</h2>
-      </div>
-
-      <!-- Action Buttons -->
-      <br>
-      <button onclick="printGolem()">Print / Save PDF</button>
-      <button onclick="downloadTxt()">Download .txt</button>
-      <button onclick="saveBuild()">Save Build</button>
-      <button onclick="loadBuild()">Load Build</button>
-      <button onclick="shareBuild()">Share Build</button>
-    </div>
-
-    <!-- Second Golem Panel -->
-    <div id="golem2" class="card" style="display:none;">
-      <h2>Second Golem</h2>
-      Level <input id="level2" type="number" value="10"><br>
-      INT Mod <input id="int2" type="number" value="4"><br>
-
-    Engine
-<select id="engine2">
-  <option value="none">None</option>
-  <option value="flame">Flame</option>
-  <option value="stone">Stone</option>
-  <option value="frost">Frost</option>
-  <option value="aether">Aether</option>
-</select>
-
-<br><br>
-
-Template
-<select id="template2">
-  <option value="none">None</option>
-</select>
-
-      <!-- Infusions for Second Golem -->
-      <div id="infusions2" class="container">
-        <h2>Second Golem Infusions</h2>
-      </div>
-    </div>
-
-    <!-- Golem Stat Block -->
-    <div class="card">
-      <h2>Golem Stat Block</h2>
-      <div id="statblock"></div>
-    </div>
-
+  <!-- ===== NAVIGATION ===== -->
+  <div class="nav">
+    <a href="./">Builder</a>
+    <a href="./infusions/">Infusions</a>
+    <a href="./corewright/">Subclass</a>
   </div>
-</div>
 
-<!-- ===== NEW MODULE SCRIPT ===== -->
-<script type="module" src="./src/builder.js"></script>
+  <!-- ===== SPLASH SCREEN ===== -->
+  <div id="splash">
+    <h1>Questforge Corewright Interface</h1>
+    <button onclick="enterApp()">Enter Workshop</button>
+  </div>
 
+  <!-- ===== APP CONTAINER ===== -->
+  <div id="app" style="display:none;">
+    <div class="page-shell">
+      <div class="builder-layout">
+
+        <!-- LEFT COLUMN -->
+        <section class="builder-panel">
+          <h2>Assembly</h2>
+
+          <!-- ===== TOP CONTROLS ===== -->
+          <div class="builder-top-controls">
+            <div class="control-group">
+              <label for="level">Level</label>
+              <input id="level" type="number" value="10" min="1" max="20">
+            </div>
+
+            <div class="control-group">
+              <label for="intMod">INT Mod</label>
+              <input id="intMod" type="number" value="4" min="-5" max="10">
+            </div>
+
+            <div class="control-group">
+              <label for="mode">Mode</label>
+              <select id="mode">
+                <option value="single">Single Golem</option>
+                <option value="multi">Multi-Golem</option>
+                <option value="fusion">Fusion Mode</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- ===== PRIMARY ASSEMBLY PANEL ===== -->
+          <div class="assembly-panel">
+
+            <div class="assembly-card">
+              <button class="assembly-toggle" type="button" data-target="templates-section">
+                <span>Templates</span>
+                <span class="toggle-icon">+</span>
+              </button>
+              <div class="assembly-content is-collapsed" id="templates-section">
+                <div id="templates"></div>
+              </div>
+            </div>
+
+            <div class="assembly-card">
+              <button class="assembly-toggle" type="button" data-target="constructforms-section">
+                <span>Construct Forms</span>
+                <span class="toggle-icon">+</span>
+              </button>
+              <div class="assembly-content is-collapsed" id="constructforms-section">
+                <div id="constructForms"></div>
+              </div>
+            </div>
+
+            <div class="assembly-card">
+              <button class="assembly-toggle" type="button" data-target="infusions-section">
+                <span>Infusions</span>
+                <span class="toggle-icon">+</span>
+              </button>
+              <div class="assembly-content is-collapsed" id="infusions-section">
+                <div class="infusion-slot-row">
+                  <span id="infusionSlotCounter" class="slot-counter">Infusion Slots: 0 / 0</span>
+                </div>
+                <div id="infusions"></div>
+              </div>
+            </div>
+
+            <div class="assembly-card">
+              <button class="assembly-toggle" type="button" data-target="engines-section">
+                <span>Engines</span>
+                <span class="toggle-icon">+</span>
+              </button>
+              <div class="assembly-content is-collapsed" id="engines-section">
+                <div id="engines"></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ===== ACTIONS ===== -->
+          <div class="action-row">
+            <button id="printBuild" type="button">Print / Save PDF</button>
+            <button id="downloadTxt" type="button">Download .txt</button>
+            <button id="saveBuild" type="button">Save Build</button>
+            <button id="loadBuildBtn" type="button">Load Build</button>
+            <button id="copyShareLink" type="button">Share Build</button>
+          </div>
+
+          <input id="shareLink" type="text" readonly style="width:100%; margin-top:12px;">
+
+          <!-- ===== HIDDEN COMPATIBILITY INPUTS ===== -->
+          <div class="compat-hidden-inputs" aria-hidden="true">
+            <select id="template" tabindex="-1">
+              <option value="none">None</option>
+            </select>
+
+            <select id="constructForm" tabindex="-1">
+              <option value="none">None</option>
+            </select>
+
+            <select id="engine" tabindex="-1">
+              <option value="none">None</option>
+            </select>
+          </div>
+
+          <!-- ===== SECOND GOLEM ===== -->
+          <div id="golem2" class="builder-panel" style="display:none; margin-top:20px;">
+            <h2>Second Golem</h2>
+
+            <div class="builder-top-controls">
+              <div class="control-group">
+                <label for="level2">Level</label>
+                <input id="level2" type="number" value="10" min="1" max="20">
+              </div>
+
+              <div class="control-group">
+                <label for="intMod2">INT Mod</label>
+                <input id="intMod2" type="number" value="4" min="-5" max="10">
+              </div>
+
+              <div class="control-group">
+                <label for="mode-display">Mode</label>
+                <input id="mode-display" type="text" value="Linked to top mode selector" readonly>
+              </div>
+            </div>
+
+            <div class="assembly-panel">
+
+              <div class="assembly-card">
+                <button class="assembly-toggle" type="button" data-target="templates2-section">
+                  <span>Templates</span>
+                  <span class="toggle-icon">+</span>
+                </button>
+                <div class="assembly-content is-collapsed" id="templates2-section">
+                  <div id="templates2"></div>
+                </div>
+              </div>
+
+              <div class="assembly-card">
+                <button class="assembly-toggle" type="button" data-target="constructforms2-section">
+                  <span>Construct Forms</span>
+                  <span class="toggle-icon">+</span>
+                </button>
+                <div class="assembly-content is-collapsed" id="constructforms2-section">
+                  <div id="constructForms2"></div>
+                </div>
+              </div>
+
+              <div class="assembly-card">
+                <button class="assembly-toggle" type="button" data-target="infusions2-section">
+                  <span>Infusions</span>
+                  <span class="toggle-icon">+</span>
+                </button>
+                <div class="assembly-content is-collapsed" id="infusions2-section">
+                  <div class="infusion-slot-row">
+                    <span id="infusionSlotCounter2" class="slot-counter">Infusion Slots: 0 / 0</span>
+                  </div>
+                  <div id="infusions2"></div>
+                </div>
+              </div>
+
+              <div class="assembly-card">
+                <button class="assembly-toggle" type="button" data-target="engines2-section">
+                  <span>Engines</span>
+                  <span class="toggle-icon">+</span>
+                </button>
+                <div class="assembly-content is-collapsed" id="engines2-section">
+                  <div id="engines2"></div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- ===== HIDDEN COMPATIBILITY INPUTS (SECOND GOLEM) ===== -->
+            <div class="compat-hidden-inputs" aria-hidden="true">
+              <select id="template2" tabindex="-1">
+                <option value="none">None</option>
+              </select>
+
+              <select id="constructForm2" tabindex="-1">
+                <option value="none">None</option>
+              </select>
+
+              <select id="engine2" tabindex="-1">
+                <option value="none">None</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- RIGHT COLUMN -->
+        <aside class="builder-output">
+          <div class="summary-card">
+            <h2>Assembly Summary</h2>
+            <div id="selectionSummary"></div>
+            <div id="secondarySummary" style="display:none; margin-top:12px;"></div>
+          </div>
+
+          <div class="statblock-card">
+            <h2>Construct Stat Block</h2>
+            <div id="statBlockOutput"></div>
+            <div id="secondaryStatBlock" style="display:none; margin-top:16px;"></div>
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SPLASH HELPER ===== -->
+  <script>
+    function enterApp() {
+      document.getElementById("splash").style.display = "none";
+      document.getElementById("app").style.display = "block";
+    }
+  </script>
+
+  <!-- ===== MODULE SCRIPT ===== -->
+  <script type="module" src="./src/builder.js"></script>
 </body>
 </html>

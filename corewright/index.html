@@ -5,6 +5,200 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Corewright Subclass</title>
 <link rel="stylesheet" href="../css/style.css">
+
+<style>
+.subclass-shell {
+  width: min(100%, 1100px);
+  margin: 0 auto;
+  padding: 24px 20px 40px;
+}
+
+.subclass-hero,
+.subclass-card,
+.feature-entry {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.subclass-hero,
+.subclass-card {
+  padding: 22px;
+  margin-bottom: 20px;
+}
+
+.subclass-hero h1,
+.subclass-card h2 {
+  margin-top: 0;
+  color: var(--muted);
+}
+
+.subclass-hero p:last-child,
+.subclass-card p:last-child {
+  margin-bottom: 0;
+}
+
+.feature-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.feature-entry {
+  overflow: hidden;
+  background: #fffaf0;
+}
+
+.feature-toggle {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.feature-toggle:hover {
+  background: #fcf4e6;
+}
+
+.feature-toggle-main {
+  display: grid;
+  gap: 6px;
+}
+
+.feature-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.feature-icon {
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.feature-title {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.feature-sub {
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.feature-toggle-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--muted);
+  padding-top: 2px;
+}
+
+.feature-content {
+  display: none;
+  border-top: 1px solid var(--border-soft);
+  padding: 14px 16px 16px;
+  background: #fffdf8;
+}
+
+.feature-content.open {
+  display: block;
+}
+
+.feature-content p:first-child {
+  margin-top: 0;
+}
+
+.feature-content p:last-child,
+.feature-content ul:last-child {
+  margin-bottom: 0;
+}
+
+.feature-content ul {
+  padding-left: 20px;
+}
+
+.feature-content li + li {
+  margin-top: 6px;
+}
+
+.progression-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background: #fffaf0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progression-table th,
+.progression-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-soft);
+  text-align: left;
+}
+
+.progression-table th {
+  color: var(--muted);
+  background: #f3e7d0;
+}
+
+.progression-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.spell-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.spell-line {
+  padding: 10px 12px;
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+  background: #fffaf0;
+}
+
+.note-line {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.choice-block {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: #f7eddc;
+  color: var(--muted);
+}
+
+@media (max-width: 700px) {
+  .subclass-shell {
+    padding: 16px 12px 28px;
+  }
+
+  .subclass-hero,
+  .subclass-card {
+    padding: 16px;
+  }
+
+  .feature-toggle,
+  .feature-content {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+</style>
 </head>
 <body>
 
@@ -14,144 +208,290 @@
   <a href="./">Subclass</a>
 </div>
 
-<div class="container">
+<main class="subclass-shell">
 
-<!-- Introduction -->
-<div class="card">
-<h1>Artificer Specialist: Corewright</h1>
-<p>Corewrights are artificers who pierce the boundary between construct and life, crafting bodies of stone, metal, and sinew, and animating them with arcane cores of immense power. These constructs are evolving engines of will, shaped by their creator’s design.</p>
-</div>
+  <section class="subclass-hero">
+    <h1>Artificer Specialist: Corewright</h1>
+    <p>
+      Corewrights are artificers who give shape to living engines of arcane design. Where other artificers bind magic into tools and devices, the Corewright fashions a body of wood, clay, metal, stone, or stranger matter, and sets within it an animating core. The result is not a mere servant, but an evolving construct shaped by craft, refinement, and awakened purpose.
+    </p>
+  </section>
 
-<!-- Features Table -->
-<div class="card">
-<h2>Corewright Features</h2>
-<table>
-<tr><th>Level</th><th>Feature</th></tr>
-<tr><td>3rd</td><td>Golem Core Creation</td></tr>
-<tr><td>5th</td><td>Golem Infusions</td></tr>
-<tr><td>9th</td><td>Golem Templates</td></tr>
-<tr><td>15th</td><td>Living Engine Core</td></tr>
-<tr><td>17th</td><td>Master Golemmancy</td></tr>
-</table>
-</div>
+  <section class="subclass-card">
+    <h2>Corewright Features</h2>
+    <table class="progression-table">
+      <tr>
+        <th>Artificer Level</th>
+        <th>Feature</th>
+      </tr>
+      <tr>
+        <td>3rd</td>
+        <td>Golem Core Creation</td>
+      </tr>
+      <tr>
+        <td>5th</td>
+        <td>Golem Infusions</td>
+      </tr>
+      <tr>
+        <td>9th</td>
+        <td>Golem Templates</td>
+      </tr>
+      <tr>
+        <td>15th</td>
+        <td>Living Engine Core</td>
+      </tr>
+      <tr>
+        <td>17th</td>
+        <td>Penultimate Golemmancy</td>
+      </tr>
+    </table>
+  </section>
 
-<!-- Spell List -->
-<div class="card">
-<h2>Corewright Spells</h2>
-<p>You always have these spells prepared. They don’t count against your prepared spells.</p>
-<ul>
-<li><b>1st Level:</b> Alarm, Tenser’s Floating Disk, Unseen Servant</li>
-<li><b>2nd Level:</b> Enlarge/Reduce, Heat Metal, Enhance Ability</li>
-<li><b>3rd Level:</b> Protection from Energy, Tiny Servant, Conjure Constructs*</li>
-<li><b>4th Level:</b> Stone Shape, Elemental Bane, Summon Construct</li>
-<li><b>5th Level:</b> Transmute Rock, Animate Objects</li>
-</ul>
-<p><i>*Conjure Constructs is a homebrew spell.</i></p>
-</div>
+  <section class="subclass-card">
+    <h2>Corewright Spells</h2>
+    <p>
+      Starting at 3rd level, you always have certain spells prepared after you reach particular levels in this class, as shown in the Corewright Spells table. These spells count as artificer spells for you, but they do not count against the number of artificer spells you prepare.
+    </p>
 
-<!-- Golem Core Creation -->
-<div class="card">
-<h2>Golem Core Creation (3rd Level)</h2>
-<p>You construct a magical core that animates a golem.</p>
-<ul>
-<li>Create or rebuild during a long rest</li>
-<li>Only one active golem</li>
-<li>Acts on your initiative</li>
-<li>Bonus action to command</li>
-<li>Takes Dodge if not commanded</li>
-</ul>
-</div>
+    <div class="spell-list">
+      <div class="spell-line"><strong>1st Level:</strong> Alarm, Tenser’s Floating Disk, Unseen Servant</div>
+      <div class="spell-line"><strong>2nd Level:</strong> Enlarge/Reduce, Heat Metal, Enhance Ability</div>
+      <div class="spell-line"><strong>3rd Level:</strong> Protection from Energy, Tiny Servant, Conjure Constructs*</div>
+      <div class="spell-line"><strong>4th Level:</strong> Stone Shape, Elemental Bane, Summon Construct</div>
+      <div class="spell-line"><strong>5th Level:</strong> Transmute Rock, Animate Objects</div>
+    </div>
 
-<!-- Golem Infusions -->
-<div class="card">
-<h2>Golem Infusions (5th Level)</h2>
-<p>You learn specialized modifications for your golem.</p>
-<ul>
-<li>Apply during creation</li>
-<li>Persist until changed</li>
-<li>Multiple infusions can be active</li>
-</ul>
-</div>
+    <div class="note-line"><em>*Conjure Constructs is a homebrew spell.</em></div>
+  </section>
 
-<!-- Golem Templates -->
-<div class="card">
-<h2>Golem Templates (9th Level)</h2>
-<p>Choose a material form such as stone, metal, wood, or more exotic types.</p>
-<ul>
-<li>Defines base defenses</li>
-<li>Grants passive traits</li>
-</ul>
-</div>
+  <section class="subclass-card">
+    <h2>Core Features</h2>
 
-<!-- Living Engine Core -->
-<div class="card">
-<h2>Living Engine Core (15th Level)</h2>
-<p>Your golem gains an elemental engine.</p>
-<ul>
-<li><b>Flame:</b> Fire damage and aura</li>
-<li><b>Stone:</b> Damage reduction and stability</li>
-<li><b>Frost:</b> Slows enemies</li>
-<li><b>Aether:</b> Mobility and flight</li>
-</ul>
-</div>
+    <div class="feature-stack">
 
-<!-- Penultimate Golemmancy -->
-<div class="card">
-<h2>17th-Level Feature: Penultimate Golemmancy</h2>
-<p>At 17th level, you achieve the pinnacle of your craft, unlocking the ultimate potential of your Golem Core. Choose one of the following options, representing the final evolution of your construct mastery:</p>
-<ul>
-<li>Core Fusion</li>
-<li>Awakened Core</li>
-<li>Dual Core Convergence</li>
-</ul>
-<p><strong>Once you make this choice, it cannot be changed.</strong></p>
-</div>
+      <article class="feature-entry">
+        <button class="feature-toggle" type="button">
+          <div class="feature-toggle-main">
+            <div class="feature-title-row">
+              <span class="feature-icon">🜂</span>
+              <span class="feature-title">3rd Level — Golem Core Creation</span>
+            </div>
+            <div class="feature-sub">You create the animating core and establish your construct companion.</div>
+          </div>
+          <span class="feature-toggle-icon">+</span>
+        </button>
+        <div class="feature-content">
+          <p>
+            At 3rd level, you create a magical core that animates a golem of your design. This core serves as the heart of your construct and may be rebuilt or replaced as your craft evolves.
+          </p>
+          <ul>
+            <li>You can create or rebuild your golem during a long rest.</li>
+            <li>You can have only one active golem at a time unless a later feature states otherwise.</li>
+            <li>Your golem acts on your initiative.</li>
+            <li>You command your golem with a bonus action.</li>
+            <li>If you do not issue it a command, the golem takes the Dodge action.</li>
+          </ul>
+          <p>
+            Your golem is the foundation of the subclass. As you gain levels, you refine it through infusions, templates, and ultimately an awakened engine.
+          </p>
+        </div>
+      </article>
 
-<!-- Core Fusion -->
-<div class="card">
-<h3>🔥 Core Fusion</h3>
-<p>You can merge with your golem, becoming a single, empowered construct.</p>
-<p><strong>Bonus Action:</strong> Merge with your golem. This lasts 1 minute, until you end it, or until you are reduced to 0 hit points.</p>
-<p><strong>While fused:</strong></p>
-<ul>
-<li>Gain temporary hit points equal to your golem’s current hit points</li>
-<li>Retain your statistics but gain Golem Infusions, Material Template, and Living Engine Core</li>
-<li>Melee attacks deal +1d8 damage of your Engine Core type</li>
-<li>Speed increases by 10 ft and gain any special movement your golem possesses</li>
-<li>Attack action grants one additional weapon attack</li>
-</ul>
-<p>When the transformation ends, your golem reappears within 5 feet of you with half its maximum hit points.</p>
-<p><strong>Recharge:</strong> Long rest</p>
-</div>
+      <article class="feature-entry">
+        <button class="feature-toggle" type="button">
+          <div class="feature-toggle-main">
+            <div class="feature-title-row">
+              <span class="feature-icon">✦</span>
+              <span class="feature-title">5th Level — Golem Infusions</span>
+            </div>
+            <div class="feature-sub">You install modular augmentations that alter your golem’s battlefield role.</div>
+          </div>
+          <span class="feature-toggle-icon">+</span>
+        </button>
+        <div class="feature-content">
+          <p>
+            At 5th level, you learn to weave specialized arcane systems into your golem. These infusions represent reinforced frames, mobility enhancements, reactive defenses, and other modular refinements.
+          </p>
+          <ul>
+            <li>You choose infusions when your golem is created or rebuilt.</li>
+            <li>The maximum number of active infusions on your golem equals your Intelligence modifier (minimum of 0).</li>
+            <li>Infusions remain active until you rebuild the golem or replace them with different choices.</li>
+          </ul>
+          <p>
+            Golem Infusions are the Corewright’s principal method of tuning a construct toward defense, mobility, utility, control, or offense.
+          </p>
+        </div>
+      </article>
 
-<!-- Awakened Core -->
-<div class="card">
-<h3>🧠 Awakened Core</h3>
-<p>Your Golem Core develops true autonomy, allowing your construct to act independently.</p>
-<ul>
-<li>Golem rolls its own initiative and acts independently</li>
-<li>No longer requires your bonus action but follows commands</li>
-<li>Gains saving throw bonus = your Intelligence modifier</li>
-<li>Can take reactions normally</li>
-<li>Once per turn, add your Intelligence modifier to one attack or damage roll</li>
-<li>If you are incapacitated, golem continues defending allies</li>
-</ul>
-</div>
+      <article class="feature-entry">
+        <button class="feature-toggle" type="button">
+          <div class="feature-toggle-main">
+            <div class="feature-title-row">
+              <span class="feature-icon">⬢</span>
+              <span class="feature-title">9th Level — Golem Templates</span>
+            </div>
+            <div class="feature-sub">You define the material chassis from which your golem is built.</div>
+          </div>
+          <span class="feature-toggle-icon">+</span>
+        </button>
+        <div class="feature-content">
+          <p>
+            Beginning at 9th level, your mastery extends beyond magical systems and into physical composition. You can shape your golem from specialized materials, each of which confers its own strengths and weaknesses.
+          </p>
+          <ul>
+            <li>A template represents the fundamental construction of the golem’s body.</li>
+            <li>Templates influence its defenses, statistics, and passive traits.</li>
+            <li>Examples include stone, wood, metal, and other more exotic constructions.</li>
+          </ul>
+          <p>
+            Where infusions are upgrades, templates are identity. They determine what your construct is made of, and how it endures the world.
+          </p>
+        </div>
+      </article>
 
-<!-- Dual Core Convergence -->
-<div class="card">
-<h3>⚙️ Dual Core Convergence</h3>
-<p>You can divide your Golem Core, creating multiple constructs.</p>
-<ul>
-<li>When creating a golem, you may instead create two golems with half normal HP</li>
-<li>Both golems act on the same initiative, taking turns after yours</li>
-<li>Command both golems with the same bonus action</li>
-<li>Each golem makes one attack when taking the Attack action</li>
-<li>If one golem is destroyed, the other regains HP = your artificer level</li>
-<li>Whenever you create a golem, choose to make one or two</li>
-</ul>
-</div>
+      <article class="feature-entry">
+        <button class="feature-toggle" type="button">
+          <div class="feature-toggle-main">
+            <div class="feature-title-row">
+              <span class="feature-icon">⚡</span>
+              <span class="feature-title">15th Level — Living Engine Core</span>
+            </div>
+            <div class="feature-sub">You awaken an elemental engine within your construct’s heart.</div>
+          </div>
+          <span class="feature-toggle-icon">+</span>
+        </button>
+        <div class="feature-content">
+          <p>
+            At 15th level, you learn to refine your golem’s animating core into a true living engine. This engine grants an elemental or conceptual specialization that changes how the construct fights and moves.
+          </p>
+          <ul>
+            <li><strong>Flame:</strong> ignites foes, radiates heat, and enhances aggressive damage output.</li>
+            <li><strong>Storm:</strong> increases mobility and rewards pressure across multiple targets.</li>
+            <li><strong>Earth:</strong> hardens the frame and improves durability through rooted resilience.</li>
+            <li><strong>Aether:</strong> improves mobility and may grant flight or similar movement advantages.</li>
+          </ul>
+          <p>
+            A Living Engine Core is more than an upgrade. It is the point at which your construct begins to feel singular—its own engine of war, purpose, and identity.
+          </p>
+        </div>
+      </article>
 
-</div>
+    </div>
+  </section>
+
+  <section class="subclass-card">
+    <h2>17th Level — Penultimate Golemmancy</h2>
+    <p>
+      At 17th level, you attain the highest expression of Corewright craft. Choose one of the following options, representing the final evolution of your bond with the Golem Core. Once you make this choice, it cannot be changed.
+    </p>
+
+    <div class="choice-block">
+      <strong>Permanent Choice.</strong> Your Penultimate Golemmancy option reflects the ultimate shape of your practice: union, awakening, or division.
+    </div>
+
+    <div class="feature-stack" style="margin-top: 14px;">
+
+      <article class="feature-entry">
+        <button class="feature-toggle" type="button">
+          <div class="feature-toggle-main">
+            <div class="feature-title-row">
+              <span class="feature-icon">🔥</span>
+              <span class="feature-title">Core Fusion</span>
+            </div>
+            <div class="feature-sub">You merge with your golem and become a single empowered construct.</div>
+          </div>
+          <span class="feature-toggle-icon">+</span>
+        </button>
+        <div class="feature-content">
+          <p>
+            As a bonus action, you can merge with your golem, becoming a single empowered construct. This transformation lasts for 1 minute, until you end it, or until you are reduced to 0 hit points.
+          </p>
+          <p><strong>While fused:</strong></p>
+          <ul>
+            <li>You gain temporary hit points equal to your golem’s current hit points.</li>
+            <li>You retain your own game statistics, but gain the benefits of your golem’s infusions, template, and Living Engine Core.</li>
+            <li>Your melee weapon attacks deal an extra 1d8 damage of your Engine Core’s type.</li>
+            <li>Your speed increases by 10 feet, and you gain any special movement speeds your golem possesses.</li>
+            <li>When you take the Attack action, you can make one additional weapon attack.</li>
+          </ul>
+          <p>
+            When the transformation ends, your golem reappears within 5 feet of you with hit points equal to half its maximum.
+          </p>
+          <p><strong>Recharge:</strong> You can use this feature once per long rest.</p>
+        </div>
+      </article>
+
+      <article class="feature-entry">
+        <button class="feature-toggle" type="button">
+          <div class="feature-toggle-main">
+            <div class="feature-title-row">
+              <span class="feature-icon">🧠</span>
+              <span class="feature-title">Awakened Core</span>
+            </div>
+            <div class="feature-sub">Your construct gains true autonomy and acts with self-directed purpose.</div>
+          </div>
+          <span class="feature-toggle-icon">+</span>
+        </button>
+        <div class="feature-content">
+          <p>
+            Your Golem Core approaches true sentience. The construct no longer functions merely as an extension of your command, but as an independent guardian shaped by your will.
+          </p>
+          <ul>
+            <li>Your golem rolls its own initiative and acts independently.</li>
+            <li>It no longer requires your bonus action to act, though it still follows your commands.</li>
+            <li>It gains a bonus to saving throws equal to your Intelligence modifier.</li>
+            <li>It can take reactions normally.</li>
+            <li>Once on each of its turns, it can add your Intelligence modifier to one attack roll or damage roll it makes.</li>
+            <li>If you are incapacitated, the golem continues to defend you and your allies to the best of its ability.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="feature-entry">
+        <button class="feature-toggle" type="button">
+          <div class="feature-toggle-main">
+            <div class="feature-title-row">
+              <span class="feature-icon">⚙️</span>
+              <span class="feature-title">Dual Core Convergence</span>
+            </div>
+            <div class="feature-sub">You divide your craft between two linked constructs.</div>
+          </div>
+          <span class="feature-toggle-icon">+</span>
+        </button>
+        <div class="feature-content">
+          <p>
+            You learn to divide the animating principle of your craft, creating a paired expression of your golem rather than a single body.
+          </p>
+          <ul>
+            <li>Whenever you create a golem, you can instead create two golems, each with half the normal hit points.</li>
+            <li>Both golems act on the same initiative and take their turns after yours.</li>
+            <li>You command both golems with the same bonus action.</li>
+            <li>Each golem makes one attack when it takes the Attack action.</li>
+            <li>If one of the two golems is destroyed, the remaining golem regains hit points equal to your artificer level.</li>
+          </ul>
+          <p>
+            This option represents mastery through multiplicity: not one perfected body, but two linked engines acting in concert.
+          </p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+</main>
+
+<script>
+document.querySelectorAll(".feature-toggle").forEach((button) => {
+  button.addEventListener("click", () => {
+    const content = button.nextElementSibling;
+    const icon = button.querySelector(".feature-toggle-icon");
+    const isOpen = content.classList.contains("open");
+
+    content.classList.toggle("open", !isOpen);
+    if (icon) icon.textContent = isOpen ? "+" : "−";
+  });
+});
+</script>
+
 </body>
 </html>
