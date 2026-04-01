@@ -32,7 +32,14 @@ html {
 body {
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(rgba(232, 220, 195, 0.88), rgba(232, 220, 195, 0.88)),
+    url("../images/parchment-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   color: var(--ink);
   line-height: 1.45;
 }
@@ -93,27 +100,132 @@ a {
   align-items: center;
   text-align: center;
   padding: 24px;
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(32, 24, 16, 0.55), rgba(32, 24, 16, 0.55)),
+    url("../images/hero-workshop.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+#splash::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at center, rgba(255, 220, 140, 0.08), transparent 55%);
+  pointer-events: none;
+}
+
+#splash > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================
+   Living Workshop Splash
+   ========================= */
+
+#splash::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 210, 120, 0.10), transparent 28%),
+    radial-gradient(circle at 50% 42%, rgba(255, 170, 80, 0.06), transparent 42%);
+  animation: splashGlowPulse 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.splash-particles {
+  position: absolute;
+  inset: -10%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.55;
+  background-repeat: repeat;
+}
+
+.splash-particles-back {
+  background-image:
+    radial-gradient(circle, rgba(255, 220, 150, 0.16) 0 1px, transparent 1.5px),
+    radial-gradient(circle, rgba(255, 245, 220, 0.12) 0 1px, transparent 1.5px),
+    radial-gradient(circle, rgba(255, 180, 90, 0.10) 0 2px, transparent 2.5px);
+  background-size: 180px 180px, 260px 260px, 320px 320px;
+  background-position: 0 0, 40px 80px, 120px 30px;
+  animation: driftParticlesBack 22s linear infinite;
+  filter: blur(0.3px);
+}
+
+.splash-particles-front {
+  background-image:
+    radial-gradient(circle, rgba(255, 235, 190, 0.20) 0 1.2px, transparent 1.8px),
+    radial-gradient(circle, rgba(255, 200, 120, 0.14) 0 1.8px, transparent 2.4px);
+  background-size: 220px 220px, 340px 340px;
+  background-position: 60px 20px, 140px 110px;
+  animation: driftParticlesFront 16s linear infinite;
+  opacity: 0.38;
+}
+
+@keyframes splashGlowPulse {
+  0%, 100% {
+    opacity: 0.72;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes driftParticlesBack {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-10px, -14px, 0);
+  }
+  100% {
+    transform: translate3d(-20px, -28px, 0);
+  }
+}
+
+@keyframes driftParticlesFront {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(12px, -18px, 0);
+  }
+  100% {
+    transform: translate3d(24px, -36px, 0);
+  }
 }
 
 #splash h1 {
   margin: 0 0 20px;
   font-size: clamp(2rem, 4vw, 3.25rem);
   color: #f8e7cc;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
 }
 
 #splash button {
   border: 1px solid var(--border);
-  background: var(--panel);
+  background: rgba(253, 246, 227, 0.92);
   color: var(--ink);
   border-radius: 10px;
   padding: 12px 20px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: var(--shadow);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(2px);
 }
 
 #splash button:hover {
   filter: brightness(1.04);
+  transform: translateY(-1px);
 }
 
 /* =========================
@@ -773,10 +885,25 @@ button.btn:hover,
     grid-template-columns: 1fr;
   }
 }
-
+/* Example banner notification for import to builder */
 .loaded-example-banner,
 .summary-line.loaded-example-banner {
   background: #f7eddc;
-  border: 1px solid var(--border);
+  border: 2px solid #8b7355;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  animation: exampleFadeIn 0.4s ease-out;
 }
 
+@keyframes exampleFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -80,9 +80,14 @@ function suffix(n) {
 }
 
 function getAttackAbility(golem) {
+  if (golem.attackAbilityMode === "bestOfStrDex") {
+    const strMod = getMod(golem.str || 10);
+    const dexMod = getMod(golem.dex || 10);
+    return dexMod > strMod ? "dex" : "str";
+  }
+
   return golem.attackAbility === "dex" ? "dex" : "str";
 }
-
 function getAttackModifier(golem) {
   const ability = getAttackAbility(golem);
   return getMod(golem[ability] || 10);
@@ -579,14 +584,42 @@ function buildSlamText(golem, player) {
   const attackAbility = getAttackAbility(golem);
   const attackMod = getAttackModifier(golem);
   const attackBonus = player.pb + attackMod;
+  const damageDie = golem.slamDamageDie || "1d8";
 
-  let text = `Slam. Melee Weapon Attack: +${attackBonus} to hit, reach ${golem.reach} ft., one target. Hit: 1d8 ${attackMod >= 0 ? "+" : "-"}${Math.abs(attackMod)} bludgeoning damage.`;
+  let text = `Slam. Melee Weapon Attack: +${attackBonus} to hit, reach ${golem.reach} ft., one target. Hit: ${damageDie} ${attackMod >= 0 ? "+" : "-"}${Math.abs(attackMod)} bludgeoning damage.`;
 
   if (golem.onHitEffects.length) {
     text += ` ${golem.onHitEffects.join(" ")}`;
   }
 
-  if (attackAbility === "dex") {
+  if (golem.attackAbilityMode === "bestOfStrDex") {
+    text += ` This attack uses Strength or Dexterity, whichever is higher, for its attack and damage rolls.`;
+  } else if (attackAbility === "dex") {
+    text += ` This attack uses Dexterity for its attack and damage rolls.`;
+  }
+
+  return text;
+}
+
+function buildRangedAttackText(golem, player) {
+  const attackAbility = getAttackAbility(golem);
+  const attackMod = getAttackModifier(golem);
+  const attackBonus = player.pb + attackMod;
+
+  const attackName = golem.rangedAttack?.name || "Arcane Bolt";
+  const range = golem.rangedAttack?.range || "60/240 ft.";
+  const damageDie = golem.rangedAttack?.damageDie || "1d10";
+  const damageType = golem.rangedAttack?.damageType || "force";
+
+  let text = `${attackName}. Ranged Weapon Attack: +${attackBonus} to hit, range ${range}, one target. Hit: ${damageDie} ${attackMod >= 0 ? "+" : "-"}${Math.abs(attackMod)} ${damageType} damage.`;
+
+  if (golem.onHitEffects.length) {
+    text += ` ${golem.onHitEffects.join(" ")}`;
+  }
+
+  if (golem.attackAbilityMode === "bestOfStrDex") {
+    text += ` This attack uses Strength or Dexterity, whichever is higher, for its attack and damage rolls.`;
+  } else if (attackAbility === "dex") {
     text += ` This attack uses Dexterity for its attack and damage rolls.`;
   }
 
@@ -600,7 +633,12 @@ function buildActionsList(golem, player) {
     actions.push(`Multiattack. ${golem.multiattackText}`);
   }
 
-  actions.push(buildSlamText(golem, player));
+  if (golem.primaryAttackMode === "ranged") {
+    actions.push(buildRangedAttackText(golem, player));
+    actions.push(buildSlamText(golem, player));
+  } else {
+    actions.push(buildSlamText(golem, player));
+  }
 
   for (const action of golem.actions || []) {
     if (typeof action === "string") {
@@ -1140,6 +1178,42 @@ function setupAssemblyToggles() {
     });
   });
 }
+function setAssemblyExpanded(targetId, expanded = true) {
+  const content = document.getElementById(targetId);
+  if (!content) return;
+
+  const button = document.querySelector(`.assembly-toggle[data-target="${targetId}"]`);
+  const icon = button?.querySelector(".toggle-icon");
+
+  if (expanded) {
+    content.classList.remove("is-collapsed");
+    if (icon) icon.textContent = "−";
+  } else {
+    content.classList.add("is-collapsed");
+    if (icon) icon.textContent = "+";
+  }
+}
+
+function autoExpandSelectedSections(index = 1) {
+  const s = suffix(index);
+
+  const templateId = getSelectedTemplateId(index);
+  const formId = getSelectedFormId(index);
+  const engineId = getSelectedEngineId(index);
+  const infusions = getSelectedInfusionIds(createPlayer(index), index);
+
+  if (templateId !== "none") setAssemblyExpanded(`templates${s}-section`, true);
+  if (formId !== "none") setAssemblyExpanded(`constructforms${s}-section`, true);
+  if (engineId !== "none") setAssemblyExpanded(`engines${s}-section`, true);
+  if (infusions.length > 0) setAssemblyExpanded(`infusions${s}-section`, true);
+}
+
+function autoExpandLoadedExample() {
+  if (!findMatchingExampleBuild()) return;
+
+  autoExpandSelectedSections(1);
+  autoExpandSelectedSections(2);
+}
 
 /* =========================
    Save / Load / Share
@@ -1516,14 +1590,21 @@ function renderPrimaryOutputs(mode) {
 
   const golem1 = createGolem(player1, templateId1, engineId1, formId1, infusionIds1);
 
-  const statBlock1 = $("#statBlockOutput") || $("#statBlock");
-  if (statBlock1) {
-    statBlock1.innerHTML = renderStatBlock(
-      golem1,
-      player1,
-      mode === "single" ? "Arcane Golem" : "Primary Golem"
-    );
-  }
+const statBlock1 = $("#statBlockOutput") || $("#statBlock");
+if (statBlock1) {
+  const banner = renderLoadedExampleBanner();
+
+  const output = renderStatBlock(
+    golem1,
+    player1,
+    mode === "single" ? "Arcane Golem" : "Primary Golem"
+  );
+
+  statBlock1.innerHTML = `
+    ${banner}
+    ${output}
+  `;
+}
 
   const summary1 = $("#selectionSummary");
   if (summary1) {
@@ -1866,16 +1947,32 @@ function bindEvents() {
    Init
 ========================= */
 
+function hasBuildQueryString() {
+  return [...new URLSearchParams(window.location.search).keys()].length > 0;
+}
+
 function initBuilder() {
   populateAllCompatibilitySelects();
-  loadFromQueryString();
+
   loadBuild();
+  if (hasBuildQueryString()) {
+    loadFromQueryString();
+  }
+
   populateAllCompatibilitySelects();
   setupAssemblyToggles();
   updateModeUI();
   refreshNamedBuildsDropdown();
   bindEvents();
+
   updateBuilder();
+
+  // 🔥 Auto-expand AFTER render
+  if (hasBuildQueryString()) {
+    setTimeout(() => {
+      autoExpandLoadedExample();
+    }, 0);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", initBuilder);

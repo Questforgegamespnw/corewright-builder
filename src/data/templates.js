@@ -41,9 +41,10 @@ export const TEMPLATES = [
 
       golem.templateName = "Clay";
       golem.con = Math.min((golem.con || 10) + 4, 20);
-
+      golem.regen = Math.max(1, getMod(golem.con || 10) + pb);
+      
       golem.traits.push(
-        `Malleable Reconstruction. At the start of its turn, the golem regains ${pb} hit points if it has at least 1 hit point.`
+        `Malleable Reconstruction. At the start of its turn, the golem regains ${golem.regen} hit points if it has at least 1 hit point.`
       );
       golem.traits.push(
         `Acid Disruption. If the golem takes acid damage, this regeneration doesn't function until the end of its next turn.`

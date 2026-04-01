@@ -40,19 +40,19 @@ export const CONSTRUCT_FORMS = [
     lore:
       "Bestial articulation, coiled limbs, and a predatory motion profile turn the construct into a relentless pursuer.",
     mechanics:
-      "The golem's speed increases by 10 feet. If it moves at least 20 feet straight toward a creature and then hits it with a melee attack on the same turn, the target must succeed on a Strength saving throw against your spell save DC or be knocked prone. If the target is prone, the golem can immediately make a Rend attack as part of the same action sequence.",
+      "The golem's speed increases by 10 feet. If it moves at least 20 feet straight toward a creature and then hits it with a melee attack on the same turn, the target must succeed on a Strength saving throw against your spell save DC or be knocked prone.",
 
     apply(golem) {
       golem.formName = "Predator Form";
       golem.speed += 10;
       golem.dex = Math.min((golem.dex || 10) + 4, 20);
-      golem.attackAbility = "dex";
+      golem.attackAbilityMode = "bestOfStrDex";
 
       golem.traits.push(
         `Form Bias. The golem gains +4 Dexterity, to a maximum of 20.`
       );
       golem.traits.push(
-        `Predatory Precision. The golem uses Dexterity for its attack and damage rolls.`
+        `Predatory Precision. The golem can use Strength or Dexterity, whichever is higher, for its attack and damage rolls.`
       );
 
       golem.actions = [
@@ -70,12 +70,9 @@ export const CONSTRUCT_FORMS = [
     name: "Bulwark Form",
     tags: ["Defense", "Control", "Melee"],
     effect: "Guarding form that protects allies and anchors space",
-    details:
-      "A broad defensive chassis meant to hold doorways, screen allies, and punish creatures that try to slip past it.",
-    lore:
-      "Towering shield-limbs, braced stance geometry, and defensive combat logic make this form ideal for bodyguard duty.",
-    mechanics:
-      "When a creature within 5 feet of the golem attacks a target other than it, the golem can use its reaction to impose disadvantage on that attack. In addition, the area within 5 feet of the golem counts as difficult terrain for hostile creatures while the golem is touching the ground.",
+    details: "...",
+    lore: "...",
+    mechanics: "...",
 
     apply(golem) {
       golem.formName = "Bulwark Form";
@@ -84,47 +81,6 @@ export const CONSTRUCT_FORMS = [
       golem.traits.push(
         `Form Bias. The golem gains +4 Constitution, to a maximum of 20.`
       );
-
-      golem.reactions = [
-        ...(golem.reactions || []),
-        {
-          name: "Intercepting Guard",
-          text: "When a creature within 5 feet of the golem attacks a target other than it, the golem can use its reaction to impose disadvantage on that attack."
-        }
-      ];
-    }
-  },
-
-  {
-    id: "strider",
-    name: "Strider Form",
-    tags: ["Mobility", "Skirmisher"],
-    effect: "Skirmishing form built for rapid repositioning",
-    details:
-      "A long-limbed pursuit frame that excels at crossing the field, diving through openings, and disengaging from pressure.",
-    lore:
-      "Extended stride geometry and spring-loaded joints make this form ideal for fast-moving battlefield roles.",
-    mechanics:
-      "The golem's speed increases by 10 feet. It can take the Dash or Disengage action as a bonus action without requiring your command. If it moves at least 10 feet before making a Slam attack, it does not provoke opportunity attacks from that target for the rest of the turn.",
-
-    apply(golem) {
-      golem.formName = "Strider Form";
-      golem.speed += 10;
-      golem.dex = Math.min((golem.dex || 10) + 3, 20);
-      golem.con = Math.min((golem.con || 10) + 1, 20);
-
-      golem.traits.push(
-        `Form Bias. The golem gains +3 Dexterity and +1 Constitution, to a maximum of 20.`
-      );
-      golem.traits.push(
-        `Slip Through. If the golem moves at least 10 feet before making a Slam attack, it does not provoke opportunity attacks from that target for the rest of the turn.`
-      );
-
-      golem.bonusActionsNoCommand = [
-        ...(golem.bonusActionsNoCommand || []),
-        "dash",
-        "disengage"
-      ];
     }
   },
 
@@ -133,36 +89,35 @@ export const CONSTRUCT_FORMS = [
     name: "Artillery Form",
     tags: ["Ranged", "Control", "Utility"],
     effect: "Ranged bombardment form with arcane projection",
-    details:
-      "A precision siege frame built to fire from the back line rather than commit to direct melee.",
-    lore:
-      "Stabilized projection lattices and targeting vanes allow the construct to launch controlled blasts of force at range.",
-    mechanics:
-      "The golem gains an Arcane Bolt ranged attack. Once on each of its turns when it deals damage to a creature with Arcane Bolt, it can reduce that creature's speed by 10 feet until the start of the golem's next turn.",
+    details: "...",
+    lore: "...",
+    mechanics: "...",
 
     apply(golem) {
       golem.formName = "Artillery Form";
       golem.dex = Math.min((golem.dex || 10) + 3, 20);
       golem.str = Math.min((golem.str || 10) + 1, 20);
 
+      golem.attackAbilityMode = "bestOfStrDex";
+      golem.primaryAttackMode = "ranged";
+
+      golem.rangedAttack = {
+        name: "Arcane Bolt",
+        range: "60/240 ft.",
+        damageDie: "1d10",
+        damageType: "force"
+      };
+
+      golem.slamDamageDie = "1d6";
+
       golem.traits.push(
         `Form Bias. The golem gains +3 Dexterity and +1 Strength, to a maximum of 20.`
       );
-
-      golem.actions = [
-        ...(golem.actions || []),
-        {
-          name: "Arcane Bolt",
-          text: "Ranged Weapon Attack: use the golem's Slam attack bonus, range 60/240 ft., one target. Hit: 1d8 force damage."
-        },
-        {
-          name: "Suppressing Fire",
-          text: "Once on each of the golem's turns when it deals damage with Arcane Bolt, it can reduce the target's speed by 10 feet until the start of the golem's next turn."
-        }
-      ];
+      golem.traits.push(
+        `Bombardment Frame. The golem can use Strength or Dexterity, whichever is higher for attacks.`
+      );
     }
   },
-
   {
     id: "climber",
     name: "Climbing Form",
