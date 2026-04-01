@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Corewright Example Builds</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <div class="nav">
+    <a href="../">Builder</a>
+    <a href="./">Examples</a>
+    <a href="../infusions/">Infusions</a>
+    <a href="../corewright/">Subclass</a>
+  </div>
+
+  <div class="page-shell">
+
+    <section class="builder-panel">
+      <h2>Example Builds</h2>
+
+      <div class="example-build-toolbar">
+        <div class="control-group">
+          <label for="search">Search</label>
+          <input id="search" type="text" placeholder="Name, tag, theme...">
+        </div>
+
+        <div class="control-group">
+          <label for="levelFilter">Level</label>
+          <select id="levelFilter">
+            <option value="all">All</option>
+            <option value="10">Level 10</option>
+            <option value="15">Level 15</option>
+            <option value="17">Level 17+</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label for="roleFilter">Role</label>
+          <select id="roleFilter">
+            <option value="all">All</option>
+            <option value="Tank">Tank</option>
+            <option value="DPS">DPS</option>
+            <option value="Control">Control</option>
+            <option value="Utility">Utility</option>
+            <option value="Bruiser">Bruiser</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label for="difficultyFilter">Difficulty</label>
+          <select id="difficultyFilter">
+            <option value="all">All</option>
+            <option value="Easy">Easy</option>
+            <option value="Moderate">Moderate</option>
+            <option value="Advanced">Advanced</option>
+          </select>
+        </div>
+      </div>
+
+      <p class="section-note">
+        Browse curated builds. Click one to instantly load it into the builder.
+      </p>
+    </section>
+
+    <section class="summary-card" style="margin-top: 20px;">
+      <h2>Build Library</h2>
+      <div id="exampleBuilds"></div>
+    </section>
+
+  </div>
+
+  <script type="module" src="../src/examples.js"></script>
+
+</body>
+</html>

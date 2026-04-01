@@ -509,6 +509,63 @@ a {
 }
 
 /* =========================
+   Concept Art Prompt
+   ========================= */
+
+.prompt-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+#conceptArtPromptOutput {
+  width: 100%;
+  min-height: 240px;
+  resize: vertical;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fffaf0;
+  color: var(--ink);
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+#conceptArtPromptOutput:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+#copyConceptArtPromptBtn {
+  border: 1px solid var(--border);
+  background: var(--nav);
+  color: var(--nav-ink);
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+#copyConceptArtPromptBtn:hover {
+  filter: brightness(1.05);
+}
+.prompt-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#promptModeSelect {
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #8b7355;
+  background: #fdf6e3;
+  font-family: Georgia, serif;
+}
+
+/* =========================
    Buttons
    ========================= */
 
@@ -635,3 +692,91 @@ button.btn:hover,
     background: #fff;
   }
 }
+.save-manager-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 12px;
+}
+
+#saveName,
+#savedBuildsSelect {
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #8b7355;
+  border-radius: 8px;
+  background: #fdf6e3;
+  font-family: inherit;
+  min-width: 220px;
+}
+/* =========================
+   Example Builds Page
+   ========================= */
+
+.example-build-toolbar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.example-build-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.example-build-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.example-build-card .card-preview p {
+  margin: 4px 0;
+  font-size: 0.9rem;
+}
+
+.example-build-card .button-row {
+  margin-top: 10px;
+}
+
+.tag.difficulty-Easy {
+  background: #e7f3e7;
+}
+
+.tag.difficulty-Moderate {
+  background: #f3ecd9;
+}
+
+.tag.difficulty-Advanced {
+  background: #f3dede;
+}
+
+/* Mobile tweak */
+@media (max-width: 800px) {
+  .example-build-toolbar {
+    grid-template-columns: 1fr;
+  }
+}
+/* Layout for example build grid */
+
+#exampleBuilds {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.example-build-card {
+  height: 100%;
+}
+
+/* Responsive */
+@media (max-width: 1080px) {
+  #exampleBuilds {
+    grid-template-columns: 1fr;
+  }
+}
+
+.loaded-example-banner,
+.summary-line.loaded-example-banner {
+  background: #f7eddc;
+  border: 1px solid var(--border);
+}
+

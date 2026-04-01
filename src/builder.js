@@ -2,7 +2,19 @@ import { INFUSIONS } from "./data/infusions.js";
 import { ENGINES } from "./data/engines.js";
 import { TEMPLATES } from "./data/templates.js";
 import { CONSTRUCT_FORMS } from "./data/constructForms.js";
-
+import { EXAMPLE_BUILDS } from "./data/exampleBuilds.js";
+import {
+  FORM_DESCRIPTORS,
+  FORM_DESCRIPTORS_SAFE,
+  TEMPLATE_DESCRIPTORS,
+  TEMPLATE_DESCRIPTORS_SAFE,
+  ENGINE_DESCRIPTORS,
+  ENGINE_DESCRIPTORS_SAFE,
+  INFUSION_DESCRIPTORS,
+  INFUSION_DESCRIPTORS_SAFE,
+  ART_STYLES,
+  ART_STYLES_SAFE
+} from "./data/descriptors.js";
 /* =========================
    Helpers
 ========================= */
@@ -22,6 +34,24 @@ function escapeHtml(str) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function getStatBlockExportText() {
+  const statBlock1 = $("#statBlockOutput") || $("#statBlock");
+  const statBlock2 = $("#secondaryStatBlock");
+
+  if (!statBlock1) return "";
+
+  let text = (statBlock1.innerText || statBlock1.textContent || "").trim();
+
+  if (statBlock2) {
+    const secondaryText = (statBlock2.innerText || statBlock2.textContent || "").trim();
+    if (secondaryText) {
+      text += `\n\n${secondaryText}`;
+    }
+  }
+
+  return text.trim();
 }
 
 function dedupe(arr) {
@@ -94,6 +124,165 @@ function getModeDisplayText(mode) {
   return "Single Golem";
 }
 
+function arraysEqualAsSets(a = [], b = []) {
+  if (a.length !== b.length) return false;
+
+  const aSorted = [...a].sort();
+  const bSorted = [...b].sort();
+
+  return aSorted.every((value, index) => value === bSorted[index]);
+}
+function getPromptMode() {
+  return $("#promptModeSelect")?.value || "standard";
+}
+/* =========================
+   Concept Art Prompt System
+========================= */
+
+function buildPromptRoleText({ formId, templateId, engineId, infusionIds = [] }) {
+  const tags = [];
+
+  if (formId === "brawler") tags.push("powerful frontline construct");
+  if (formId === "predator") tags.push("fast, agile pursuit construct");
+  if (formId === "bulwark") tags.push("immovable defensive guardian");
+  if (formId === "strider") tags.push("swift skirmisher");
+  if (formId === "artillery") tags.push("ranged support platform");
+  if (formId === "climber") tags.push("vertical traversal specialist");
+  if (formId === "aquatic") tags.push("water-adapted pursuit construct");
+  if (formId === "glider") tags.push("aerial mobility construct");
+
+  if (templateId === "stone") tags.push("heavy and enduring");
+  if (templateId === "clay") tags.push("self-mending");
+  if (templateId === "wood") tags.push("agile and hand-crafted");
+  if (templateId === "metal") tags.push("heavily armored");
+  if (templateId === "cloth") tags.push("light and uncanny");
+  if (templateId === "bone") tags.push("sharp-featured and striking");
+  if (templateId === "blood") tags.push("mysterious and alchemical");
+
+  if (engineId === "flame") tags.push("radiating heat and fire");
+  if (engineId === "frost") tags.push("cold and suppressive");
+  if (engineId === "storm") tags.push("charged with speed and lightning");
+  if (engineId === "aether") tags.push("arcane and levitating");
+  if (engineId === "earth") tags.push("grounded and powerful");
+
+  if (infusionIds.includes("war_construct")) tags.push("built for sustained action");
+  if (infusionIds.includes("reinforced_frame")) tags.push("visibly reinforced");
+  if (infusionIds.includes("accelerated_servos")) tags.push("built for sudden speed");
+  if (infusionIds.includes("overcharged_core")) tags.push("brightly energized");
+  if (infusionIds.includes("cognitive_matrix")) tags.push("eerily intelligent");
+  if (infusionIds.includes("colossus")) tags.push("monumental in scale");
+
+  return tags.length ? tags.join(", ") : "arcane, hand-crafted, and battle-ready";
+}
+
+function buildPromptPoseText({ formId, engineId }) {
+  if (formId === "predator") return "in a low, agile motion pose";
+  if (formId === "bulwark") return "braced in a defensive guard stance";
+  if (formId === "strider") return "in a fast-moving skirmisher stride";
+  if (formId === "artillery") return "locked into a ranged casting stance";
+  if (formId === "climber") return "clinging to a wall or descending from above";
+  if (formId === "aquatic") return "moving through water with smooth control";
+  if (formId === "glider") return "gliding downward in a controlled descent";
+  if (engineId === "storm") return "surging forward with crackling momentum";
+  if (engineId === "flame") return "standing amid heat shimmer and ember glow";
+  return "standing in a ready stance";
+}
+
+function generateConceptArtPrompt({ formId, templateId, engineId, infusionIds = [], style = "sheet" }) {
+  const mode = getPromptMode();
+  const isSafe = mode === "safe";
+
+  const formMap = isSafe ? FORM_DESCRIPTORS_SAFE : FORM_DESCRIPTORS;
+  const templateMap = isSafe ? TEMPLATE_DESCRIPTORS_SAFE : TEMPLATE_DESCRIPTORS;
+  const engineMap = isSafe ? ENGINE_DESCRIPTORS_SAFE : ENGINE_DESCRIPTORS;
+  const infusionMap = isSafe ? INFUSION_DESCRIPTORS_SAFE : INFUSION_DESCRIPTORS;
+  const styleMap = isSafe ? ART_STYLES_SAFE : ART_STYLES;
+
+  const formText =
+    formMap[formId] ||
+    "artificer-built magical construct with a clear silhouette";
+
+  const templateText =
+    templateMap[templateId] ||
+    "crafted arcane chassis with readable material detail";
+
+  const engineText =
+    engineMap[engineId] ||
+    "faint magical energy housed in its core";
+
+  const infusionText = infusionIds
+    .map((id) => infusionMap[id])
+    .filter(Boolean)
+    .join(", ");
+
+  const roleText = buildPromptRoleText({ formId, templateId, engineId, infusionIds });
+  const poseText = buildPromptPoseText({ formId, engineId });
+  const styleText = styleMap[style] || styleMap.sheet;
+
+  return [
+    "Fantasy construct concept art, a magically animated artificer-built golem, full-body illustration, clear readable silhouette.",
+    "",
+    `Base form: ${formText}.`,
+    `Material chassis: ${templateText}.`,
+    `Engine core: ${engineText}.`,
+    `Visible upgrades: ${infusionText || "minimal external upgrades, clean chassis lines, and restrained magical detailing"}.`,
+    "",
+    `The construct should look hand-crafted but arcane, with believable joints, reinforced plating, engraved runes, magical core housing, and elegant mechanical anatomy. Emphasize ${roleText}. Pose it ${poseText}.`,
+    "",
+    styleText
+  ].join("\n");
+}
+
+function renderConceptArtPrompt(primary, secondary, mode) {
+  const output = $("#conceptArtPromptOutput");
+  if (!output) return;
+
+  let text = generateConceptArtPrompt(primary);
+
+  if ((mode === "multi" || mode === "fusion") && secondary) {
+    text += `\n\n--- SECOND GOLEM ---\n\n`;
+    text += generateConceptArtPrompt(secondary);
+  }
+
+  output.value = text;
+}
+
+async function copyConceptArtPrompt() {
+  const output = $("#conceptArtPromptOutput");
+  const button = $("#copyConceptArtPromptBtn");
+  if (!output) return;
+
+  const text = output.value || "";
+  if (!text.trim()) return;
+
+  let copied = false;
+
+  try {
+    await navigator.clipboard.writeText(text);
+    copied = true;
+  } catch {
+    try {
+      output.removeAttribute("readonly");
+      output.focus();
+      output.select();
+      output.setSelectionRange(0, text.length);
+      copied = document.execCommand("copy");
+      output.setAttribute("readonly", "readonly");
+    } catch {
+      output.setAttribute("readonly", "readonly");
+      copied = false;
+    }
+  }
+
+  if (button) {
+    const originalText = button.textContent;
+    button.textContent = copied ? "Copied!" : "Press Ctrl+C";
+    setTimeout(() => {
+      button.textContent = originalText;
+    }, 1400);
+  }
+}
+
 /* =========================
    Data lookup
 ========================= */
@@ -112,6 +301,10 @@ function getInfusionById(id) {
 
 function getConstructFormById(id) {
   return CONSTRUCT_FORMS.find((f) => f.id === id) || null;
+}
+
+function getExampleBuildById(id) {
+  return EXAMPLE_BUILDS.find((b) => b.id === id) || null;
 }
 
 /* =========================
@@ -553,6 +746,45 @@ function renderSelectionSummaryBlock(player, templateId, engineId, formId, infus
   `;
 }
 
+function findMatchingExampleBuild() {
+  const state = getBuildState();
+
+  return (
+    EXAMPLE_BUILDS.find((build) => {
+      return (
+        (build.mode || "single") === state.mode &&
+        Number(build.level) === Number(state.level) &&
+        Number(build.intMod) === Number(state.intMod) &&
+        (build.template || "none") === state.template &&
+        (build.engine || "none") === state.engine &&
+        (build.form || "none") === state.form &&
+        arraysEqualAsSets(build.infusions || [], state.infusions || [])
+      );
+    }) || null
+  );
+}
+
+function renderLoadedExampleBanner() {
+  const match = findMatchingExampleBuild();
+  if (!match) return "";
+
+  const upgradeName = match.upgradeTo
+    ? getExampleBuildById(match.upgradeTo)?.name || match.upgradeTo
+    : null;
+
+  const upgradeText = upgradeName
+    ? `<br><strong>Upgrade Path:</strong> ${escapeHtml(upgradeName)}`
+    : "";
+
+  return `
+    <div class="summary-line loaded-example-banner">
+      <strong>Loaded Example:</strong> ${escapeHtml(match.name)}<br>
+      <strong>Role:</strong> ${escapeHtml(match.role)}<br>
+      <strong>Difficulty:</strong> ${escapeHtml(match.difficulty)}${upgradeText}
+    </div>
+  `;
+}
+
 /* =========================
    UI Rendering
 ========================= */
@@ -707,7 +939,7 @@ function renderEngineCards(index = 1) {
   }).join("");
 
   container.innerHTML = `
-    ${!enginesUnlocked ? `<div class="section-note">Engine Cores unlock at level 17. Until then, only None is available.</div>` : ""}
+    ${!enginesUnlocked ? `<div class="section-note">Engine Cores unlock at level 15. Until then, only None is available.</div>` : ""}
     ${cards}
   `;
 }
@@ -987,26 +1219,6 @@ function applyBuildState(state) {
   setSelectedInfusions(2, state.infusions2 || []);
 }
 
-/* =========================
-   Persistence
-========================= */
-
-function saveBuild() {
-  localStorage.setItem("corewright-build", JSON.stringify(getBuildState()));
-}
-
-function loadBuild() {
-  const raw = localStorage.getItem("corewright-build");
-  if (!raw) return;
-
-  try {
-    const state = JSON.parse(raw);
-    applyBuildState(state);
-  } catch (err) {
-    console.error("Failed to load saved build:", err);
-  }
-}
-
 function updateShareLink() {
   const shareEl = $("#shareLink");
   if (!shareEl) return;
@@ -1066,6 +1278,209 @@ function loadFromQueryString() {
 }
 
 /* =========================
+   Persistence
+========================= */
+
+const WORKING_BUILD_KEY = "corewright-build";
+const NAMED_BUILDS_KEY = "corewright-named-builds";
+
+let lastAutoGeneratedSaveName = "";
+
+function saveBuild() {
+  localStorage.setItem(WORKING_BUILD_KEY, JSON.stringify(getBuildState()));
+}
+
+function loadBuild() {
+  const raw = localStorage.getItem(WORKING_BUILD_KEY);
+  if (!raw) return;
+
+  try {
+    const state = JSON.parse(raw);
+    applyBuildState(state);
+  } catch (err) {
+    console.error("Failed to load saved build:", err);
+  }
+}
+
+function getNamedBuilds() {
+  try {
+    return JSON.parse(localStorage.getItem(NAMED_BUILDS_KEY)) || [];
+  } catch (err) {
+    console.error("Failed to read named builds:", err);
+    return [];
+  }
+}
+
+function setNamedBuilds(builds) {
+  localStorage.setItem(NAMED_BUILDS_KEY, JSON.stringify(builds));
+}
+
+function normalizeBuildName(name) {
+  return String(name || "").trim();
+}
+
+function buildSuggestedSaveName() {
+  const mode = getMode();
+
+  const template1 = getTemplateById(getSelectedTemplateId(1))?.name || "No Template";
+  const form1 = getConstructFormById(getSelectedFormId(1))?.name || "No Form";
+  const engine1 = getEngineById(getSelectedEngineId(1))?.name || "No Engine";
+
+  const primaryLabel = `${template1} ${form1}`.replace(/\s+/g, " ").trim();
+
+  if (mode === "single") {
+    return `${primaryLabel} - ${engine1}`;
+  }
+
+  const template2 = getTemplateById(getSelectedTemplateId(2))?.name || "No Template";
+  const form2 = getConstructFormById(getSelectedFormId(2))?.name || "No Form";
+
+  const secondaryLabel = `${template2} ${form2}`.replace(/\s+/g, " ").trim();
+
+  if (mode === "fusion") {
+    return `Fusion: ${primaryLabel} + ${secondaryLabel}`;
+  }
+
+  return `Dual Build: ${primaryLabel} + ${secondaryLabel}`;
+}
+
+function maybeAutoFillSaveName(force = false) {
+  const input = $("#saveName");
+  if (!input) return;
+
+  const suggestion = buildSuggestedSaveName();
+  const current = normalizeBuildName(input.value);
+
+  const shouldReplace =
+    force ||
+    current === "" ||
+    current === lastAutoGeneratedSaveName;
+
+  if (shouldReplace) {
+    input.value = suggestion;
+    lastAutoGeneratedSaveName = suggestion;
+  }
+}
+
+function refreshNamedBuildsDropdown() {
+  const select = $("#savedBuildsSelect");
+  if (!select) return;
+
+  const currentValue = select.value;
+  const builds = getNamedBuilds();
+
+  select.innerHTML = `<option value="">-- Select Saved Build --</option>`;
+
+  for (const build of builds) {
+    const option = document.createElement("option");
+    option.value = build.name;
+    option.textContent = build.name;
+    select.appendChild(option);
+  }
+
+  if (builds.some((b) => b.name === currentValue)) {
+    select.value = currentValue;
+  }
+}
+
+function saveNamedBuild() {
+  const input = $("#saveName");
+  if (!input) return;
+
+  maybeAutoFillSaveName();
+
+  const name = normalizeBuildName(input.value);
+  if (!name) {
+    alert("Please enter a build name.");
+    return;
+  }
+
+  const builds = getNamedBuilds();
+  const state = getBuildState();
+
+  const record = {
+    name,
+    updatedAt: new Date().toISOString(),
+    state,
+  };
+
+  const existingIndex = builds.findIndex(
+    (b) => b.name.toLowerCase() === name.toLowerCase()
+  );
+
+  if (existingIndex >= 0) {
+    builds[existingIndex] = record;
+  } else {
+    builds.push(record);
+  }
+
+  builds.sort((a, b) => a.name.localeCompare(b.name));
+
+  setNamedBuilds(builds);
+  refreshNamedBuildsDropdown();
+
+  const select = $("#savedBuildsSelect");
+  if (select) select.value = name;
+
+  lastAutoGeneratedSaveName = name;
+  saveBuild();
+  alert(`Saved build "${name}".`);
+}
+
+function loadNamedBuild() {
+  const select = $("#savedBuildsSelect");
+  if (!select || !select.value) {
+    alert("Please select a saved build to load.");
+    return;
+  }
+
+  const builds = getNamedBuilds();
+  const selected = builds.find((b) => b.name === select.value);
+
+  if (!selected) {
+    alert("That saved build could not be found.");
+    refreshNamedBuildsDropdown();
+    return;
+  }
+
+  applyBuildState(selected.state);
+
+  const input = $("#saveName");
+  if (input) input.value = selected.name;
+
+  lastAutoGeneratedSaveName = selected.name;
+  updateBuilder();
+  saveBuild();
+}
+
+function deleteNamedBuild() {
+  const select = $("#savedBuildsSelect");
+  if (!select || !select.value) {
+    alert("Please select a saved build to delete.");
+    return;
+  }
+
+  const name = select.value;
+  const confirmed = confirm(`Delete saved build "${name}"?`);
+  if (!confirmed) return;
+
+  const builds = getNamedBuilds().filter((b) => b.name !== name);
+  setNamedBuilds(builds);
+  refreshNamedBuildsDropdown();
+
+  const input = $("#saveName");
+  if (input && input.value === name) {
+    input.value = "";
+  }
+
+  if (lastAutoGeneratedSaveName === name) {
+    lastAutoGeneratedSaveName = "";
+  }
+
+  maybeAutoFillSaveName(true);
+}
+
+/* =========================
    Render pipeline
 ========================= */
 
@@ -1112,14 +1527,16 @@ function renderPrimaryOutputs(mode) {
 
   const summary1 = $("#selectionSummary");
   if (summary1) {
-    summary1.innerHTML = renderSelectionSummaryBlock(
-      player1,
-      templateId1,
-      engineId1,
-      formId1,
-      infusionIds1,
-      mode === "single" ? "Golem Summary" : "Primary Golem"
-    );
+    summary1.innerHTML =
+      renderLoadedExampleBanner() +
+      renderSelectionSummaryBlock(
+        player1,
+        templateId1,
+        engineId1,
+        formId1,
+        infusionIds1,
+        mode === "single" ? "Golem Summary" : "Primary Golem"
+      );
   }
 
   return { player1, templateId1, engineId1, formId1, infusionIds1 };
@@ -1188,11 +1605,33 @@ function updateBuilder() {
   updateModeUI();
   renderSelectionPanels(1);
   renderSelectionPanels(2);
-  renderPrimaryOutputs(mode);
-  renderSecondaryOutputs(mode);
+
+  const primary = renderPrimaryOutputs(mode);
+  const secondary = renderSecondaryOutputs(mode);
+
   appendFusionSummaryNote(mode);
+
+  renderConceptArtPrompt(
+    {
+      formId: primary.formId1,
+      templateId: primary.templateId1,
+      engineId: primary.engineId1,
+      infusionIds: primary.infusionIds1
+    },
+    secondary
+      ? {
+          formId: secondary.formId2,
+          templateId: secondary.templateId2,
+          engineId: secondary.engineId2,
+          infusionIds: secondary.infusionIds2
+        }
+      : null,
+    mode
+  );
+
   updateShareLink();
   saveBuild();
+  maybeAutoFillSaveName();
 }
 
 /* =========================
@@ -1259,6 +1698,7 @@ function bindEvents() {
       target.matches("#template2") ||
       target.matches("#constructForm2") ||
       target.matches("#engine2") ||
+      target.matches("#promptModeSelect") ||
       target.matches('input[name="infusions"]') ||
       target.matches('input[name="infusions2"]')
     ) {
@@ -1311,7 +1751,7 @@ function bindEvents() {
   const saveBtn = $("#saveBuild");
   if (saveBtn) {
     saveBtn.addEventListener("click", () => {
-      saveBuild();
+      saveNamedBuild();
       updateBuilder();
     });
   }
@@ -1319,14 +1759,69 @@ function bindEvents() {
   const loadBtn = $("#loadBuildBtn");
   if (loadBtn) {
     loadBtn.addEventListener("click", () => {
-      loadBuild();
+      loadNamedBuild();
+    });
+  }
+
+  const deleteBtn = $("#deleteBuildBtn");
+  if (deleteBtn) {
+    deleteBtn.addEventListener("click", () => {
+      deleteNamedBuild();
       updateBuilder();
+    });
+  }
+
+  const saveNameInput = $("#saveName");
+  if (saveNameInput) {
+    saveNameInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        saveNamedBuild();
+        updateBuilder();
+      }
     });
   }
 
   const printBtn = $("#printBuild");
   if (printBtn) {
     printBtn.addEventListener("click", () => window.print());
+  }
+
+  const copyStatBlockBtn = $("#copyStatBlockBtn");
+  if (copyStatBlockBtn) {
+    copyStatBlockBtn.addEventListener("click", async () => {
+      const text = getStatBlockExportText();
+      if (!text) return;
+
+      try {
+        await navigator.clipboard.writeText(text);
+        const originalText = copyStatBlockBtn.textContent;
+        copyStatBlockBtn.textContent = "Copied!";
+        setTimeout(() => {
+          copyStatBlockBtn.textContent = originalText;
+        }, 1200);
+      } catch {
+        const temp = document.createElement("textarea");
+        temp.value = text;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand("copy");
+        temp.remove();
+
+        const originalText = copyStatBlockBtn.textContent;
+        copyStatBlockBtn.textContent = "Copied!";
+        setTimeout(() => {
+          copyStatBlockBtn.textContent = originalText;
+        }, 1200);
+      }
+    });
+  }
+
+  const copyPromptBtn = $("#copyConceptArtPromptBtn");
+  if (copyPromptBtn) {
+    copyPromptBtn.addEventListener("click", () => {
+      copyConceptArtPrompt();
+    });
   }
 
   const copyBtn = $("#copyShareLink");
@@ -1349,15 +1844,8 @@ function bindEvents() {
   const downloadBtn = $("#downloadTxt");
   if (downloadBtn) {
     downloadBtn.addEventListener("click", () => {
-      const statBlock = $("#statBlockOutput") || $("#statBlock");
-      const statBlock2 = $("#secondaryStatBlock");
-      if (!statBlock) return;
-
-      let text = statBlock.innerText || statBlock.textContent || "";
-
-      if (statBlock2 && statBlock2.innerText.trim()) {
-        text += "\n\n" + (statBlock2.innerText || statBlock2.textContent || "");
-      }
+      const text = getStatBlockExportText();
+      if (!text) return;
 
       const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
       const url = URL.createObjectURL(blob);
@@ -1385,6 +1873,7 @@ function initBuilder() {
   populateAllCompatibilitySelects();
   setupAssemblyToggles();
   updateModeUI();
+  refreshNamedBuildsDropdown();
   bindEvents();
   updateBuilder();
 }

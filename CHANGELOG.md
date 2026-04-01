@@ -5,6 +5,101 @@ All notable changes to the **Corewright Builder** project will be documented in 
 This project follows a simplified version of [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and uses semantic-style versioning.
 
 ---
+## v3.1 – Visual & UX Expansion Update
+
+### ✨ New Features
+
+#### 🎨 Concept Art Prompt Generator
+- Automatically generates detailed, copy-ready concept art prompts based on build selections
+- Integrates:
+  - Construct Form
+  - Material Template
+  - Engine Core
+  - Infusions
+- Outputs structured prompts for use in tools like Canva and other image generators
+
+#### 🔄 Prompt Mode Toggle
+- Added dropdown to switch between:
+  - **Standard Prompt** (full creative flavor)
+  - **Canva-Safe Prompt** (filtered language for higher compatibility)
+- Helps reduce content filtering issues in external tools
+
+#### 📋 Copy Prompt Button
+- One-click copy functionality for generated prompts
+- Includes fallback handling for browser compatibility
+- Visual feedback on successful copy
+
+---
+
+### 🧠 System Improvements
+
+#### 🧩 Descriptor-Based Prompt Architecture
+- Introduced centralized `descriptors.js`
+- Prompt generation now fully driven by:
+  - Form descriptors
+  - Template descriptors
+  - Engine descriptors
+  - Infusion descriptors
+- Enables scalable expansion without modifying core logic
+
+#### 🛡️ Safe Descriptor Layer
+- Added parallel “safe” descriptor sets
+- Eliminates need for runtime string sanitization
+- Improves reliability across image generation platforms
+
+#### 🔌 Builder Integration
+- Prompt system integrated into main `updateBuilder()` pipeline
+- Supports:
+  - Single Golem
+  - Multi-Golem
+  - Fusion Mode (dual prompt output)
+
+---
+
+### 🎛️ UI / UX Enhancements
+
+#### 🧭 Prompt Control Panel
+- Added Prompt Mode selector to prompt UI
+- Integrated into existing prompt card layout
+
+#### 🎨 Prompt Card Improvements
+- Improved alignment of controls and buttons
+- Consistent styling with parchment UI theme
+
+#### 📱 Responsive Behavior
+- Prompt controls adapt cleanly on smaller screens
+
+---
+
+### 🧪 Stability & Fixes
+
+- Fixed clipboard reliability issues for prompt copying
+- Removed fragile string sanitization system
+- Added safe fallback handling for missing descriptor entries
+- Improved event binding (Prompt Mode updates now trigger live refresh)
+
+---
+
+### 📌 Known Minor Issues
+
+- Some descriptor combinations (notably **Predator form**) may trigger content warnings in certain image tools  
+  *(Planned refinement in a future language tuning pass)*
+-Need to introduce either/or wording for str/dex attack options, allowing the use of whichever stat is higher. 
+-Artillery form does not currently specify a ranged attack. It should. 
+
+---
+
+### 🚀 Planned / Upcoming
+
+- 📚 Example Builds Compendium (click-to-load builds)
+- 🎭 Additional Prompt Styles:
+  - Cinematic
+  - Minimal
+  - Token / Portrait modes
+- 🧠 Fully data-driven role and pose descriptors
+- 🔗 Expanded sharing and export options
+
+---
 
 ## [3.0.0] - Core Systems & Forms Update
 

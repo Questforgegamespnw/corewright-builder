@@ -11,6 +11,7 @@
   <!-- ===== NAVIGATION ===== -->
   <div class="nav">
     <a href="./">Builder</a>
+    <a href="./examples/">Examples</a>
     <a href="./infusions/">Infusions</a>
     <a href="./corewright/">Subclass</a>
   </div>
@@ -104,9 +105,18 @@
           <div class="action-row">
             <button id="printBuild" type="button">Print / Save PDF</button>
             <button id="downloadTxt" type="button">Download .txt</button>
-            <button id="saveBuild" type="button">Save Build</button>
-            <button id="loadBuildBtn" type="button">Load Build</button>
+            <button id="saveBuild" type="button">Save Named Build</button>
+            <button id="loadBuildBtn" type="button">Load Selected</button>
+            <button id="deleteBuildBtn" type="button">Delete Selected</button>
+            <button id="copyStatBlockBtn" type="button">Copy Stat Block</button>
             <button id="copyShareLink" type="button">Share Build</button>
+          </div>
+
+          <div class="save-manager-row">
+            <input id="saveName" type="text" placeholder="Enter build name">
+            <select id="savedBuildsSelect">
+              <option value="">-- Select Saved Build --</option>
+            </select>
           </div>
 
           <input id="shareLink" type="text" readonly style="width:100%; margin-top:12px;">
@@ -223,6 +233,26 @@
             <h2>Construct Stat Block</h2>
             <div id="statBlockOutput"></div>
             <div id="secondaryStatBlock" style="display:none; margin-top:16px;"></div>
+          </div>
+
+          <div class="statblock-card">
+            <h2>Concept Art Prompt</h2>
+
+            <div class="prompt-card-actions">
+              <label for="promptModeSelect">Prompt Mode</label>
+              <select id="promptModeSelect">
+                <option value="standard">Standard Prompt</option>
+                <option value="safe">Canva-Safe Prompt</option>
+              </select>
+              <button id="copyConceptArtPromptBtn" type="button">Copy Prompt</button>
+            </div>
+
+            <textarea
+              id="conceptArtPromptOutput"
+              rows="12"
+              readonly
+              placeholder="Your generated concept art prompt will appear here..."
+            ></textarea>
           </div>
         </aside>
 
