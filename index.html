@@ -34,35 +34,39 @@
         <section class="builder-panel">
           <h2>Assembly</h2>
 
-          <!-- ===== TOP CONTROLS ===== -->
-          <div class="builder-top-controls">
-            <div class="control-group">
-              <label for="level">Level</label>
-              <input id="level" type="number" value="10" min="1" max="20">
-            </div>
+<!-- ===== TOP CONTROLS ===== -->
+<div class="builder-top-controls">
+  <div class="control-group">
+    <label for="level">Level</label>
+    <input id="level" type="number" value="10" min="1" max="20">
+  </div>
 
-            <div class="control-group">
-              <label for="intMod">INT Mod</label>
-              <input id="intMod" type="number" value="4" min="-5" max="10">
-            </div>
+  <div class="control-group">
+    <label for="intMod">INT Mod</label>
+    <input id="intMod" type="number" value="4" min="-5" max="10">
+  </div>
 
-            <div class="control-group">
-              <label for="mode">Mode</label>
-              <select id="mode">
-                <option value="single">Single Golem</option>
-                <option value="multi">Multi-Golem</option>
-                <option value="fusion">Fusion Mode</option>
-              </select>
-            </div>
-          </div>
+  <div class="control-group">
+    <label for="mode">Mode</label>
+    <select id="mode">
+      <option value="single">Single Golem</option>
+      <option value="awakened">Awakened Core (17th Level)</option>
+      <option value="multi">Multi-Golem (17th Level)</option>
+      <option value="fusion">Fusion Mode (17th Level)</option>
+    </select>
+    <div id="modeLockNote" class="section-note" style="display:none; margin-top:8px;">
+      Penultimate Golemmancy options unlock at 17th level.
+    </div>
+  </div>
+</div>
 
-          <!-- ===== PRIMARY ASSEMBLY PANEL ===== -->
-          <div class="assembly-panel">
+<!-- ===== PRIMARY ASSEMBLY PANEL ===== -->
+  <div class="assembly-panel">
 
-            <div class="assembly-card">
-              <button class="assembly-toggle" type="button" data-target="templates-section">
-                <span>Templates</span>
-                <span class="toggle-icon">+</span>
+    <div class="assembly-card">
+        <button class="assembly-toggle" type="button" data-target="templates-section">
+            <span>Templates</span>
+            <span class="toggle-icon">+</span>
               </button>
               <div class="assembly-content is-collapsed" id="templates-section">
                 <div id="templates"></div>

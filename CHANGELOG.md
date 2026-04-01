@@ -4,6 +4,116 @@ All notable changes to the **Corewright Builder** project will be documented in 
 
 This project follows a simplified version of [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and uses semantic-style versioning.
 
+---
+
+## [3.3] - Corewright Capstone Expansion & Builder Integration
+### 🔥 Major Features
+
+#### Corewright Fusion (Fully Implemented)
+- Added complete Fusion Mode system to builder
+- Player merges with construct using golem physical stats and player mental stats
+- New Fusion traits:
+  - Arcane Co-Pilot (INT to attack damage)
+  - Overclocked Conduit Frame (+2 spell attack / save DC + INT to spell damage)
+  - Integrated Combat Matrix (STR/DEX flexibility)
+  - Spell Conduit (touch spell delivery)
+  - Unified Vitality (temp HP on activation)
+- Fusion now:
+  - lasts up to 1 minute
+  - ends at 0 HP
+  - destroys construct body (core remains intact)
+  - allows early disengage
+- Fusion Mode now renders as a **single stat block transformation**
+- Added **Fused Form visual tag** to stat block
+
+---
+
+#### Awakened Core (Newly Integrated)
+- Added Awakened Core as a selectable capstone mode
+- Implemented mental stat upgrades:
+  - INT → 16
+  - WIS → 14
+  - CHA → 14
+- Added awakened traits:
+  - Autonomous reasoning
+  - Independent initiative and actions
+  - Saving throw bonuses
+- Added **Awakened Skills display**:
+  - Investigation
+  - Perception
+  - Insight
+  - Persuasion
+  - Intimidation
+- Skills now display with calculated modifiers for quick reference
+
+---
+
+#### Dual Core Convergence (Stabilized)
+- Confirmed dual-golem system stability
+- Maintains two constructs with halved HP pools
+- Clean UI separation from Fusion and Awakened modes
+
+---
+
+### ⚙️ Builder Improvements
+
+- Added **Level 17 capstone gating**
+  - Fusion, Awakened, and Multi modes locked until level 17
+  - Auto-reverts to Single mode if level drops below 17
+- Updated mode system to support:
+  - Single
+  - Awakened
+  - Multi
+  - Fusion
+- Improved stat block rendering:
+  - Conditional trait injection (Fusion / Awakened)
+  - Temporary HP display support
+- Added contextual summary banners for:
+  - Fusion Mode
+  - Awakened Core
+
+---
+
+### 🎨 UI / UX Enhancements
+
+- Added **Fusion visual tag** to stat block header
+- Improved readability of capstone modes in summary panel
+- Fixed layout issue caused by improper HTML nesting in mode controls
+- Maintained responsive layout across builder panels
+
+---
+
+### 🧠 Design Improvements
+
+- Fully differentiated level 17 feature identities:
+  - Fusion → Player becomes the construct
+  - Awakened → Construct gains autonomy and intelligence
+  - Dual → Player commands multiple constructs
+- Improved 5e wording consistency across all features
+- Synced subclass page with builder logic
+
+---
+
+### 🐛 Fixes
+
+- Fixed missing Awakened mode in builder dropdown
+- Fixed Fusion stat block title fallback issue
+- Fixed summary panel not updating for Awakened mode
+- Fixed HTML structure causing layout collapse into single column
+- Restored capstone lock messaging visibility
+
+---
+
+### 🚀 Notes
+
+This release marks the **complete implementation of Corewright’s level 17 feature suite** within the builder.
+
+All capstone features are now:
+- mechanically functional
+- visually represented
+- and aligned with subclass documentation
+
+---
 ## [3.2.0] – Corewright UX & Combat Refinement Update
 
 ### ✨ Added
