@@ -395,8 +395,43 @@ a {
 
 .select-card.selected {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-soft);
+  box-shadow:
+    0 0 0 2px var(--accent-soft),
+    0 8px 20px rgba(123, 95, 59, 0.12);
   background: #fff7ea;
+  transform: translateY(-1px);
+  animation: selectedCardPulse 0.45s ease-out;
+}
+.select-card.selected .select-card-header strong {
+  color: #5f4729;
+}
+
+.select-card.selected .tag {
+  background: #ead8b8;
+  border-color: var(--accent);
+  color: #4c3922;
+}
+
+@keyframes selectedCardPulse {
+  0% {
+    box-shadow:
+      0 0 0 0 rgba(123, 95, 59, 0.28),
+      0 0 0 2px var(--accent-soft);
+    transform: translateY(0) scale(0.995);
+  }
+  60% {
+    box-shadow:
+      0 0 0 8px rgba(123, 95, 59, 0),
+      0 0 0 2px var(--accent-soft),
+      0 10px 22px rgba(123, 95, 59, 0.14);
+    transform: translateY(-1px) scale(1.01);
+  }
+  100% {
+    box-shadow:
+      0 0 0 2px var(--accent-soft),
+      0 8px 20px rgba(123, 95, 59, 0.12);
+    transform: translateY(-1px) scale(1);
+  }
 }
 
 .select-card.locked {
@@ -494,6 +529,16 @@ a {
   padding-bottom: 4px;
 }
 
+.infusion-card.selected {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 2px var(--accent-soft),
+    0 8px 20px rgba(123, 95, 59, 0.12);
+  background: #fff7ea;
+  transform: translateY(-1px);
+  animation: selectedCardPulse 0.45s ease-out;
+}
+
 .infusion-pill-row {
   display: flex;
   flex-wrap: wrap;
@@ -574,6 +619,13 @@ a {
   font-style: italic;
   color: var(--muted);
   margin-bottom: 12px;
+}
+
+.fusion-tag {
+  margin-top: 4px;
+  font-style: italic;
+  color: #d4b25a;
+  text-shadow: 0 0 6px rgba(212, 178, 90, 0.35);
 }
 
 .stat-block hr {

@@ -124,6 +124,7 @@ function getPreviewText(item, player = null) {
 }
 
 function getModeDisplayText(mode) {
+  if (mode === "awakened") return "Awakened Core";
   if (mode === "multi") return "Multi-Golem";
   if (mode === "fusion") return "Fusion Mode";
   return "Single Golem";
@@ -500,7 +501,34 @@ function enforceEngineRestrictions(index = 1) {
     setSelectedEngineId(index, "none");
   }
 }
+function enforceCapstoneModeRestrictions() {
+  const level = createPlayer(1).level;
+  const modeSelect = $("#mode");
+  const modeLockNote = $("#modeLockNote");
 
+  if (!modeSelect) return;
+
+  const awakenedOption = modeSelect.querySelector('option[value="awakened"]');
+  const multiOption = modeSelect.querySelector('option[value="multi"]');
+  const fusionOption = modeSelect.querySelector('option[value="fusion"]');
+
+  const capstoneUnlocked = level >= 17;
+
+  if (awakenedOption) awakenedOption.disabled = !capstoneUnlocked;
+  if (multiOption) multiOption.disabled = !capstoneUnlocked;
+  if (fusionOption) fusionOption.disabled = !capstoneUnlocked;
+
+  if (
+    !capstoneUnlocked &&
+    (modeSelect.value === "awakened" || modeSelect.value === "multi" || modeSelect.value === "fusion")
+  ) {
+    modeSelect.value = "single";
+  }
+
+  if (modeLockNote) {
+    modeLockNote.style.display = capstoneUnlocked ? "none" : "block";
+  }
+}
 /* =========================
    Golem construction
 ========================= */
@@ -574,6 +602,54 @@ function createGolem(
   }
 
   return finalizeDerivedData(golem);
+}
+function createFusionGolem(player, golem) {
+  const fusion = JSON.parse(JSON.stringify(golem));
+  const intBonus = player.intMod;
+
+  fusion.attackAbilityMode = "bestOfStrDex";
+  fusion.canDeliverTouchSpells = true;
+  fusion.fusedTempHp = player.level;
+  fusion.fusionState = true;
+
+  fusion.traits = [
+    "Corewright Fusion. The artificer and construct are merged into a single fused form for up to 1 minute. The fused form acts on the artificer's turn and doesn't require commands to take actions.",
+    `Arcane Co-Pilot. Once on each of its turns, the fused form can add ${intBonus >= 0 ? `+${intBonus}` : intBonus} to the damage of one attack it makes.`,
+    `Overclocked Conduit Frame. The fused form gains a +2 bonus to spell attack rolls and to its spell save DC. In addition, once on each of its turns when it casts a spell that deals damage, it can add ${intBonus >= 0 ? `+${intBonus}` : intBonus} to one damage roll of that spell.`,
+    "Integrated Combat Matrix. The fused form can use Strength or Dexterity, whichever is higher, for the attack and damage rolls of its weapon attacks.",
+    "Spell Conduit. When you cast a spell with a range of touch, the fused form can deliver the spell as if it were the caster.",
+    `Unified Vitality. When the fusion begins, the fused form gains ${player.level} temporary hit points.`,
+    "If the fused form is reduced to 0 hit points, the fusion ends and the construct's body is destroyed, though its core remains intact. The artificer is separated and cannot reconstruct the golem until finishing a long rest.",
+    "The artificer can end the fusion early (no action required). If the construct still has hit points when the fusion ends, it remains active and functions as normal.",
+    ...(fusion.traits || [])
+  ];
+
+  return fusion;
+}
+
+function applyAwakenedCoreBenefits(player, golem) {
+  const awakened = JSON.parse(JSON.stringify(golem));
+
+  awakened.int = Math.max(awakened.int || 0, 16);
+  awakened.wis = Math.max(awakened.wis || 0, 14);
+  awakened.cha = Math.max(awakened.cha || 0, 14);
+
+  awakened.awakenedSkills = [
+    "Investigation",
+    "Perception",
+    "Insight",
+    "Persuasion",
+    "Intimidation"
+  ];
+
+  awakened.traits = [
+    "Awakened Cognition. The construct's Intelligence score becomes 16, its Wisdom score becomes 14, and its Charisma score becomes 14, unless a score is already higher.",
+    "Autonomous Reasoning. The awakened construct can independently take skill-based actions, including Search, Study, and Influence, as the situation requires.",
+    "Awakened Skills. The construct is proficient in Investigation, Perception, Insight, Persuasion, and Intimidation.",
+    ...(awakened.traits || [])
+  ];
+
+  return awakened;
 }
 
 /* =========================
@@ -688,7 +764,22 @@ function renderStatBlock(golem, player, title = "Arcane Golem") {
   const condImmText = golem.conditionImmunities.length ? golem.conditionImmunities.join(", ") : "—";
   const sensesText = golem.senses.length ? golem.senses.join(", ") : "—";
   const languagesText = golem.languages.length ? golem.languages.join(", ") : "—";
+  const awakenedSkillsText = (golem.awakenedSkills || []).length
+  ? golem.awakenedSkills
+      .map((skill) => {
+        const skillKey = skill.toLowerCase();
 
+        let abilityMod = 0;
+        if (skillKey === "investigation") abilityMod = getMod(golem.int || 10);
+        else if (skillKey === "perception" || skillKey === "insight") abilityMod = getMod(golem.wis || 10);
+        else if (skillKey === "persuasion" || skillKey === "intimidation") abilityMod = getMod(golem.cha || 10);
+
+        const total = abilityMod + player.pb;
+        const signed = total >= 0 ? `+${total}` : `${total}`;
+        return `${skill} ${signed}`;
+      })
+      .join(", ")
+  : "";
   const traitsHtml = (golem.traits || []).length
     ? golem.traits.map((t) => `<p>${escapeHtml(t)}</p>`).join("")
     : `<p>—</p>`;
@@ -715,13 +806,14 @@ function renderStatBlock(golem, player, title = "Arcane Golem") {
       <div class="stat-block-header">
         <div class="creature-name">${escapeHtml(title)}</div>
         <div class="creature-meta"><em>${creatureSize} construct</em></div>
+        ${golem.fusionState ? `<div class="fusion-tag"><em>Fused Form</em></div>` : ""}
         ${headerSection}
       </div>
 
       <hr>
 
       <p><strong>Armor Class</strong> ${golem.ac}</p>
-      <p><strong>Hit Points</strong> ${golem.hp}${golem.maxHp && golem.maxHp !== golem.hp ? ` (maximum ${golem.maxHp})` : ""}</p>
+      <p><strong>Hit Points</strong> ${golem.hp}${golem.maxHp && golem.maxHp !== golem.hp ? ` (maximum ${golem.maxHp})` : ""}${golem.fusedTempHp ? ` + ${golem.fusedTempHp} temporary hit points` : ""}</p>
       <p><strong>Speed</strong> ${escapeHtml(speedText)}</p>
 
       <hr>
@@ -743,6 +835,7 @@ function renderStatBlock(golem, player, title = "Arcane Golem") {
       <p><strong>Condition Immunities</strong> ${escapeHtml(condImmText)}</p>
       <p><strong>Senses</strong> ${escapeHtml(sensesText)}</p>
       <p><strong>Languages</strong> ${escapeHtml(languagesText)}</p>
+      ${awakenedSkillsText ? `<p><strong>Awakened Skills</strong> ${escapeHtml(awakenedSkillsText)}</p>` : ""}
 
       <hr>
 
@@ -1103,7 +1196,7 @@ function updateInfusionCapacityDisplay(capacity, used, index = 1) {
 
 function updateModeUI() {
   const mode = getMode();
-  const showSecond = mode === "multi" || mode === "fusion";
+  const showSecond = mode === "multi";
 
   const golem2 = $("#golem2");
   const secondarySummary = $("#secondarySummary");
@@ -1572,6 +1665,10 @@ function renderSelectionPanels(index = 1) {
   normalizeInfusionsForCapacity(index);
   enforceEngineRestrictions(index);
 
+  if (index === 1) {
+    enforceCapstoneModeRestrictions();
+  }
+
   renderTemplateCards(index);
   renderConstructFormOptions(index);
   renderInfusionOptions(index);
@@ -1590,33 +1687,70 @@ function renderPrimaryOutputs(mode) {
 
   const golem1 = createGolem(player1, templateId1, engineId1, formId1, infusionIds1);
 
-const statBlock1 = $("#statBlockOutput") || $("#statBlock");
-if (statBlock1) {
-  const banner = renderLoadedExampleBanner();
+  let displayGolem = golem1;
+  if (mode === "fusion") {
+    displayGolem = createFusionGolem(player1, golem1);
+  } else if (mode === "awakened") {
+    displayGolem = applyAwakenedCoreBenefits(player1, golem1);
+  }
 
-  const output = renderStatBlock(
-    golem1,
-    player1,
-    mode === "single" ? "Arcane Golem" : "Primary Golem"
-  );
+  const statBlock1 = $("#statBlockOutput") || $("#statBlock");
+  if (statBlock1) {
+    const banner = renderLoadedExampleBanner();
 
-  statBlock1.innerHTML = `
-    ${banner}
-    ${output}
-  `;
-}
+    const output = renderStatBlock(
+      displayGolem,
+      player1,
+      mode === "single"
+        ? "Arcane Golem"
+        : mode === "awakened"
+        ? "Awakened Construct"
+        : mode === "fusion"
+        ? "Corewright Fusion Form"
+        : "Primary Golem"
+    );
+
+    statBlock1.innerHTML = `
+      ${banner}
+      ${output}
+    `;
+  }
 
   const summary1 = $("#selectionSummary");
   if (summary1) {
+    const specialSummary =
+      mode === "fusion"
+        ? `
+          <div class="summary-line">
+            <strong>Fusion Mode Active</strong><br>
+            You are merged with your construct for up to 1 minute. The fused form uses the construct's physical chassis while acting under your direct control.
+          </div>
+        `
+        : mode === "awakened"
+        ? `
+          <div class="summary-line">
+            <strong>Awakened Core Active</strong><br>
+            Your construct acts with awakened reason and independent purpose, gaining elevated mental ability scores and awakened skills.
+          </div>
+        `
+        : "";
+
     summary1.innerHTML =
       renderLoadedExampleBanner() +
+      specialSummary +
       renderSelectionSummaryBlock(
         player1,
         templateId1,
         engineId1,
         formId1,
         infusionIds1,
-        mode === "single" ? "Golem Summary" : "Primary Golem"
+        mode === "single"
+          ? "Golem Summary"
+          : mode === "awakened"
+          ? "Awakened Construct"
+          : mode === "fusion"
+          ? "Fusion Chassis"
+          : "Primary Golem"
       );
   }
 
@@ -1627,7 +1761,7 @@ function renderSecondaryOutputs(mode) {
   const secondarySummary = $("#secondarySummary");
   const secondaryStatBlock = $("#secondaryStatBlock");
 
-  if (mode !== "multi" && mode !== "fusion") {
+  if (mode !== "multi") {
     if (secondarySummary) secondarySummary.innerHTML = "";
     if (secondaryStatBlock) secondaryStatBlock.innerHTML = "";
     return null;
@@ -1650,7 +1784,7 @@ function renderSecondaryOutputs(mode) {
       engineId2,
       formId2,
       infusionIds2,
-      mode === "fusion" ? "Fusion Component B" : "Second Golem"
+      "Second Golem"
     );
   }
 
@@ -1658,7 +1792,7 @@ function renderSecondaryOutputs(mode) {
     secondaryStatBlock.innerHTML = renderStatBlock(
       golem2,
       player2,
-      mode === "fusion" ? "Fusion Component B" : "Second Golem"
+      "Second Golem"
     );
   }
 
@@ -1667,17 +1801,6 @@ function renderSecondaryOutputs(mode) {
 
 function appendFusionSummaryNote(mode) {
   if (mode !== "fusion") return;
-
-  const summary1 = $("#selectionSummary");
-  if (!summary1) return;
-
-  summary1.innerHTML += `
-    <div class="summary-line">
-      <strong>Fusion Mode</strong><br>
-      Status: Fusion mode is active.<br>
-      This currently preserves both component builds side-by-side so you can compare and stage a future fused stat block cleanly.
-    </div>
-  `;
 }
 
 function updateBuilder() {
