@@ -10,7 +10,83 @@ It allows players and GMs to assemble fully customizable golems using a layered 
 - **Forms** (playstyle and behavior)
 
 The builder generates a complete, game-ready stat block and concept art prompt in real time.
+---
+### 🆕 Latest Update – Living Workshop & Builder Enhancements
 
+The Corewright Builder now features:
+- Fully functional example builds with one-click loading
+- Animated “Living Workshop” entry screen
+- Improved combat logic (Artillery rework, flexible attack stats)
+- Enhanced regeneration mechanics
+- Visual and UX polish across the entire builder experience
+
+This update focuses on making the builder more intuitive, immersive, and table-ready.
+---
+
+## 🎨 Version 3.1 — Visual & Prompt System Expansion
+
+Version 3.1 introduces a **visual generation layer** to the Corewright Builder, allowing players to instantly translate mechanical builds into concept art prompts.
+
+---
+
+### 🖼️ Concept Art Prompt Generator
+- Automatically generates detailed, copy-ready prompts based on:
+  - Construct Form
+  - Material Template
+  - Engine Core
+  - Infusions
+- Designed for use with tools like Canva and other AI image generators
+- Outputs structured, readable prompt blocks for consistent results
+
+---
+
+### 🔄 Prompt Mode Toggle
+- Switch between:
+  - **Standard Prompt** → rich, cinematic language
+  - **Canva-Safe Prompt** → simplified, filter-friendly wording
+- Helps ensure higher success rates across different image platforms
+
+---
+
+### 📋 Copy Prompt Integration
+- One-click copy for generated prompts
+- Includes browser-safe fallback handling
+- Instant visual feedback on copy success
+
+---
+
+### 🧩 Descriptor-Driven Prompt System
+- Introduced centralized `descriptors.js`
+- Prompt output now built from:
+  - Form descriptors
+  - Template descriptors
+  - Engine descriptors
+  - Infusion descriptors
+- Enables easy expansion and tuning without modifying builder logic
+
+---
+
+### 🛡️ Safe Descriptor Layer
+- Parallel “safe” descriptor set implemented
+- Removes need for runtime sanitization
+- Improves compatibility with stricter content filters
+
+---
+
+### ⚙️ System Integration
+- Fully integrated into the existing builder pipeline
+- Supports:
+  - Single Golem
+  - Multi-Golem
+  - Fusion Mode (dual prompt output)
+
+---
+
+### 📌 Notes
+- Some descriptor combinations (notably **Predator form**) may still trigger warnings in certain tools  
+- Future updates will refine language for maximum compatibility
+
+---
 ---
 ---
 

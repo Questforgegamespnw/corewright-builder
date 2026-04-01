@@ -344,35 +344,35 @@ export const INFUSIONS = [
   },
 
   {
-    id: "self_repair_matrix",
-    name: "Self-Repair Matrix",
-    tier: "advanced",
-    prerequisiteLevel: 9,
-    tags: ["Tank"],
-    effect: "Start-turn regeneration",
-    details:
-      "Autonomous repair systems continuously restore structural integrity.",
+  id: "self_repair_matrix",
+  name: "Self-Repair Matrix",
+  tier: "advanced",
+  prerequisiteLevel: 9,
+  tags: ["Tank"],
+  effect: "Start-turn regeneration",
+  details:
+    "Autonomous repair systems continuously restore structural integrity.",
 
-    lore:
-      "Regenerative enchantments and self-mending matrices close cracks and rebuild damaged components.",
+  lore:
+    "Regenerative enchantments and self-mending matrices close cracks and rebuild damaged components.",
 
-    mechanics:
-      "At the start of each of its turns, the golem regains hit points equal to your Intelligence modifier + your proficiency bonus. If it takes acid or fire damage, this regeneration is suppressed until the end of its next turn.",
+  mechanics:
+    "At the start of each of its turns, the golem regains hit points equal to its Constitution modifier + your proficiency bonus. If it takes acid or fire damage, this regeneration is suppressed until the end of its next turn.",
 
-    traits: [
-      (p) =>
-        `<strong>Self-Repair Matrix.</strong> At the start of each of its turns, the golem regains ${p.intMod} + ${p.pb} hit points.`,
-      () =>
-        "<strong>Suppression.</strong> If it takes acid or fire damage, this regeneration is suppressed until the end of its next turn."
-    ],
+  traits: [
+    (p) =>
+      `<strong>Self-Repair Matrix.</strong> At the start of each of its turns, the golem regains hit points equal to its Constitution modifier + ${p.pb}.`,
+    () =>
+      "<strong>Suppression.</strong> If it takes acid or fire damage, this regeneration is suppressed until the end of its next turn."
+  ],
 
-    apply: (golem, player) => {
-      golem.regen = player.intMod + player.pb;
-      golem.regenSuppressedBy = ["acid", "fire"];
-      golem.regenSuppressionDuration = "until_end_of_next_turn";
-    }
-  },
-
+  apply: (golem, player) => {
+    const conMod = Math.floor(((golem.con || 10) - 10) / 2);
+    golem.regen = Math.max(golem.regen || 0, Math.max(1, conMod + player.pb));
+    golem.regenSuppressedBy = [...new Set([...(golem.regenSuppressedBy || []), "acid", "fire"])];
+    golem.regenSuppressionDuration = "until_end_of_next_turn";
+  }
+},
   {
     id: "siege_engine",
     name: "Siege Engine",

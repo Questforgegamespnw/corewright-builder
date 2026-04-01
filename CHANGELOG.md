@@ -4,6 +4,81 @@ All notable changes to the **Corewright Builder** project will be documented in 
 
 This project follows a simplified version of [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and uses semantic-style versioning.
 
+## [3.2.0] – Corewright UX & Combat Refinement Update
+
+### ✨ Added
+- **Example Build Integration (Fully Functional)**
+  - Example builds now correctly load into the builder via query string
+  - Builder prioritizes loaded examples over saved local state
+  - Added **Loaded Example banner** to clearly confirm imported builds
+  - Example builds now function as true onboarding tools
+
+- **Auto-Expand on Load**
+  - Builder automatically expands relevant sections (Template, Form, Engine, Infusions) when loading an example
+  - Improves clarity and reduces friction for new users
+
+- **Living Workshop Splash Screen**
+  - Added animated particle and glow effects to entry screen
+  - Subtle ambient motion creates a “living” magical workshop feel
+  - Fully CSS-based (no performance impact)
+
+- **Visual Background System**
+  - Added hero workshop background to entry screen
+  - Added parchment-style background texture across builder pages
+  - Implemented overlay system to preserve readability while enhancing theme
+
+---
+
+### ⚔️ Changed
+- **Artillery Form Rework**
+  - Now functions as a **ranged-primary chassis**
+  - Introduced `Arcane Bolt` as primary attack
+  - Slam downgraded to `1d6` for close-quarters fallback
+  - Improved identity as a backline construct
+
+- **Attack Ability Logic Update**
+  - Replaced hard Dexterity lock with:
+    > “Uses Strength or Dexterity, whichever is higher”
+  - Applies to relevant forms and future-proofed via `attackAbilityMode`
+  - Prevents unintuitive stat locking behavior
+
+- **Regeneration System Rebalance**
+  - Regeneration now uses:
+    > Constitution modifier + Proficiency Bonus
+  - Applied to:
+    - Clay Template
+    - Self-Repair Matrix infusion
+  - Introduced non-stacking behavior (uses highest value)
+  - Maintains reliability without excessive scaling
+
+---
+
+### 🛠️ Fixed
+- Fixed issue where **example builds would not load correctly** due to local save override
+- Fixed multiple **syntax errors (missing commas/brackets)** in:
+  - `constructForms.js`
+  - `infusions.js`
+- Corrected action rendering so non-melee forms behave properly
+- Resolved unintended stat-lock behavior in Dexterity-based builds
+
+---
+
+### 🎨 UI / UX Improvements
+- Improved visual hierarchy of splash screen
+- Added text shadow and overlay balancing for readability
+- Enhanced button styling on entry screen
+- Improved clarity of builder feedback (example loading + section visibility)
+
+---
+
+### 💡 Notes
+- This update significantly improves **first-time user experience**
+- Establishes visual identity for the Corewright system
+- Lays groundwork for future features:
+  - Example progression system
+  - Engine-reactive visuals
+  - Advanced build sharing
+
 ---
 ## v3.1 – Visual & UX Expansion Update
 
