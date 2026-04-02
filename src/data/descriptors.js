@@ -25,7 +25,10 @@ export const FORM_DESCRIPTORS = {
     "sealed amphibious construct with finned limbs, pressure-stable body, fluid motion design",
 
   glider:
-    "lightweight aerial construct with finned or membranous extensions, glide-capable frame, dive-strike posture"
+    "lightweight aerial construct with finned or membranous extensions, glide-capable frame, dive-strike posture",
+
+  constrictor:
+    "heavy grappling construct, crushing limbs, locking joints, clamp-like appendages, restraint-focused melee frame"
 };
 
 /* =========================
@@ -55,7 +58,10 @@ export const FORM_DESCRIPTORS_SAFE = {
     "sealed amphibious construct with finned limbs, pressure-stable body, fluid motion design",
 
   glider:
-    "lightweight aerial construct with finned or membranous extensions, glide-capable frame, graceful descending posture"
+    "lightweight aerial construct with finned or membranous extensions, glide-capable frame, graceful descending posture",
+
+  constrictor:
+    "heavy control construct, reinforced limbs, locking joints, clamp-like appendages, restraint-focused melee frame"
 };
 
 /* =========================
@@ -180,6 +186,9 @@ export const INFUSION_DESCRIPTORS = {
   reactive_plating:
     "layered segmented armor, shifting defensive plates, impact-dampening surface structure",
 
+  adaptive_plating:
+    "morphing armor layers that shift and reconfigure dynamically in response to threats",
+
   arcane_conduit:
     "glowing magical channels running from the core through the limbs, energy conduits for spell delivery",
 
@@ -204,6 +213,15 @@ export const INFUSION_DESCRIPTORS = {
   reflexive_countermeasures:
     "adaptive armor segments, reactive shutters, anticipatory defensive mechanisms",
 
+  predictive_guard_matrix:
+    "threat-analysis lenses, layered defensive shutters, forecasting sigils, anti-barrage plating",
+
+  sundering_strikes:
+    "stress-fracture targeting runes, armor-cracking impact points, precision breach geometry",
+
+  adamantine_plating:
+    "dark adamantine armor plates, reinforced vital seams, catastrophic-failure-resistant chassis",
+
   cognitive_matrix:
     "advanced head structure with glowing eye cluster, elegant arcane lattice of intelligence",
 
@@ -212,9 +230,6 @@ export const INFUSION_DESCRIPTORS = {
 
   overdrive_protocol:
     "overclocked vents, stressed glowing internals, aggressive power posture and heat output",
-
-  adaptive_plating:
-    "morphing armor layers that shift and reconfigure dynamically in response to threats",
 
   replication_matrix:
     "mirrored core shards, echo projections, faint duplicate silhouettes forming near the body",
@@ -246,6 +261,9 @@ export const INFUSION_DESCRIPTORS_SAFE = {
   reactive_plating:
     "layered segmented armor, shifting defensive plates, impact-dampening surface structure",
 
+  adaptive_plating:
+    "morphing armor layers that shift and reconfigure dynamically in response to threats",
+
   arcane_conduit:
     "glowing magical channels running from the core through the limbs, energy conduits for spell delivery",
 
@@ -270,6 +288,15 @@ export const INFUSION_DESCRIPTORS_SAFE = {
   reflexive_countermeasures:
     "adaptive armor segments, reactive shutters, anticipatory defensive mechanisms",
 
+  predictive_guard_matrix:
+    "threat-analysis lenses, layered defensive shutters, forecasting sigils, anti-barrage plating",
+
+  sundering_strikes:
+    "stress-fracture targeting runes, armor-weakening impact points, precision breach geometry",
+
+  adamantine_plating:
+    "dark reinforced armor plates, protected vital seams, resilient heavy chassis",
+
   cognitive_matrix:
     "advanced head structure with glowing eye cluster, elegant arcane lattice of intelligence",
 
@@ -278,9 +305,6 @@ export const INFUSION_DESCRIPTORS_SAFE = {
 
   overdrive_protocol:
     "overclocked vents, stressed glowing internals, aggressive power posture and heat output",
-
-  adaptive_plating:
-    "morphing armor layers that shift and reconfigure dynamically in response to threats",
 
   replication_matrix:
     "mirrored core shards, echo projections, faint duplicate silhouettes forming near the body",

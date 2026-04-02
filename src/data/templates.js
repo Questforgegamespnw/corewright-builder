@@ -249,5 +249,36 @@ export const TEMPLATES = [
         `Template Bias. The golem gains +3 Constitution and +1 Dexterity, to a maximum of 20.`
       ];
     }
+  },
+
+  {
+  id: "glass",
+  name: "Glass",
+  tag: "DPS",
+
+  summary: "Fragile crystalline body that punishes attackers.",
+
+  description:
+    "A razor-edged construct of arcane glass that shatters violently under stress.",
+
+  apply(golem, player) {
+    const { pb } = player;
+
+    golem.templateName = "Glass";
+
+    // === Stats ===
+    golem.hp -= 15;
+    golem.ac -= 2;
+    golem.dex = Math.min((golem.dex || 10) + 3, 20);
+
+    // === Traits ===
+    golem.traits = [
+      ...(golem.traits || []),
+      `Brittle Form. The golem has vulnerability to bludgeoning damage.`,
+      `Shatter Response. When the golem takes damage from a creature within 5 feet, that creature takes ${pb} slashing damage.`,
+      `Explosive Fracture. When the golem is reduced to 0 hit points, creatures within 10 feet take ${pb * 2} slashing damage (Dex save for half).`,
+      `Template Bias. The golem gains +4 Dexterity, to a maximum of 20.`
+    ];
+  }
   }
 ];

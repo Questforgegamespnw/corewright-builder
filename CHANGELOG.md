@@ -5,6 +5,83 @@ All notable changes to the **Corewright Builder** project will be documented in 
 This project follows a simplified version of [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and uses semantic-style versioning.
 
 ---
+
+## [3.5] – System Alignment, Infusion Pass & UX Refinement
+
+### 🧠 System Alignment Pass
+- Fully synchronized:
+  - subclass page
+  - infusions compendium
+  - example builds
+  - builder data
+- Ensured all systems reflect current gameplay identities and mechanics
+
+---
+
+### 🔧 Infusion System Refinement
+- Standardized wording across all infusion tiers
+- Updated and clarified key infusions:
+  - **Dexterous Manipulators** — full weapon integration and object interaction
+  - **Adaptive Plating** — reactive resistance based on last damage type taken
+  - **Phase Shifter** — incorporeal movement, first-attack advantage, and forced ejection behavior
+  - **Elemental Convergence** — engine scaling clarified and aligned
+- Verified all infusion entries match builder logic and stat block output
+
+---
+
+### 🧩 Example Builds Expansion & Cleanup
+- Expanded build library with clearer archetypes:
+  - Bulwark (defender / space control)
+  - Constrictor (grapple / restraint control)
+  - Predator and hybrid builds
+- Improved build summaries and tagging consistency
+- Removed “build count” display for cleaner presentation
+
+---
+
+### 🎨 UI / UX Improvements
+- Reworked **Example Builds page layout**:
+  - Search bar is now centered and more prominent
+  - Filters (Level, Role, Difficulty) grouped beneath search
+  - Improved spacing and readability
+- Enhanced overall visual hierarchy of build browsing experience
+
+---
+
+### 📚 Compendium Alignment
+- Infusion compendium now fully matches live builder data
+- Maintains tag filtering, search indexing, and tier organization
+- Improved clarity of preview and detail sections
+
+---
+
+### 🧾 Documentation & Share Support
+- Added Homebrewery-formatted subclass document
+- Included example construct stat block (Bulwark Prototype)
+- Added QR-enabled “Continue Your Craft” section:
+  - Corewright Builder
+  - Questforge Games PNW
+
+---
+
+### ⚙️ Internal Cleanup
+- Removed outdated references and legacy terminology
+- Simplified rendering logic where possible
+- Improved consistency across modules for future expansion
+
+---
+
+### 🚀 Notes
+This release represents a **full system alignment pass**, bringing all Corewright components into a unified and player-ready state.
+
+Corewright is now consistent across:
+- builder
+- compendium
+- examples
+- documentation
+
+---
+
 ## [3.4] – Codebase Uniformity & Stability Release
 
 ### 🧹 Structural Refactor (Major)

@@ -277,14 +277,9 @@ function renderResultSummary(results) {
   if (!container) return;
 
   const count = results.length;
-  const summary = `
-    <div class="summary-line" style="margin-bottom: 12px;">
-      <strong>${count}</strong> build${count === 1 ? "" : "s"} shown
-    </div>
-  `;
-
-  container.innerHTML =
-    summary + (count ? results.map(renderBuildCard).join("") : renderEmptyState());
+  container.innerHTML = count
+    ? results.map(renderBuildCard).join("")
+    : renderEmptyState();
 }
 
 function renderExampleBuilds() {

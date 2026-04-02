@@ -33,50 +33,13 @@ export const INFUSIONS = [
   },
 
   {
-    id: "war_construct",
-    name: "War Construct",
-    tier: "advanced",
-    prerequisiteLevel: 9,
-    tags: ["DPS"],
-
-    effect: "2 attacks, +1d6 force per attack",
-
-    details:
-      "The golem is redesigned for sustained offensive output.",
-
-    lore:
-      "Improved targeting systems, reinforced limbs, and integrated weaponry convert the construct into a dedicated combat platform.",
-
-    mechanics:
-      "When you command the golem to take the Attack action, it can make two attacks instead of one. Each of its attacks deals an additional 1d6 force damage.",
-
-    actions: [
-      () =>
-        "<strong>War Construct.</strong> When commanded to take the Attack action, the golem makes two attacks instead of one.",
-      () =>
-        "<strong>Force-Enhanced Strikes.</strong> Each of its attacks deals an additional 1d6 force damage."
-    ],
-
-    apply(golem) {
-      golem.attackActionAttacks = Math.max(golem.attackActionAttacks || 1, 2);
-      golem.onEveryHit = [
-        ...(golem.onEveryHit || []),
-        {
-          damageDice: "1d6",
-          damageType: "force"
-        }
-      ];
-    }
-  },
-
-  {
     id: "dexterous_manipulators",
     name: "Dexterous Manipulators",
     tier: "base",
     prerequisiteLevel: null,
     tags: ["Utility"],
 
-    effect: "DEX 14, weapons, object use",
+    effect: "DEX becomes 14, weapons, object use",
 
     details:
       "Finely articulated appendages allow the golem to handle weapons and manipulate objects with precision.",
@@ -85,11 +48,11 @@ export const INFUSIONS = [
       "Miniaturized servos, complex finger assemblies, and articulated joints allow humanoid-like interactions.",
 
     mechanics:
-      "The golem’s Dexterity becomes 14 unless already higher. It gains proficiency with simple weapons, can wield weapons and manipulate objects as a humanoid would, replaces Arcane Strikes with wielded weapon attacks, and can take the Use an Object action without requiring your command.",
+      "The golem’s Dexterity becomes 14. It gains proficiency with simple weapons, can wield weapons and manipulate objects as a humanoid would, replaces Arcane Strikes with wielded weapon attacks, and can take the Use an Object action without requiring your command.",
 
     traits: [
       () =>
-        "<strong>Dexterous Manipulators.</strong> The golem’s Dexterity becomes 14 unless already higher.",
+        "<strong>Dexterous Manipulators.</strong> The golem’s Dexterity becomes 14.",
       () =>
         "<strong>Weapon Handling.</strong> The golem gains proficiency with simple weapons and can wield weapons and manipulate objects as a humanoid would.",
       () =>
@@ -99,7 +62,7 @@ export const INFUSIONS = [
     ],
 
     apply(golem) {
-      golem.dex = Math.max(golem.dex, 14);
+      golem.dex = 14;
       golem.weaponProficiencies = [
         ...new Set([...(golem.weaponProficiencies || []), "simple"])
       ];
@@ -120,31 +83,24 @@ export const INFUSIONS = [
     prerequisiteLevel: null,
     tags: ["Utility", "Mobility"],
 
-    effect: "+10 ft speed, Dash/Disengage BA",
+    effect: "+15 ft speed",
 
     details:
-      "Enhanced joints and arcane propulsion systems improve speed and fluid movement.",
+      "Enhanced joints and arcane propulsion systems dramatically improve speed and fluid movement.",
 
     lore:
-      "Lighter materials and aggressive arcane servos allow sudden bursts of motion.",
+      "Lighter materials and aggressive arcane servos allow sudden bursts of motion and sustained rapid repositioning.",
 
     mechanics:
-      "The golem’s movement speed increases by 10 feet. It can take the Dash or Disengage action as a bonus action without requiring your command.",
+      "The golem’s movement speed increases by 15 feet.",
 
     traits: [
       () =>
-        "<strong>Accelerated Servos.</strong> The golem’s speed increases by 10 feet.",
-      () =>
-        "<strong>Responsive Mobility.</strong> It can take the Dash or Disengage action as a bonus action without requiring your command."
+        "<strong>Accelerated Servos.</strong> The golem’s speed increases by 15 feet."
     ],
 
     apply(golem) {
-      golem.speed += 10;
-      golem.bonusActionsNoCommand = [
-        ...(golem.bonusActionsNoCommand || []),
-        "dash",
-        "disengage"
-      ];
+      golem.speed += 15;
     }
   },
 
@@ -175,6 +131,37 @@ export const INFUSIONS = [
       golem.damageReductionReaction = {
         dice: "1d10",
         flat: player.pb
+      };
+    }
+  },
+
+  {
+    id: "adaptive_plating",
+    name: "Adaptive Plating",
+    tier: "base",
+    prerequisiteLevel: null,
+    tags: ["Tank"],
+
+    effect: "Gain resistance to the last damage type taken",
+
+    details:
+      "The golem dynamically adapts to survive incoming threats.",
+
+    lore:
+      "Smart armor layers reconfigure instantly in response to damage patterns, hardening against the most recent threat.",
+
+    mechanics:
+      "When the golem takes damage, it gains resistance to that damage type until the end of its next turn.",
+
+    traits: [
+      () =>
+        "<strong>Adaptive Plating.</strong> When the golem takes damage, it gains resistance to that damage type until the end of its next turn."
+    ],
+
+    apply(golem) {
+      golem.adaptiveResistance = {
+        duration: "until_end_of_next_turn",
+        basedOnIncomingDamageType: true
       };
     }
   },
@@ -331,6 +318,43 @@ export const INFUSIONS = [
      ADVANCED INFUSIONS
   ========================= */
   {
+    id: "war_construct",
+    name: "War Construct",
+    tier: "advanced",
+    prerequisiteLevel: 9,
+    tags: ["DPS"],
+
+    effect: "2 attacks, +1d6 force per attack",
+
+    details:
+      "The golem is redesigned for sustained offensive output.",
+
+    lore:
+      "Improved targeting systems, reinforced limbs, and integrated weaponry convert the construct into a dedicated combat platform.",
+
+    mechanics:
+      "When you command the golem to take the Attack action, it can make two attacks instead of one. Each of its attacks deals an additional 1d6 force damage.",
+
+    actions: [
+      () =>
+        "<strong>War Construct.</strong> When commanded to take the Attack action, the golem makes two attacks instead of one.",
+      () =>
+        "<strong>Force-Enhanced Strikes.</strong> Each of its attacks deals an additional 1d6 force damage."
+    ],
+
+    apply(golem) {
+      golem.attackActionAttacks = Math.max(golem.attackActionAttacks || 1, 2);
+      golem.onEveryHit = [
+        ...(golem.onEveryHit || []),
+        {
+          damageDice: "1d6",
+          damageType: "force"
+        }
+      ];
+    }
+  },
+
+  {
     id: "gravitic_core",
     name: "Gravitic Core",
     tier: "advanced",
@@ -414,24 +438,24 @@ export const INFUSIONS = [
     name: "Siege Engine",
     tier: "advanced",
     prerequisiteLevel: 9,
-    tags: ["DPS"],
+    tags: ["Utility", "Control"],
 
-    effect: "Object damage, +1d8 force, defensive drawback",
+    effect: "Structure damage, ignores Hardness, defensive exposure",
 
     details:
-      "A destructive configuration specialized for shattering fortifications.",
+      "A destructive configuration specialized for reducing fortifications, barriers, and battlefield structures to rubble.",
 
     lore:
-      "Reinforced impact assemblies and breaching enchantments turn the construct into a living battering ram.",
+      "Reinforced impact assemblies and breaching enchantments turn the construct into a living battering ram built to obliterate terrain in its path.",
 
     mechanics:
-      "The golem’s attacks deal double damage to objects and structures. When it hits a creature, it deals an additional 1d8 force damage, but attack rolls against it have advantage until the start of its next turn.",
+      "The golem’s attacks deal double damage to objects and structures. Its attacks ignore Hardness values of objects and structures. Attack rolls against the golem have advantage until the start of its next turn.",
 
     actions: [
       () =>
         "<strong>Siege Engine.</strong> The golem’s attacks deal double damage to objects and structures.",
       () =>
-        "<strong>Breaching Strike.</strong> When it hits a creature, it deals an additional 1d8 force damage.",
+        "<strong>Breaching Force.</strong> The golem’s attacks ignore Hardness values of objects and structures.",
       () =>
         "<strong>Overextended Defense.</strong> Attack rolls against the golem have advantage until the start of its next turn."
     ],
@@ -443,12 +467,10 @@ export const INFUSIONS = [
         "structures"
       ];
 
-      golem.onEveryHit = [
-        ...(golem.onEveryHit || []),
-        {
-          damageDice: "1d8",
-          damageType: "force"
-        }
+      golem.ignoresHardnessVs = [
+        ...(golem.ignoresHardnessVs || []),
+        "objects",
+        "structures"
       ];
 
       golem.selfDebuffsOnHit = [
@@ -468,22 +490,20 @@ export const INFUSIONS = [
     prerequisiteLevel: 9,
     tags: ["Control", "Defense"],
 
-    effect: "Counterattack on miss, anti-multiattack AC rise",
+    effect: "Counterattack on miss",
 
     details:
-      "Automated defenses retaliate against failed attacks and adapt against repeated strikes.",
+      "Automated defenses retaliate against failed attacks with immediate force.",
 
     lore:
-      "Pattern analysis routines let the golem punish missed attacks and harden against sustained aggression.",
+      "Pattern analysis routines let the golem instantly exploit openings left by clumsy or misjudged attacks.",
 
     mechanics:
-      "When a creature misses the golem with an attack, it can use its reaction to make one melee attack against that creature. When struck by a multiattack, its AC temporarily increases by 4 against repeated attacks from the same creature.",
+      "When a creature misses the golem with an attack, it can use its reaction to make one melee attack against that creature.",
 
     reactions: [
       () =>
-        "<strong>Reflexive Countermeasures.</strong> When a creature misses the golem with an attack, it can use its reaction to make one melee attack against that creature.",
-      () =>
-        "<strong>Pattern Adaptation.</strong> When struck by a multiattack, the golem’s AC increases by 4 against repeated attacks from the same creature."
+        "<strong>Reflexive Countermeasures.</strong> When a creature misses the golem with an attack, it can use its reaction to make one melee attack against that creature."
     ],
 
     apply(golem) {
@@ -494,11 +514,103 @@ export const INFUSIONS = [
           attackType: "melee"
         }
       ];
+    }
+  },
 
+  {
+    id: "predictive_guard_matrix",
+    name: "Predictive Guard Matrix",
+    tier: "advanced",
+    prerequisiteLevel: 9,
+    tags: ["Tank", "Defense"],
+
+    effect: "AC rises against repeated attacks from the same creature",
+
+    details:
+      "Defensive forecasting routines help the golem adapt mid-assault against sustained attack sequences.",
+
+    lore:
+      "Threat-pattern analysis lets the construct anticipate follow-up strikes and shift its defenses into the correct position before impact lands.",
+
+    mechanics:
+      "When a creature hits the golem with an attack, the golem’s AC increases by 4 against subsequent attacks made by that same creature until the start of the golem’s next turn.",
+
+    traits: [
+      () =>
+        "<strong>Predictive Guard Matrix.</strong> When a creature hits the golem with an attack, the golem’s AC increases by 4 against subsequent attacks made by that same creature until the start of the golem’s next turn."
+    ],
+
+    apply(golem) {
       golem.multiattackDefense = {
         acBonus: 4,
-        scope: "sameCreatureRepeatedAttacks"
+        scope: "sameCreatureRepeatedAttacks",
+        duration: "until_start_of_next_turn"
       };
+    }
+  },
+
+  {
+    id: "sundering_strikes",
+    name: "Sundering Strikes",
+    tier: "advanced",
+    prerequisiteLevel: 9,
+    tags: ["DPS", "Control"],
+
+    effect: "Slam/ranged hits reduce AC by PB, max once per creature",
+
+    details:
+      "Precision impact routines weaken enemy defenses and expose structural flaws.",
+
+    lore:
+      "Each blow is guided to stress points, cracked plating, weak joints, and unstable seams that leave the target easier to damage.",
+
+    mechanics:
+      "When the golem hits a creature with a Slam or ranged attack, that creature’s AC is reduced by your proficiency bonus until the start of the golem’s next turn. A creature can be affected by this feature only once at a time.",
+
+    actions: [
+      (p) =>
+        `<strong>Sundering Strikes.</strong> When the golem hits a creature with a Slam or ranged attack, that creature’s AC is reduced by ${p.pb} until the start of the golem’s next turn. A creature can be affected by this feature only once at a time.`
+    ],
+
+    apply(golem, player) {
+      golem.oncePerCreatureOnHit = [
+        ...(golem.oncePerCreatureOnHit || []),
+        {
+          attackTypes: ["slam", "ranged"],
+          effect: "reduceAC",
+          amount: player.pb,
+          duration: "until_start_of_next_turn",
+          maxInstancesPerCreature: 1
+        }
+      ];
+    }
+  },
+
+  {
+    id: "adamantine_plating",
+    name: "Adamantine Plating",
+    tier: "advanced",
+    prerequisiteLevel: 9,
+    tags: ["Tank", "Defense"],
+
+    effect: "Critical hits against the golem become normal hits",
+
+    details:
+      "The golem is armored with impossibly resilient plating that negates catastrophic structural failures.",
+
+    lore:
+      "Adamantine reinforcement prevents weak-point collapses and turns lethal critical impacts into ordinary blows.",
+
+    mechanics:
+      "Critical hits against the golem become normal hits.",
+
+    traits: [
+      () =>
+        "<strong>Adamantine Plating.</strong> Critical hits against the golem become normal hits."
+    ],
+
+    apply(golem) {
+      golem.critImmunity = true;
     }
   },
 
@@ -512,18 +624,20 @@ export const INFUSIONS = [
     prerequisiteLevel: 15,
     tags: ["Utility", "Defense"],
 
-    effect: "All save proficiency, INT to checks/saves, bonus Help",
+    effect: "Mental stats become 10, all save proficiency, INT to checks/saves, bonus Help",
 
     details:
       "The golem approaches true sentience, becoming more adaptive and tactically aware.",
 
     lore:
-      "A near-sentient mind lattice grants advanced cognition and learning capability.",
+      "A near-sentient mind lattice grants advanced cognition and learning capability without fully awakening the construct into independent personhood.",
 
     mechanics:
-      "The golem gains proficiency in all saving throws. It can add your Intelligence modifier to its ability checks and saving throws. It can take the Help action as a bonus action without requiring your command.",
+      "The golem’s Intelligence, Wisdom, and Charisma become 10 unless already higher. It gains proficiency in all saving throws. It can add your Intelligence modifier to its ability checks and saving throws. It can take the Help action as a bonus action without requiring your command.",
 
     traits: [
+      () =>
+        "<strong>Cognitive Matrix.</strong> The golem’s Intelligence, Wisdom, and Charisma become 10 unless already higher.",
       () =>
         "<strong>Cognitive Matrix.</strong> The golem gains proficiency in all saving throws.",
       (p) =>
@@ -533,6 +647,10 @@ export const INFUSIONS = [
     ],
 
     apply(golem, player) {
+      golem.int = Math.max(golem.int || 0, 10);
+      golem.wis = Math.max(golem.wis || 0, 10);
+      golem.cha = Math.max(golem.cha || 0, 10);
+
       golem.proficientSaves = "all";
       golem.bonusToAbilityChecks =
         (golem.bonusToAbilityChecks || 0) + player.intMod;
@@ -553,24 +671,26 @@ export const INFUSIONS = [
     prerequisiteLevel: 15,
     tags: ["Utility", "Mobility"],
 
-    effect: "Bonus-action incorporeality",
+    effect: "Bonus-action incorporeality and advantaged first strike",
 
     details:
-      "The golem partially steps outside reality to move through matter.",
+      "The golem partially steps outside reality to move through matter and strike from impossible angles.",
 
     lore:
-      "Planar phase instability lets the construct slip through obstacles at terrible cost if trapped.",
+      "Planar phase instability lets the construct slip through obstacles at terrible cost if trapped, while briefly desynchronizing it from normal defenses.",
 
     mechanics:
-      "As a bonus action, without requiring your command, the golem becomes incorporeal until the start of its next turn. While incorporeal, it can move through creatures and objects as difficult terrain. If it ends its turn inside an object, it takes force damage equal to twice your proficiency bonus.",
+      "As a bonus action, without requiring your command, the golem becomes incorporeal until the start of its next turn. While incorporeal, it can move through creatures and objects as difficult terrain. The first attack it makes before the start of its next turn has advantage. If it ends its turn inside an object, it is shunted to the nearest unoccupied space and takes force damage equal to twice your proficiency bonus.",
 
     traits: [
       () =>
         "<strong>Phase Shifter.</strong> As a bonus action, the golem becomes incorporeal until the start of its next turn.",
       () =>
         "<strong>Unreal Passage.</strong> While incorporeal, it can move through creatures and objects as difficult terrain.",
+      () =>
+        "<strong>Phase Ambush.</strong> The first attack the golem makes before the start of its next turn has advantage.",
       (p) =>
-        `<strong>Phase Rejection.</strong> If it ends its turn inside an object, it takes ${p.pb * 2} force damage.`
+        `<strong>Phase Rejection.</strong> If the golem ends its turn inside an object, it is moved to the nearest unoccupied space and takes ${p.pb * 2} force damage.`
     ],
 
     apply(golem, player) {
@@ -583,8 +703,10 @@ export const INFUSIONS = [
         duration: "until_start_of_next_turn",
         movementThroughCreaturesAndObjects: true,
         movementMode: "difficultTerrain",
+        firstAttackAdvantage: true,
         endTurnInObjectDamage: player.pb * 2,
-        endTurnInObjectDamageType: "force"
+        endTurnInObjectDamageType: "force",
+        ejectToNearestUnoccupiedSpace: true
       };
     }
   },
@@ -596,66 +718,41 @@ export const INFUSIONS = [
     prerequisiteLevel: 15,
     tags: ["DPS"],
 
-    effect: "Extra attack, self-damage",
+    effect: "Advantage on attacks, vulnerability window, self-damage",
 
     details:
-      "The golem pushes beyond safe operational limits for extreme offense.",
+      "The golem pushes beyond safe operational limits, sacrificing defense for overwhelming offensive pressure.",
 
     lore:
       "Combat governors are disabled, allowing peak output at the expense of structural stability.",
 
     mechanics:
-      "When you command the golem to take the Attack action, it can make one additional attack. At the end of its turn, it takes force damage equal to your proficiency bonus.",
+      "When commanded to take the Attack action, the golem can enter Overdrive until the start of its next turn. While in Overdrive, it has advantage on attack rolls, but attack rolls against it also have advantage. At the end of its turn, it takes force damage equal to your proficiency bonus.",
 
     actions: [
       () =>
-        "<strong>Overdrive Protocol.</strong> When commanded to take the Attack action, the golem makes one additional attack.",
+        "<strong>Overdrive Protocol.</strong> When commanded to take the Attack action, the golem can enter Overdrive, gaining advantage on attack rolls until the start of its next turn.",
+      () =>
+        "<strong>System Instability.</strong> While Overdrive is active, attack rolls against the golem have advantage.",
       (p) =>
         `<strong>System Strain.</strong> At the end of its turn, the golem takes ${p.pb} force damage.`
     ],
 
     apply(golem, player) {
-      golem.additionalAttackWhenCommanded =
-        (golem.additionalAttackWhenCommanded || 0) + 1;
+      golem.overdrive = {
+        grantsAdvantage: true,
+        grantsAdvantageAgainstSelf: true,
+        duration: "until_start_of_next_turn"
+      };
 
       golem.endOfTurnSelfDamage = [
         ...(golem.endOfTurnSelfDamage || []),
         {
           damage: player.pb,
-          damageType: "force"
+          damageType: "force",
+          source: "overdrive"
         }
       ];
-    }
-  },
-
-  {
-    id: "adaptive_plating",
-    name: "Adaptive Plating",
-    tier: "masterwork",
-    prerequisiteLevel: 15,
-    tags: ["Tank"],
-
-    effect: "Reaction resistance by damage type",
-
-    details:
-      "The golem dynamically adapts to survive incoming threats.",
-
-    lore:
-      "Smart armor layers reconfigure instantly in response to damage patterns.",
-
-    mechanics:
-      "When the golem takes damage, it can use its reaction to gain resistance to that damage type until the end of its next turn.",
-
-    reactions: [
-      () =>
-        "<strong>Adaptive Plating.</strong> When the golem takes damage, it can use its reaction to gain resistance to that damage type until the end of its next turn."
-    ],
-
-    apply(golem) {
-      golem.adaptiveResistanceReaction = {
-        duration: "until_end_of_next_turn",
-        basedOnIncomingDamageType: true
-      };
     }
   },
 
@@ -702,32 +799,26 @@ export const INFUSIONS = [
     name: "Elemental Convergence",
     tier: "masterwork",
     prerequisiteLevel: 15,
-    tags: ["DPS", "Synergy"],
+    tags: ["DPS"],
 
-    effect: "Engine-type bonus damage and temp HP",
+    effect: "Upgrades engine damage scaling",
 
     details:
-      "The golem’s elemental core becomes more potent and synergistic.",
+      "The golem’s elemental core intensifies and reaches higher destructive thresholds as its power grows.",
 
     lore:
-      "Its core resonates with its engine type, amplifying aligned elemental output.",
+      "Its core enters a resonant state, allowing its native elemental output to ascend beyond standard limits.",
 
     mechanics:
-      "When your golem deals damage matching its Engine Core type, it deals additional damage equal to your Intelligence modifier. If it damages multiple creatures with that type in a turn, it gains temporary hit points equal to your proficiency bonus.",
+      "The extra damage granted by your Engine Core improves as you reach higher levels: 1d8 at 15th level, 1d10 at 17th level, and 1d12 at 20th level.",
 
     actions: [
-      (p) =>
-        `<strong>Elemental Convergence.</strong> When the golem deals damage matching its Engine Core type, it deals an additional ${p.intMod} damage.`,
-      (p) =>
-        `<strong>Resonant Overflow.</strong> If it damages multiple creatures with that type in a turn, it gains ${p.pb} temporary hit points.`
+      () =>
+        "<strong>Elemental Convergence.</strong> The extra damage from your Engine Core improves to 1d10 at 17th level and 1d12 at 20th level."
     ],
 
-    apply(golem, player) {
-      golem.elementalConvergence = {
-        bonusDamage: player.intMod,
-        requiresMatchingEngineType: true,
-        multiTargetTempHp: player.pb
-      };
+    apply(golem) {
+      golem.upgradedEngineScaling = true;
     }
   },
 
