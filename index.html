@@ -1,281 +1,419 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Questforge Corewright Interface</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="./css/style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Questforge Corewright Interface</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
 
-  <!-- ===== NAVIGATION ===== -->
-  <div class="nav">
-    <a href="./">Builder</a>
-    <a href="./examples/">Examples</a>
-    <a href="./infusions/">Infusions</a>
-    <a href="./corewright/">Subclass</a>
-  </div>
-
-  <!-- ===== SPLASH SCREEN ===== -->
-<div id="splash">
-  <div class="splash-particles splash-particles-back"></div>
-  <div class="splash-particles splash-particles-front"></div>
-
-  <h1>Questforge Corewright Interface</h1>
-  <button onclick="enterApp()">Enter Workshop</button>
-</div>
-
-  <!-- ===== APP CONTAINER ===== -->
-  <div id="app" style="display:none;">
-    <div class="page-shell">
-      <div class="builder-layout">
-
-        <!-- LEFT COLUMN -->
-        <section class="builder-panel">
-          <h2>Assembly</h2>
-
-<!-- ===== TOP CONTROLS ===== -->
-<div class="builder-top-controls">
-  <div class="control-group">
-    <label for="level">Level</label>
-    <input id="level" type="number" value="10" min="1" max="20">
-  </div>
-
-  <div class="control-group">
-    <label for="intMod">INT Mod</label>
-    <input id="intMod" type="number" value="4" min="-5" max="10">
-  </div>
-
-  <div class="control-group">
-    <label for="mode">Mode</label>
-    <select id="mode">
-      <option value="single">Single Golem</option>
-      <option value="awakened">Awakened Core (17th Level)</option>
-      <option value="multi">Multi-Golem (17th Level)</option>
-      <option value="fusion">Fusion Mode (17th Level)</option>
-    </select>
-    <div id="modeLockNote" class="section-note" style="display:none; margin-top:8px;">
-      Penultimate Golemmancy options unlock at 17th level.
+  <body>
+    <!-- ===== NAVIGATION ===== -->
+    <div class="nav">
+      <a href="./">Builder</a>
+      <a href="./examples/">Examples</a>
+      <a href="./infusions/">Infusions</a>
+      <a href="./corewright/">Subclass</a>
     </div>
-  </div>
-</div>
 
-<!-- ===== PRIMARY ASSEMBLY PANEL ===== -->
-  <div class="assembly-panel">
+    <!-- ===== SPLASH SCREEN ===== -->
+    <div id="splash">
+      <div class="splash-particles splash-particles-back"></div>
+      <div class="splash-particles splash-particles-front"></div>
 
-    <div class="assembly-card">
-        <button class="assembly-toggle" type="button" data-target="templates-section">
-            <span>Templates</span>
-            <span class="toggle-icon">+</span>
-              </button>
-              <div class="assembly-content is-collapsed" id="templates-section">
-                <div id="templates"></div>
-              </div>
-            </div>
+      <h1>Questforge Corewright Interface</h1>
+      <button onclick="enterApp()">Enter Workshop</button>
+    </div>
 
-            <div class="assembly-card">
-              <button class="assembly-toggle" type="button" data-target="constructforms-section">
-                <span>Construct Forms</span>
-                <span class="toggle-icon">+</span>
-              </button>
-              <div class="assembly-content is-collapsed" id="constructforms-section">
-                <div id="constructForms"></div>
-              </div>
-            </div>
+    <!-- ===== APP CONTAINER ===== -->
+    <div id="app" style="display: none;">
+      <div class="page-shell">
+        <div class="builder-layout">
+          <!-- ========================================= -->
+          <!-- LEFT COLUMN / BUILDER INPUTS -->
+          <!-- ========================================= -->
+          <section class="builder-panel">
+            <h2>Assembly</h2>
 
-            <div class="assembly-card">
-              <button class="assembly-toggle" type="button" data-target="infusions-section">
-                <span>Infusions</span>
-                <span class="toggle-icon">+</span>
-              </button>
-              <div class="assembly-content is-collapsed" id="infusions-section">
-                <div class="infusion-slot-row">
-                  <span id="infusionSlotCounter" class="slot-counter">Infusion Slots: 0 / 0</span>
-                </div>
-                <div id="infusions"></div>
-              </div>
-            </div>
-
-            <div class="assembly-card">
-              <button class="assembly-toggle" type="button" data-target="engines-section">
-                <span>Engines</span>
-                <span class="toggle-icon">+</span>
-              </button>
-              <div class="assembly-content is-collapsed" id="engines-section">
-                <div id="engines"></div>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- ===== ACTIONS ===== -->
-          <div class="action-row">
-            <button id="printBuild" type="button">Print / Save PDF</button>
-            <button id="downloadTxt" type="button">Download .txt</button>
-            <button id="saveBuild" type="button">Save Named Build</button>
-            <button id="loadBuildBtn" type="button">Load Selected</button>
-            <button id="deleteBuildBtn" type="button">Delete Selected</button>
-            <button id="copyStatBlockBtn" type="button">Copy Stat Block</button>
-            <button id="copyShareLink" type="button">Share Build</button>
-          </div>
-
-          <div class="save-manager-row">
-            <input id="saveName" type="text" placeholder="Enter build name">
-            <select id="savedBuildsSelect">
-              <option value="">-- Select Saved Build --</option>
-            </select>
-          </div>
-
-          <input id="shareLink" type="text" readonly style="width:100%; margin-top:12px;">
-
-          <!-- ===== HIDDEN COMPATIBILITY INPUTS ===== -->
-          <div class="compat-hidden-inputs" aria-hidden="true">
-            <select id="template" tabindex="-1">
-              <option value="none">None</option>
-            </select>
-
-            <select id="constructForm" tabindex="-1">
-              <option value="none">None</option>
-            </select>
-
-            <select id="engine" tabindex="-1">
-              <option value="none">None</option>
-            </select>
-          </div>
-
-          <!-- ===== SECOND GOLEM ===== -->
-          <div id="golem2" class="builder-panel" style="display:none; margin-top:20px;">
-            <h2>Second Golem</h2>
-
+            <!-- ===== TOP CONTROLS ===== -->
+            <!--
+              Primary global controls for the main build.
+              These drive builder.js state updates and mode gating.
+            -->
             <div class="builder-top-controls">
               <div class="control-group">
-                <label for="level2">Level</label>
-                <input id="level2" type="number" value="10" min="1" max="20">
+                <label for="level">Level</label>
+                <input id="level" type="number" value="10" min="1" max="20" />
               </div>
 
               <div class="control-group">
-                <label for="intMod2">INT Mod</label>
-                <input id="intMod2" type="number" value="4" min="-5" max="10">
+                <label for="intMod">INT Mod</label>
+                <input id="intMod" type="number" value="4" min="-5" max="10" />
               </div>
 
               <div class="control-group">
-                <label for="mode-display">Mode</label>
-                <input id="mode-display" type="text" value="Linked to top mode selector" readonly>
+                <label for="mode">Mode</label>
+                <select id="mode">
+                  <option value="single">Single Golem</option>
+                  <option value="awakened">Awakened Core (17th Level)</option>
+                  <option value="multi">Multi-Golem (17th Level)</option>
+                  <option value="fusion">Fusion Mode (17th Level)</option>
+                </select>
+
+                <div
+                  id="modeLockNote"
+                  class="section-note"
+                  style="display: none; margin-top: 8px;"
+                >
+                  Penultimate Golemmancy options unlock at 17th level.
+                </div>
               </div>
             </div>
 
+            <!-- ===== PRIMARY ASSEMBLY PANEL ===== -->
+            <!--
+              Main collapsible build sections for golem #1.
+              These IDs are used by builder.js assembly toggle behavior.
+            -->
             <div class="assembly-panel">
-
+              <!-- --- Templates --- -->
               <div class="assembly-card">
-                <button class="assembly-toggle" type="button" data-target="templates2-section">
+                <button
+                  class="assembly-toggle"
+                  type="button"
+                  data-target="templates-section"
+                >
                   <span>Templates</span>
                   <span class="toggle-icon">+</span>
                 </button>
-                <div class="assembly-content is-collapsed" id="templates2-section">
-                  <div id="templates2"></div>
+
+                <div class="assembly-content is-collapsed" id="templates-section">
+                  <div id="templates"></div>
                 </div>
               </div>
 
+              <!-- --- Construct Forms --- -->
               <div class="assembly-card">
-                <button class="assembly-toggle" type="button" data-target="constructforms2-section">
+                <button
+                  class="assembly-toggle"
+                  type="button"
+                  data-target="constructforms-section"
+                >
                   <span>Construct Forms</span>
                   <span class="toggle-icon">+</span>
                 </button>
-                <div class="assembly-content is-collapsed" id="constructforms2-section">
-                  <div id="constructForms2"></div>
+
+                <div
+                  class="assembly-content is-collapsed"
+                  id="constructforms-section"
+                >
+                  <div id="constructForms"></div>
                 </div>
               </div>
 
+              <!-- --- Infusions --- -->
               <div class="assembly-card">
-                <button class="assembly-toggle" type="button" data-target="infusions2-section">
+                <button
+                  class="assembly-toggle"
+                  type="button"
+                  data-target="infusions-section"
+                >
                   <span>Infusions</span>
                   <span class="toggle-icon">+</span>
                 </button>
-                <div class="assembly-content is-collapsed" id="infusions2-section">
+
+                <div class="assembly-content is-collapsed" id="infusions-section">
                   <div class="infusion-slot-row">
-                    <span id="infusionSlotCounter2" class="slot-counter">Infusion Slots: 0 / 0</span>
+                    <span id="infusionSlotCounter" class="slot-counter">
+                      Infusion Slots: 0 / 0
+                    </span>
                   </div>
-                  <div id="infusions2"></div>
+
+                  <div id="infusions"></div>
                 </div>
               </div>
 
+              <!-- --- Engines --- -->
               <div class="assembly-card">
-                <button class="assembly-toggle" type="button" data-target="engines2-section">
+                <button
+                  class="assembly-toggle"
+                  type="button"
+                  data-target="engines-section"
+                >
                   <span>Engines</span>
                   <span class="toggle-icon">+</span>
                 </button>
-                <div class="assembly-content is-collapsed" id="engines2-section">
-                  <div id="engines2"></div>
+
+                <div class="assembly-content is-collapsed" id="engines-section">
+                  <div id="engines"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ===== BUILD SAVE / LOAD ACTIONS ===== -->
+            <!--
+              Save system controls.
+              Buttons are bound in builder.js bindEvents().
+            -->
+            <div class="action-row">
+              <button id="saveBuild" type="button">Save Named Build</button>
+              <button id="loadBuildBtn" type="button">Load Saved Build</button>
+              <button id="deleteBuildBtn" type="button">Delete Selected</button>
+            </div>
+
+            <!-- ===== SAVE MANAGER ===== -->
+            <div class="save-manager-row">
+              <input id="saveName" type="text" placeholder="Enter build name" />
+
+              <select id="savedBuildsSelect">
+                <option value="">-- Select Saved Build --</option>
+              </select>
+            </div>
+
+            <!-- ===== VISIBLE SHARE LINK FIELD ===== -->
+            <!--
+              User-visible share URL field.
+              builder.js should write the generated link here for manual copy/reference.
+            -->
+            <input
+              id="shareLinkVisible"
+              type="text"
+              readonly
+              style="width: 100%; margin-top: 12px;"
+            />
+
+            <!-- ===== HIDDEN COMPATIBILITY INPUTS ===== -->
+            <!--
+              Hidden native form controls used as compatibility/state mirrors.
+              Card UI writes into these; builder.js also reads from them.
+            -->
+            <div class="compat-hidden-inputs" aria-hidden="true">
+              <select id="template" tabindex="-1">
+                <option value="none">None</option>
+              </select>
+
+              <select id="constructForm" tabindex="-1">
+                <option value="none">None</option>
+              </select>
+
+              <select id="engine" tabindex="-1">
+                <option value="none">None</option>
+              </select>
+            </div>
+
+            <!-- ========================================= -->
+            <!-- SECOND GOLEM PANEL -->
+            <!-- ========================================= -->
+            <!--
+              Only shown in Multi-Golem mode.
+              Mirrors the main build structure for golem #2.
+            -->
+            <div id="golem2" class="builder-panel" style="display: none; margin-top: 20px;">
+              <h2>Second Golem</h2>
+
+              <!-- ===== SECOND GOLEM TOP CONTROLS ===== -->
+              <div class="builder-top-controls">
+                <div class="control-group">
+                  <label for="level2">Level</label>
+                  <input id="level2" type="number" value="10" min="1" max="20" />
+                </div>
+
+                <div class="control-group">
+                  <label for="intMod2">INT Mod</label>
+                  <input id="intMod2" type="number" value="4" min="-5" max="10" />
+                </div>
+
+                <div class="control-group">
+                  <label for="mode-display">Mode</label>
+                  <input
+                    id="mode-display"
+                    type="text"
+                    value="Linked to top mode selector"
+                    readonly
+                  />
                 </div>
               </div>
 
+              <!-- ===== SECOND GOLEM ASSEMBLY PANEL ===== -->
+              <div class="assembly-panel">
+                <!-- --- Templates 2 --- -->
+                <div class="assembly-card">
+                  <button
+                    class="assembly-toggle"
+                    type="button"
+                    data-target="templates2-section"
+                  >
+                    <span>Templates</span>
+                    <span class="toggle-icon">+</span>
+                  </button>
+
+                  <div class="assembly-content is-collapsed" id="templates2-section">
+                    <div id="templates2"></div>
+                  </div>
+                </div>
+
+                <!-- --- Construct Forms 2 --- -->
+                <div class="assembly-card">
+                  <button
+                    class="assembly-toggle"
+                    type="button"
+                    data-target="constructforms2-section"
+                  >
+                    <span>Construct Forms</span>
+                    <span class="toggle-icon">+</span>
+                  </button>
+
+                  <div
+                    class="assembly-content is-collapsed"
+                    id="constructforms2-section"
+                  >
+                    <div id="constructForms2"></div>
+                  </div>
+                </div>
+
+                <!-- --- Infusions 2 --- -->
+                <div class="assembly-card">
+                  <button
+                    class="assembly-toggle"
+                    type="button"
+                    data-target="infusions2-section"
+                  >
+                    <span>Infusions</span>
+                    <span class="toggle-icon">+</span>
+                  </button>
+
+                  <div class="assembly-content is-collapsed" id="infusions2-section">
+                    <div class="infusion-slot-row">
+                      <span id="infusionSlotCounter2" class="slot-counter">
+                        Infusion Slots: 0 / 0
+                      </span>
+                    </div>
+
+                    <div id="infusions2"></div>
+                  </div>
+                </div>
+
+                <!-- --- Engines 2 --- -->
+                <div class="assembly-card">
+                  <button
+                    class="assembly-toggle"
+                    type="button"
+                    data-target="engines2-section"
+                  >
+                    <span>Engines</span>
+                    <span class="toggle-icon">+</span>
+                  </button>
+
+                  <div class="assembly-content is-collapsed" id="engines2-section">
+                    <div id="engines2"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ===== HIDDEN COMPATIBILITY INPUTS (SECOND GOLEM) ===== -->
+              <div class="compat-hidden-inputs" aria-hidden="true">
+                <select id="template2" tabindex="-1">
+                  <option value="none">None</option>
+                </select>
+
+                <select id="constructForm2" tabindex="-1">
+                  <option value="none">None</option>
+                </select>
+
+                <select id="engine2" tabindex="-1">
+                  <option value="none">None</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <!-- ========================================= -->
+          <!-- RIGHT COLUMN / OUTPUTS -->
+          <!-- ========================================= -->
+          <aside class="builder-output">
+            <!-- ===== ASSEMBLY SUMMARY ===== -->
+            <div class="summary-card">
+              <h2>Assembly Summary</h2>
+              <div id="selectionSummary"></div>
+              <div id="secondarySummary" style="display: none; margin-top: 12px;"></div>
             </div>
 
-            <!-- ===== HIDDEN COMPATIBILITY INPUTS (SECOND GOLEM) ===== -->
-            <div class="compat-hidden-inputs" aria-hidden="true">
-              <select id="template2" tabindex="-1">
-                <option value="none">None</option>
-              </select>
+            <!-- ===== STAT BLOCK OUTPUT CARD ===== -->
+            <!--
+              Main stat block render area.
+              Primary HTML output mounts to #statBlockOutput.
+              Multi-Golem secondary output mounts to #secondaryStatBlock.
+            -->
+            <div class="statblock-card">
+              <!-- --- Stat Block Header / Buttons --- -->
+              <div class="statblock-header-row">
+                <h2>Construct Stat Block</h2>
 
-              <select id="constructForm2" tabindex="-1">
-                <option value="none">None</option>
-              </select>
+                <div class="statblock-actions">
+                  <button id="copyStatBlockBtn" type="button">Copy</button>
+                  <button id="copyShareLink" type="button">Share</button>
+                  <button id="downloadTxt" type="button">.txt</button>
+                  <button id="printBuild" type="button">Print</button>
+                </div>
+              </div>
 
-              <select id="engine2" tabindex="-1">
-                <option value="none">None</option>
-              </select>
-            </div>
-          </div>
-        </section>
+              <!-- --- Hidden Share Link Mirror --- -->
+              <input
+                id="shareLinkMain"
+                class="share-link-hidden"
+                type="text"
+                readonly
+                aria-hidden="true"
+                tabindex="-1"
+              />
 
-        <!-- RIGHT COLUMN -->
-        <aside class="builder-output">
-          <div class="summary-card">
-            <h2>Assembly Summary</h2>
-            <div id="selectionSummary"></div>
-            <div id="secondarySummary" style="display:none; margin-top:12px;"></div>
-          </div>
+              <!-- --- Primary Stat Block Output Mount --- -->
+              <div id="statBlockOutput"></div>
 
-          <div class="statblock-card">
-            <h2>Construct Stat Block</h2>
-            <div id="statBlockOutput"></div>
-            <div id="secondaryStatBlock" style="display:none; margin-top:16px;"></div>
-          </div>
-
-          <div class="statblock-card">
-            <h2>Concept Art Prompt</h2>
-
-            <div class="prompt-card-actions">
-              <label for="promptModeSelect">Prompt Mode</label>
-              <select id="promptModeSelect">
-                <option value="standard">Standard Prompt</option>
-                <option value="safe">Canva-Safe Prompt</option>
-              </select>
-              <button id="copyConceptArtPromptBtn" type="button">Copy Prompt</button>
+              <!-- --- Secondary Stat Block Output Mount --- -->
+              <div id="secondaryStatBlock" style="display: none; margin-top: 16px;"></div>
             </div>
 
-            <textarea
-              id="conceptArtPromptOutput"
-              rows="12"
-              readonly
-              placeholder="Your generated concept art prompt will appear here..."
-            ></textarea>
-          </div>
-        </aside>
+            <!-- ===== CONCEPT ART PROMPT CARD ===== -->
+            <div class="statblock-card">
+              <h2>Concept Art Prompt</h2>
 
+              <!-- --- Prompt Controls --- -->
+              <div class="prompt-card-actions">
+                <label for="promptModeSelect">Prompt Mode</label>
+
+                <select id="promptModeSelect">
+                  <option value="standard">Standard Prompt</option>
+                  <option value="safe">Canva-Safe Prompt</option>
+                </select>
+
+                <button id="copyConceptArtPromptBtn" type="button">
+                  Copy Prompt
+                </button>
+              </div>
+
+              <!-- --- Prompt Output --- -->
+              <textarea
+                id="conceptArtPromptOutput"
+                rows="12"
+                readonly
+                placeholder="Your generated concept art prompt will appear here..."
+              ></textarea>
+            </div>
+          </aside>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- ===== SPLASH HELPER ===== -->
-  <script>
-    function enterApp() {
-      document.getElementById("splash").style.display = "none";
-      document.getElementById("app").style.display = "block";
-    }
-  </script>
+    <!-- ===== SPLASH HELPER ===== -->
+    <script>
+      function enterApp() {
+        document.getElementById("splash").style.display = "none";
+        document.getElementById("app").style.display = "block";
+      }
+    </script>
 
-  <!-- ===== MODULE SCRIPT ===== -->
-  <script type="module" src="./src/builder.js"></script>
-</body>
+    <!-- ===== MODULE SCRIPT ===== -->
+    <script type="module" src="./src/builder.js"></script>
+  </body>
 </html>

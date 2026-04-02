@@ -1,12 +1,16 @@
 export const INFUSIONS = [
-  // ===== BASE INFUSIONS =====
+  /* =========================
+     BASE INFUSIONS
+  ========================= */
   {
     id: "reinforced_frame",
     name: "Reinforced Frame",
     tier: "base",
     prerequisiteLevel: null,
     tags: ["Tank"],
+
     effect: "+2 AC, +level HP",
+
     details:
       "The golem’s frame is reinforced with denser materials, increasing both durability and armor.",
 
@@ -21,7 +25,7 @@ export const INFUSIONS = [
         `<strong>Reinforced Frame.</strong> The golem’s hit point maximum increases by ${p.level}, and it gains +2 AC.`
     ],
 
-    apply: (golem, player) => {
+    apply(golem, player) {
       golem.hp += player.level;
       golem.maxHp = (golem.maxHp || golem.hp) + player.level;
       golem.ac += 2;
@@ -34,7 +38,9 @@ export const INFUSIONS = [
     tier: "advanced",
     prerequisiteLevel: 9,
     tags: ["DPS"],
+
     effect: "2 attacks, +1d6 force per attack",
+
     details:
       "The golem is redesigned for sustained offensive output.",
 
@@ -51,7 +57,7 @@ export const INFUSIONS = [
         "<strong>Force-Enhanced Strikes.</strong> Each of its attacks deals an additional 1d6 force damage."
     ],
 
-    apply: (golem) => {
+    apply(golem) {
       golem.attackActionAttacks = Math.max(golem.attackActionAttacks || 1, 2);
       golem.onEveryHit = [
         ...(golem.onEveryHit || []),
@@ -69,7 +75,9 @@ export const INFUSIONS = [
     tier: "base",
     prerequisiteLevel: null,
     tags: ["Utility"],
+
     effect: "DEX 14, weapons, object use",
+
     details:
       "Finely articulated appendages allow the golem to handle weapons and manipulate objects with precision.",
 
@@ -90,7 +98,7 @@ export const INFUSIONS = [
         "<strong>Autonomous Interaction.</strong> The golem can take the Use an Object action without requiring your command."
     ],
 
-    apply: (golem) => {
+    apply(golem) {
       golem.dex = Math.max(golem.dex, 14);
       golem.weaponProficiencies = [
         ...new Set([...(golem.weaponProficiencies || []), "simple"])
@@ -111,7 +119,9 @@ export const INFUSIONS = [
     tier: "base",
     prerequisiteLevel: null,
     tags: ["Utility", "Mobility"],
+
     effect: "+10 ft speed, Dash/Disengage BA",
+
     details:
       "Enhanced joints and arcane propulsion systems improve speed and fluid movement.",
 
@@ -122,12 +132,13 @@ export const INFUSIONS = [
       "The golem’s movement speed increases by 10 feet. It can take the Dash or Disengage action as a bonus action without requiring your command.",
 
     traits: [
-      () => "<strong>Accelerated Servos.</strong> The golem’s speed increases by 10 feet.",
+      () =>
+        "<strong>Accelerated Servos.</strong> The golem’s speed increases by 10 feet.",
       () =>
         "<strong>Responsive Mobility.</strong> It can take the Dash or Disengage action as a bonus action without requiring your command."
     ],
 
-    apply: (golem) => {
+    apply(golem) {
       golem.speed += 10;
       golem.bonusActionsNoCommand = [
         ...(golem.bonusActionsNoCommand || []),
@@ -143,7 +154,9 @@ export const INFUSIONS = [
     tier: "base",
     prerequisiteLevel: null,
     tags: ["Tank"],
+
     effect: "Reaction damage reduction",
+
     details:
       "Dynamic plating absorbs incoming force and disperses it across the frame.",
 
@@ -158,7 +171,7 @@ export const INFUSIONS = [
         `<strong>Reactive Plating.</strong> When the golem takes damage, it can use its reaction to reduce that damage by 1d10 + ${p.pb}.`
     ],
 
-    apply: (golem, player) => {
+    apply(golem, player) {
       golem.damageReductionReaction = {
         dice: "1d10",
         flat: player.pb
@@ -172,7 +185,9 @@ export const INFUSIONS = [
     tier: "base",
     prerequisiteLevel: null,
     tags: ["Utility", "Spellcasting"],
+
     effect: "Deliver touch spells",
+
     details:
       "The golem becomes an extension of your spellcasting.",
 
@@ -189,7 +204,7 @@ export const INFUSIONS = [
         "<strong>Spell Relay.</strong> The golem must be within 30 feet of you at the time of casting."
     ],
 
-    apply: (golem) => {
+    apply(golem) {
       golem.canDeliverTouchSpells = true;
       golem.touchSpellRangeFromCaster = 30;
     }
@@ -201,7 +216,9 @@ export const INFUSIONS = [
     tier: "base",
     prerequisiteLevel: null,
     tags: ["Tank", "Control"],
+
     effect: "Anti-movement stabilization",
+
     details:
       "The golem is stabilized against battlefield displacement and restraint.",
 
@@ -220,7 +237,7 @@ export const INFUSIONS = [
         "<strong>Grounded Structure.</strong> The golem has advantage on checks and saving throws to resist grapples or restraints."
     ],
 
-    apply: (golem) => {
+    apply(golem) {
       golem.saveAdvantages = [
         ...(golem.saveAdvantages || []),
         "prone",
@@ -246,7 +263,9 @@ export const INFUSIONS = [
     tier: "base",
     prerequisiteLevel: null,
     tags: ["DPS"],
+
     effect: "Once/turn +10 force, self-damage",
+
     details:
       "The golem channels unstable energy through its attacks.",
 
@@ -261,7 +280,7 @@ export const INFUSIONS = [
         `<strong>Overcharged Core.</strong> Once per turn on hit, the golem deals an additional 10 force damage, then takes ${p.pb} force damage.`
     ],
 
-    apply: (golem, player) => {
+    apply(golem, player) {
       golem.oncePerTurnOnHit = [
         ...(golem.oncePerTurnOnHit || []),
         {
@@ -280,7 +299,9 @@ export const INFUSIONS = [
     tier: "base",
     prerequisiteLevel: null,
     tags: ["Control", "Defense"],
+
     effect: "Reaction attack to protect allies",
+
     details:
       "The golem is programmed to punish enemies that attack nearby allies.",
 
@@ -295,7 +316,7 @@ export const INFUSIONS = [
         "<strong>Sentinel Protocol.</strong> When a creature within 5 feet of the golem attacks a target other than it, the golem can use its reaction to make one melee attack against that creature."
     ],
 
-    apply: (golem) => {
+    apply(golem) {
       golem.reactionAttackTriggers = [
         ...(golem.reactionAttackTriggers || []),
         {
@@ -306,14 +327,18 @@ export const INFUSIONS = [
     }
   },
 
-  // ===== ADVANCED INFUSIONS =====
+  /* =========================
+     ADVANCED INFUSIONS
+  ========================= */
   {
     id: "gravitic_core",
     name: "Gravitic Core",
     tier: "advanced",
     prerequisiteLevel: 9,
     tags: ["Control"],
+
     effect: "Pull or prone on failed STR save",
+
     details:
       "The golem manipulates localized gravitational forces around nearby foes.",
 
@@ -330,7 +355,7 @@ export const INFUSIONS = [
         "<strong>Gravitic Collapse.</strong> On a failed save, you choose whether the target is knocked prone or pulled up to 10 feet toward the golem."
     ],
 
-    apply: (golem) => {
+    apply(golem) {
       golem.oncePerTurnActiveEffects = [
         ...(golem.oncePerTurnActiveEffects || []),
         {
@@ -344,42 +369,55 @@ export const INFUSIONS = [
   },
 
   {
-  id: "self_repair_matrix",
-  name: "Self-Repair Matrix",
-  tier: "advanced",
-  prerequisiteLevel: 9,
-  tags: ["Tank"],
-  effect: "Start-turn regeneration",
-  details:
-    "Autonomous repair systems continuously restore structural integrity.",
+    id: "self_repair_matrix",
+    name: "Self-Repair Matrix",
+    tier: "advanced",
+    prerequisiteLevel: 9,
+    tags: ["Tank"],
 
-  lore:
-    "Regenerative enchantments and self-mending matrices close cracks and rebuild damaged components.",
+    effect: "Start-turn regeneration",
 
-  mechanics:
-    "At the start of each of its turns, the golem regains hit points equal to its Constitution modifier + your proficiency bonus. If it takes acid or fire damage, this regeneration is suppressed until the end of its next turn.",
+    details:
+      "Autonomous repair systems continuously restore structural integrity.",
 
-  traits: [
-    (p) =>
-      `<strong>Self-Repair Matrix.</strong> At the start of each of its turns, the golem regains hit points equal to its Constitution modifier + ${p.pb}.`,
-    () =>
-      "<strong>Suppression.</strong> If it takes acid or fire damage, this regeneration is suppressed until the end of its next turn."
-  ],
+    lore:
+      "Regenerative enchantments and self-mending matrices close cracks and rebuild damaged components.",
 
-  apply: (golem, player) => {
-    const conMod = Math.floor(((golem.con || 10) - 10) / 2);
-    golem.regen = Math.max(golem.regen || 0, Math.max(1, conMod + player.pb));
-    golem.regenSuppressedBy = [...new Set([...(golem.regenSuppressedBy || []), "acid", "fire"])];
-    golem.regenSuppressionDuration = "until_end_of_next_turn";
-  }
-},
+    mechanics:
+      "At the start of each of its turns, the golem regains hit points equal to its Constitution modifier + your proficiency bonus. If it takes acid or fire damage, this regeneration is suppressed until the end of its next turn.",
+
+    traits: [
+      (p) =>
+        `<strong>Self-Repair Matrix.</strong> At the start of each of its turns, the golem regains hit points equal to its Constitution modifier + ${p.pb}.`,
+      () =>
+        "<strong>Suppression.</strong> If it takes acid or fire damage, this regeneration is suppressed until the end of its next turn."
+    ],
+
+    apply(golem, player) {
+      const conMod = Math.floor(((golem.con || 10) - 10) / 2);
+
+      golem.regen = Math.max(
+        golem.regen || 0,
+        Math.max(1, conMod + player.pb)
+      );
+
+      golem.regenSuppressedBy = [
+        ...new Set([...(golem.regenSuppressedBy || []), "acid", "fire"])
+      ];
+
+      golem.regenSuppressionDuration = "until_end_of_next_turn";
+    }
+  },
+
   {
     id: "siege_engine",
     name: "Siege Engine",
     tier: "advanced",
     prerequisiteLevel: 9,
     tags: ["DPS"],
+
     effect: "Object damage, +1d8 force, defensive drawback",
+
     details:
       "A destructive configuration specialized for shattering fortifications.",
 
@@ -398,7 +436,7 @@ export const INFUSIONS = [
         "<strong>Overextended Defense.</strong> Attack rolls against the golem have advantage until the start of its next turn."
     ],
 
-    apply: (golem) => {
+    apply(golem) {
       golem.doubleDamageVs = [
         ...(golem.doubleDamageVs || []),
         "objects",
@@ -429,7 +467,9 @@ export const INFUSIONS = [
     tier: "advanced",
     prerequisiteLevel: 9,
     tags: ["Control", "Defense"],
+
     effect: "Counterattack on miss, anti-multiattack AC rise",
+
     details:
       "Automated defenses retaliate against failed attacks and adapt against repeated strikes.",
 
@@ -446,7 +486,7 @@ export const INFUSIONS = [
         "<strong>Pattern Adaptation.</strong> When struck by a multiattack, the golem’s AC increases by 4 against repeated attacks from the same creature."
     ],
 
-    apply: (golem) => {
+    apply(golem) {
       golem.reactionAttackTriggers = [
         ...(golem.reactionAttackTriggers || []),
         {
@@ -462,14 +502,18 @@ export const INFUSIONS = [
     }
   },
 
-  // ===== MASTERWORK INFUSIONS =====
+  /* =========================
+     MASTERWORK INFUSIONS
+  ========================= */
   {
     id: "cognitive_matrix",
     name: "Cognitive Matrix",
     tier: "masterwork",
     prerequisiteLevel: 15,
     tags: ["Utility", "Defense"],
+
     effect: "All save proficiency, INT to checks/saves, bonus Help",
+
     details:
       "The golem approaches true sentience, becoming more adaptive and tactically aware.",
 
@@ -488,9 +532,10 @@ export const INFUSIONS = [
         "<strong>Autonomous Assistance.</strong> The golem can take the Help action as a bonus action without requiring your command."
     ],
 
-    apply: (golem, player) => {
+    apply(golem, player) {
       golem.proficientSaves = "all";
-      golem.bonusToAbilityChecks = (golem.bonusToAbilityChecks || 0) + player.intMod;
+      golem.bonusToAbilityChecks =
+        (golem.bonusToAbilityChecks || 0) + player.intMod;
       golem.bonusToSavingThrows =
         (golem.bonusToSavingThrows || 0) + player.intMod;
 
@@ -507,7 +552,9 @@ export const INFUSIONS = [
     tier: "masterwork",
     prerequisiteLevel: 15,
     tags: ["Utility", "Mobility"],
+
     effect: "Bonus-action incorporeality",
+
     details:
       "The golem partially steps outside reality to move through matter.",
 
@@ -526,7 +573,7 @@ export const INFUSIONS = [
         `<strong>Phase Rejection.</strong> If it ends its turn inside an object, it takes ${p.pb * 2} force damage.`
     ],
 
-    apply: (golem, player) => {
+    apply(golem, player) {
       golem.bonusActionsNoCommand = [
         ...(golem.bonusActionsNoCommand || []),
         "phaseShift"
@@ -548,7 +595,9 @@ export const INFUSIONS = [
     tier: "masterwork",
     prerequisiteLevel: 15,
     tags: ["DPS"],
+
     effect: "Extra attack, self-damage",
+
     details:
       "The golem pushes beyond safe operational limits for extreme offense.",
 
@@ -565,8 +614,10 @@ export const INFUSIONS = [
         `<strong>System Strain.</strong> At the end of its turn, the golem takes ${p.pb} force damage.`
     ],
 
-    apply: (golem, player) => {
-      golem.additionalAttackWhenCommanded = (golem.additionalAttackWhenCommanded || 0) + 1;
+    apply(golem, player) {
+      golem.additionalAttackWhenCommanded =
+        (golem.additionalAttackWhenCommanded || 0) + 1;
+
       golem.endOfTurnSelfDamage = [
         ...(golem.endOfTurnSelfDamage || []),
         {
@@ -583,7 +634,9 @@ export const INFUSIONS = [
     tier: "masterwork",
     prerequisiteLevel: 15,
     tags: ["Tank"],
+
     effect: "Reaction resistance by damage type",
+
     details:
       "The golem dynamically adapts to survive incoming threats.",
 
@@ -598,7 +651,7 @@ export const INFUSIONS = [
         "<strong>Adaptive Plating.</strong> When the golem takes damage, it can use its reaction to gain resistance to that damage type until the end of its next turn."
     ],
 
-    apply: (golem) => {
+    apply(golem) {
       golem.adaptiveResistanceReaction = {
         duration: "until_end_of_next_turn",
         basedOnIncomingDamageType: true
@@ -612,7 +665,9 @@ export const INFUSIONS = [
     tier: "masterwork",
     prerequisiteLevel: 15,
     tags: ["Utility"],
+
     effect: "Create temporary duplicate",
+
     details:
       "The golem briefly divides into a secondary construct.",
 
@@ -631,7 +686,7 @@ export const INFUSIONS = [
         "<strong>Limited Use.</strong> Once used, this feature cannot be used again until you finish a long rest."
     ],
 
-    apply: (golem, player) => {
+    apply(golem, player) {
       golem.replicationMatrix = {
         duplicateHp: player.level,
         usesAttackBonus: true,
@@ -648,7 +703,9 @@ export const INFUSIONS = [
     tier: "masterwork",
     prerequisiteLevel: 15,
     tags: ["DPS", "Synergy"],
+
     effect: "Engine-type bonus damage and temp HP",
+
     details:
       "The golem’s elemental core becomes more potent and synergistic.",
 
@@ -665,7 +722,7 @@ export const INFUSIONS = [
         `<strong>Resonant Overflow.</strong> If it damages multiple creatures with that type in a turn, it gains ${p.pb} temporary hit points.`
     ],
 
-    apply: (golem, player) => {
+    apply(golem, player) {
       golem.elementalConvergence = {
         bonusDamage: player.intMod,
         requiresMatchingEngineType: true,
@@ -680,7 +737,9 @@ export const INFUSIONS = [
     tier: "masterwork",
     prerequisiteLevel: 15,
     tags: ["Tank", "Control"],
+
     effect: "Larger size, +PB Hardness, crushing presence",
+
     details:
       "The golem is rebuilt on a massive scale, becoming a true engine of destruction.",
 
@@ -701,7 +760,7 @@ export const INFUSIONS = [
         "<strong>Heavy Frame.</strong> Its speed is reduced by 10 feet and it has disadvantage on Dexterity saving throws."
     ],
 
-    apply: (golem, player) => {
+    apply(golem, player) {
       golem.size = nextSizeCategory(golem.size);
       golem.hp += player.level * 2;
       golem.maxHp = (golem.maxHp || golem.hp) + player.level * 2;

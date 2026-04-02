@@ -98,7 +98,7 @@ function getFilteredBuilds() {
 }
 
 /* =========================
-   Query string / navigation
+   Query String / Navigation
 ========================= */
 
 function buildBuilderQuery(build) {
@@ -122,6 +122,7 @@ function getBuilderUrl(build) {
 function loadBuildInBuilder(buildId) {
   const build = EXAMPLE_BUILDS.find((b) => b.id === buildId);
   if (!build) return;
+
   window.location.href = getBuilderUrl(build);
 }
 
@@ -135,7 +136,10 @@ function viewUpgrade(buildId) {
   const searchInput = $("#search");
   const levelFilter = $("#levelFilter");
 
-  if (searchInput) searchInput.value = "";
+  if (searchInput) {
+    searchInput.value = "";
+  }
+
   if (levelFilter) {
     levelFilter.value = upgrade.level >= 17 ? "17" : String(upgrade.level);
   }
@@ -144,8 +148,13 @@ function viewUpgrade(buildId) {
 
   const targetCard = document.querySelector(`[data-build-id="${upgrade.id}"]`);
   if (targetCard) {
-    targetCard.scrollIntoView({ behavior: "smooth", block: "center" });
+    targetCard.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+
     targetCard.classList.add("selected");
+
     setTimeout(() => {
       targetCard.classList.remove("selected");
     }, 1200);
@@ -153,11 +162,12 @@ function viewUpgrade(buildId) {
 }
 
 /* =========================
-   Rendering
+   Rendering Helpers
 ========================= */
 
 function renderBuildTags(tags = []) {
   const uniqueTags = dedupe(tags);
+
   return uniqueTags
     .map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`)
     .join("");
@@ -169,26 +179,46 @@ function renderMetaTags(build) {
     build.role
   ];
 
-  const difficultyTag = `<span class="tag difficulty-${build.difficulty}">${build.difficulty}</span>`;
+  const difficultyTag = `
+    <span class="tag difficulty-${escapeHtml(build.difficulty)}">
+      ${escapeHtml(build.difficulty)}
+    </span>
+  `;
 
-  const otherTags = (build.tags || [])
-    .map(tag => `<span class="tag">${escapeHtml(tag)}</span>`)
-    .join("");
+  const otherTags = renderBuildTags(build.tags || []);
 
   return `
     ${difficultyTag}
-    ${baseTags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
+    ${baseTags
+      .map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`)
+      .join("")}
     ${otherTags}
   `;
 }
 
+/* =========================
+   Rendering Cards
+========================= */
+
 function renderBuildCard(build) {
   const upgradeButton = build.upgradeTo
-    ? `<button class="action-button js-upgrade-build" type="button" data-build-id="${escapeHtml(build.id)}">View Upgrade</button>`
+    ? `
+      <button
+        class="action-button js-upgrade-build"
+        type="button"
+        data-build-id="${escapeHtml(build.id)}"
+      >
+        View Upgrade
+      </button>
+    `
     : "";
 
   return `
-    <div class="select-card example-build-card" data-build-id="${escapeHtml(build.id)}" style="cursor:default; margin-bottom:12px;">
+    <div
+      class="select-card example-build-card"
+      data-build-id="${escapeHtml(build.id)}"
+      style="cursor: default; margin-bottom: 12px;"
+    >
       <div class="select-card-header">
         <strong>${escapeHtml(build.name)}</strong>
         <div class="card-tags">
@@ -203,11 +233,14 @@ function renderBuildCard(build) {
           <p><strong>Template:</strong> ${escapeHtml(build.template || "none")}</p>
           <p><strong>Form:</strong> ${escapeHtml(build.form || "none")}</p>
           <p><strong>Engine:</strong> ${escapeHtml(build.engine || "none")}</p>
-          <p><strong>Infusions:</strong> ${
-            build.infusions?.length
-              ? build.infusions.map(escapeHtml).join(", ")
-              : "None"
-          }</p>
+          <p>
+            <strong>Infusions:</strong>
+            ${
+              build.infusions?.length
+                ? build.infusions.map(escapeHtml).join(", ")
+                : "None"
+            }
+          </p>
           ${
             build.upgradeFrom
               ? `<p><strong>Upgrade From:</strong> ${escapeHtml(build.upgradeFrom)}</p>`
@@ -216,7 +249,11 @@ function renderBuildCard(build) {
         </div>
 
         <div class="button-row">
-          <button class="action-button js-load-build" type="button" data-build-id="${escapeHtml(build.id)}">
+          <button
+            class="action-button js-load-build"
+            type="button"
+            data-build-id="${escapeHtml(build.id)}"
+          >
             Load in Builder
           </button>
           ${upgradeButton}
@@ -241,12 +278,13 @@ function renderResultSummary(results) {
 
   const count = results.length;
   const summary = `
-    <div class="summary-line" style="margin-bottom:12px;">
+    <div class="summary-line" style="margin-bottom: 12px;">
       <strong>${count}</strong> build${count === 1 ? "" : "s"} shown
     </div>
   `;
 
-  container.innerHTML = summary + (count ? results.map(renderBuildCard).join("") : renderEmptyState());
+  container.innerHTML =
+    summary + (count ? results.map(renderBuildCard).join("") : renderEmptyState());
 }
 
 function renderExampleBuilds() {

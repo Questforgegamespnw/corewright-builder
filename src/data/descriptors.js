@@ -1,6 +1,6 @@
-// ==============================
-// FORM DESCRIPTORS
-// ==============================
+/* =========================
+   FORM DESCRIPTORS
+========================= */
 
 export const FORM_DESCRIPTORS = {
   brawler:
@@ -28,6 +28,10 @@ export const FORM_DESCRIPTORS = {
     "lightweight aerial construct with finned or membranous extensions, glide-capable frame, dive-strike posture"
 };
 
+/* =========================
+   FORM DESCRIPTORS (SAFE)
+========================= */
+
 export const FORM_DESCRIPTORS_SAFE = {
   brawler:
     "broad-shouldered heavy construct, reinforced torso, oversized forearms, low center of gravity, sturdy mechanical silhouette",
@@ -54,9 +58,9 @@ export const FORM_DESCRIPTORS_SAFE = {
     "lightweight aerial construct with finned or membranous extensions, glide-capable frame, graceful descending posture"
 };
 
-// ==============================
-// TEMPLATE (MATERIAL) DESCRIPTORS
-// ==============================
+/* =========================
+   TEMPLATE DESCRIPTORS
+========================= */
 
 export const TEMPLATE_DESCRIPTORS = {
   stone:
@@ -81,6 +85,10 @@ export const TEMPLATE_DESCRIPTORS = {
     "semi-translucent crimson body, fluid internal motion, glowing alchemical channels, unstable organic form"
 };
 
+/* =========================
+   TEMPLATE DESCRIPTORS (SAFE)
+========================= */
+
 export const TEMPLATE_DESCRIPTORS_SAFE = {
   stone:
     "carved stone plates, weathered mineral texture, heavy mass, glowing runic seams, immense structural weight",
@@ -104,9 +112,9 @@ export const TEMPLATE_DESCRIPTORS_SAFE = {
     "semi-translucent crimson body, fluid internal motion, glowing alchemical channels, mysterious organic form"
 };
 
-// ==============================
-// ENGINE DESCRIPTORS
-// ==============================
+/* =========================
+   ENGINE DESCRIPTORS
+========================= */
 
 export const ENGINE_DESCRIPTORS = {
   none:
@@ -128,6 +136,10 @@ export const ENGINE_DESCRIPTORS = {
     "a dense geode-like core, pulsing with earthen energy, dust shockwaves and grounded power radiating outward"
 };
 
+/* =========================
+   ENGINE DESCRIPTORS (SAFE)
+========================= */
+
 export const ENGINE_DESCRIPTORS_SAFE = {
   none:
     "a faint neutral arcane core with minimal glow, stable and inactive energy signature",
@@ -148,9 +160,9 @@ export const ENGINE_DESCRIPTORS_SAFE = {
     "a dense geode-like core, pulsing with earthen energy, drifting dust and grounded power radiating outward"
 };
 
-// ==============================
-// INFUSION DESCRIPTORS
-// ==============================
+/* =========================
+   INFUSION DESCRIPTORS
+========================= */
 
 export const INFUSION_DESCRIPTORS = {
   reinforced_frame:
@@ -214,6 +226,10 @@ export const INFUSION_DESCRIPTORS = {
     "oversized monumental frame, immense limbs, towering proportions, siege-scale construction"
 };
 
+/* =========================
+   INFUSION DESCRIPTORS (SAFE)
+========================= */
+
 export const INFUSION_DESCRIPTORS_SAFE = {
   reinforced_frame:
     "thickened armor plating, reinforced structural ribs, heavy support struts built for durability",
@@ -237,10 +253,10 @@ export const INFUSION_DESCRIPTORS_SAFE = {
     "low-set stabilizers, reinforced base, grounding spikes and heavy stance architecture",
 
   overcharged_core:
-    "intensely glowing energized core, light spilling through seams, volatile arcane surges",
+    "intensely glowing unstable core, energy leaking through seams, volatile power surges",
 
   sentinel_protocol:
-    "shield-like armatures, defensive sensor arrays, protective stance geometry",
+    "shield-like armatures, defensive sensor arrays, intercept-ready stance geometry",
 
   gravitic_core:
     "orbiting arcane sigils, distortion field around the body, subtle gravity warping effects",
@@ -249,7 +265,7 @@ export const INFUSION_DESCRIPTORS_SAFE = {
     "cracked surfaces actively reforming, glowing repair glyphs, self-mending structure",
 
   siege_engine:
-    "massive reinforced limbs, monumental hammer-like arms, heavy impact-focused construction",
+    "massive reinforced limbs, breaching hammer-like arms, heavy impact-focused construction",
 
   reflexive_countermeasures:
     "adaptive armor segments, reactive shutters, anticipatory defensive mechanisms",
@@ -258,13 +274,13 @@ export const INFUSION_DESCRIPTORS_SAFE = {
     "advanced head structure with glowing eye cluster, elegant arcane lattice of intelligence",
 
   phase_shifter:
-    "partial translucence, ghosted limb edges, soft reality distortion around the frame",
+    "partial translucence, ghosted limb edges, flickering reality distortion around the frame",
 
   overdrive_protocol:
-    "overclocked vents, stressed glowing internals, energized posture and radiant heat output",
+    "overclocked vents, stressed glowing internals, aggressive power posture and heat output",
 
   adaptive_plating:
-    "morphing armor layers that shift and reconfigure dynamically in response to changing conditions",
+    "morphing armor layers that shift and reconfigure dynamically in response to threats",
 
   replication_matrix:
     "mirrored core shards, echo projections, faint duplicate silhouettes forming near the body",
@@ -273,31 +289,5 @@ export const INFUSION_DESCRIPTORS_SAFE = {
     "engine-aligned resonance lines, amplified elemental vents, intensified core glow",
 
   colossus:
-    "oversized monumental frame, immense limbs, towering proportions, grand architectural scale"
-};
-
-// ==============================
-// STYLE BLOCKS
-// ==============================
-
-export const ART_STYLES = {
-  sheet:
-    `highly detailed fantasy concept art, tabletop RPG sourcebook illustration, full-body character design, clean readable silhouette, centered composition, neutral or subtle workshop background, sharp focus, no text, no watermark`,
-
-  hero:
-    `cinematic fantasy concept art, dramatic lighting, dynamic pose, high detail rendering, atmospheric effects, epic scale, no text, no watermark`,
-
-  minimal:
-    `clean concept art, simple background, readable silhouette, soft lighting, no text, no watermark`
-};
-
-export const ART_STYLES_SAFE = {
-  sheet:
-    `highly detailed fantasy concept art, tabletop RPG sourcebook illustration, full-body character design, clean readable silhouette, centered composition, subtle workshop or studio background, sharp focus, no text, no watermark`,
-
-  hero:
-    `cinematic fantasy concept art, dramatic lighting, elegant pose, high detail rendering, atmospheric effects, polished presentation, no text, no watermark`,
-
-  minimal:
-    `clean concept art, simple background, readable silhouette, soft lighting, no text, no watermark`
+    "oversized monumental frame, immense limbs, towering proportions, siege-scale construction"
 };
