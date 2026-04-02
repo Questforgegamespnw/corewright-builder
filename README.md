@@ -1,6 +1,6 @@
 # ⚙️ Corewright Builder
 
-**Current Version: 3.3**
+**Current Version: 3.4**
 
 The Corewright Builder is an interactive tool for creating and customizing construct companions for the Corewright Artificer subclass.
 
@@ -19,8 +19,38 @@ The Corewright Builder is an interactive tool for creating and customizing const
 - Real-time concept art prompt generation for use with AI image tools
 
 ---
+## 🆕 Latest Update — Version 3.4: Stability & Structure Pass
 
-## 🆕 Latest Update — Version 3.3: Corewright Capstone Expansion & Builder Integration
+Version 3.4 focuses on **codebase consistency, readability, and long-term maintainability**.
+
+### Highlights:
+- Fully standardized data architecture across:
+  - Templates
+  - Forms
+  - Engines
+  - Infusions
+- Unified apply-function patterns and stat mutation logic
+- Cleaned and organized CSS structure
+- Improved example build routing and builder integration
+- Eliminated edge-case errors and inconsistent behaviors
+
+---
+
+### Why This Matters
+This release establishes a **stable foundation** for future development, making it significantly easier to:
+- add new systems and mechanics
+- expand infusion and engine interactions
+- maintain balance and clarity across the builder
+
+---
+
+### What’s Next (3.5+)
+- System refinement and balance tuning
+- Expanded infusion scaling mechanics
+- Enhanced stat block clarity and combat readability
+- Visual upgrades (fusion UI, token generation, etc.)
+
+## 🆕 Previous Update — Version 3.3: Corewright Capstone Expansion & Builder Integration
 
 ### 🧠 Level 17 Capstone Modes
 
@@ -57,19 +87,6 @@ Command multiple constructs.
 
 ---
 
-## 🎨 Previous Update — Living Workshop & Builder Enhancements (v3.2)
-
-The Corewright Builder now features:
-
-- Fully functional example builds with one-click loading
-- Animated “Living Workshop” entry screen
-- Improved combat logic (Artillery rework, flexible attack stats)
-- Enhanced regeneration mechanics
-- Visual and UX polish across the entire builder experience
-
-This update focused on making the builder more intuitive, immersive, and table-ready.
-
----
 
 ## 🎨 Previous Major Update — Version 3.1: Visual & Prompt System Expansion
 
@@ -170,7 +187,28 @@ corewright-builder/
 - Modular data-driven architecture  
 - Systems use `apply()` pattern for scaling  
 - Designed for extensibility and future expansion  
+```
+/*
+STANDARD OBJECT FORMAT:
 
+{
+  id: "",
+  name: "",
+  tags: [],
+
+  effect: "",
+  details: "",
+  lore: "",
+  mechanics: "",
+
+  traits: [],
+  actions: [],
+  reactions: [],
+
+  apply(golem, player) {}
+}
+*/
+```
 ---
 
 ## 🧠 Data Architecture

@@ -5,6 +5,81 @@ All notable changes to the **Corewright Builder** project will be documented in 
 This project follows a simplified version of [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and uses semantic-style versioning.
 
 ---
+## [3.4] – Codebase Uniformity & Stability Release
+
+### 🧹 Structural Refactor (Major)
+- Standardized formatting across all data files:
+  - `constructForms.js`
+  - `templates.js`
+  - `engines.js`
+  - `infusions.js`
+  - `examples.js`
+  - `descriptors.js`
+- Unified object structure and section ordering across all systems
+- Normalized `apply(golem, player)` patterns for consistency
+- Implemented safe array mutation patterns (`...(arr || [])`)
+- Added consistent section headers for readability and maintainability
+
+---
+
+### 🧠 System Consistency Improvements
+- Aligned all trait, action, and reaction injection patterns across systems
+- Standardized naming conventions for:
+  - `onHitEffects`
+  - `oncePerTurnOnHit`
+  - `bonusActionsNoCommand`
+  - `reactionAttackTriggers`
+- Ensured consistent stat mutation logic across templates, forms, and engines
+- Cleaned descriptor mappings to fully align with builder imports
+
+---
+
+### ⚙️ Builder & Routing Fixes
+- Fixed Example Builds navigation to correctly route to builder (`../index.html`)
+- Resolved missing helper reference (`getMod`) in `templates.js`
+- Corrected mismatches between displayed trait text and applied mechanics
+
+---
+
+### 🎨 UI / CSS Cleanup
+- Reorganized `style.css` into logical sections:
+  - Theme
+  - Layout
+  - Components
+  - Responsive
+  - Print
+- Removed duplicate rules and redundant declarations
+- Improved long-term maintainability of styling system
+
+---
+
+### 🧪 Stability Improvements
+- Eliminated syntax inconsistencies across modules
+- Fixed multiple minor edge-case runtime risks:
+  - unsafe array mutations
+  - undefined property access patterns
+- Ensured all modules are self-contained and dependency-safe
+
+---
+
+### 💡 Design Notes
+- Established **3.4 as a “stability + structure” milestone**
+- Created a clean foundation for:
+  - 3.5 system expansion
+  - infusion scaling mechanics
+  - future UI features (fusion visuals, token export, etc.)
+
+---
+
+### 🚀 Notes
+This release contains **no major feature additions**, but significantly improves:
+- code readability
+- maintainability
+- system consistency
+
+This sets the groundwork for all future Corewright development.
+
+---
 
 ## [3.3] - Corewright Capstone Expansion & Builder Integration
 ### 🔥 Major Features

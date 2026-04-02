@@ -15,10 +15,12 @@ import {
   ART_STYLES,
   ART_STYLES_SAFE
 } from "./data/descriptors.js";
-/* =========================
-   Helpers
-========================= */
 
+/* =========================================================
+   HELPERS
+========================================================= */
+
+/* ---------- DOM Helpers ---------- */
 function $(selector) {
   return document.querySelector(selector);
 }
@@ -26,7 +28,10 @@ function $(selector) {
 function $all(selector) {
   return Array.from(document.querySelectorAll(selector));
 }
+/* ---------- /DOM Helpers ---------- */
 
+
+/* ---------- String + HTML Helpers ---------- */
 function escapeHtml(str) {
   return String(str ?? "")
     .replaceAll("&", "&amp;")
@@ -36,24 +41,24 @@ function escapeHtml(str) {
     .replaceAll("'", "&#039;");
 }
 
-function getStatBlockExportText() {
-  const statBlock1 = $("#statBlockOutput") || $("#statBlock");
-  const statBlock2 = $("#secondaryStatBlock");
-
-  if (!statBlock1) return "";
-
-  let text = (statBlock1.innerText || statBlock1.textContent || "").trim();
-
-  if (statBlock2) {
-    const secondaryText = (statBlock2.innerText || statBlock2.textContent || "").trim();
-    if (secondaryText) {
-      text += `\n\n${secondaryText}`;
-    }
-  }
-
-  return text.trim();
+function slugifyFilename(value) {
+  return String(value || "corewright-golem")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
+function titleCase(str) {
+  return String(str || "")
+    .split(" ")
+    .map((word) => (word ? word.charAt(0).toUpperCase() + word.slice(1) : ""))
+    .join(" ");
+}
+/* ---------- /String + HTML Helpers ---------- */
+
+
+/* ---------- Numeric Helpers ---------- */
 function dedupe(arr) {
   return [...new Set((arr || []).filter(Boolean))];
 }
@@ -67,18 +72,237 @@ function formatMod(score) {
   return mod >= 0 ? `+${mod}` : `${mod}`;
 }
 
-function proficiencyBonus(level) {
-  return Math.ceil(level / 4) + 1;
+function formatSigned(value) {
+  const n = Number(value) || 0;
+  return n >= 0 ? `+${n}` : `${n}`;
 }
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
+function proficiencyBonus(level) {
+  return Math.ceil(level / 4) + 1;
+}
+
 function suffix(n) {
   return n === 2 ? "2" : "";
 }
+/* ---------- /Numeric Helpers ---------- */
 
+
+/* ---------- Array + Object Helpers ---------- */
+function ensureArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
+function arraysEqualAsSets(a = [], b = []) {
+  if (a.length !== b.length) return false;
+
+  const aSorted = [...a].sort();
+  const bSorted = [...b].sort();
+
+  return aSorted.every((value, index) => value === bSorted[index]);
+}
+/* ---------- /Array + Object Helpers ---------- */
+
+
+/* ---------- Export Helpers ---------- */
+function formatExportModifier(score) {
+  const mod = getMod(score || 10);
+  return mod >= 0 ? `+${mod}` : `${mod}`;
+}
+
+function formatExportList(value, fallback = "None") {
+  if (!value) return fallback;
+
+  if (Array.isArray(value)) {
+    return value.length ? value.join(", ") : fallback;
+  }
+
+  return String(value).trim() ? String(value) : fallback;
+}
+
+function exportSection(title, items = []) {
+  const normalized = (items || []).filter(Boolean);
+  const lines = [title, "-".repeat(title.length)];
+
+  if (!normalized.length) {
+    lines.push("None.");
+  } else {
+    for (const item of normalized) {
+      lines.push(item);
+    }
+  }
+
+  lines.push("");
+  return lines;
+}
+/* ---------- /Export Helpers ---------- */
+
+
+/* ---------- Stat Block Export ---------- */
+function buildSingleStatBlockExport(title, golem, player, meta = {}) {
+  const lines = [];
+  const buildName = ($("#saveName")?.value || "").trim();
+  const speedText = buildSpeedText(golem);
+
+  const actions = buildActionsList(golem, player)
+    .map((action) => formatActionLine(action))
+    .filter(Boolean);
+
+  const reactions = buildReactionsList(golem)
+    .map((reaction) => formatActionLine(reaction))
+    .filter(Boolean);
+
+  const groupedTraits = renderGroupedTraitText(golem.traits || []);
+
+  lines.push(title);
+  lines.push("=".repeat(title.length));
+  lines.push("");
+
+  if (buildName) lines.push(`Build Name: ${buildName}`);
+  if (meta.modeLabel) lines.push(`Mode: ${meta.modeLabel}`);
+  if (player.level !== undefined) lines.push(`Level: ${player.level}`);
+
+  if (player.intMod !== undefined) {
+    lines.push(`INT Mod: ${player.intMod >= 0 ? `+${player.intMod}` : player.intMod}`);
+  }
+
+  if (player.pb !== undefined) {
+    lines.push(`Proficiency Bonus: +${player.pb}`);
+  }
+
+  lines.push(`Template: ${meta.templateName || "None"}`);
+  lines.push(`Construct Form: ${meta.formName || "None"}`);
+  lines.push(`Engine Core: ${meta.engineName || "None"}`);
+  lines.push(`Infusions: ${formatExportList(golem.selectedInfusionNames || [])}`);
+  lines.push("");
+
+  lines.push("CONSTRUCT STAT BLOCK");
+  lines.push("--------------------");
+  lines.push(`Armor Class: ${golem.ac}`);
+  lines.push(
+    `Hit Points: ${golem.hp}` +
+      (golem.maxHp && golem.maxHp !== golem.hp ? ` (maximum ${golem.maxHp})` : "") +
+      (golem.fusedTempHp ? ` + ${golem.fusedTempHp} temporary hit points` : "")
+  );
+  lines.push(`Speed: ${speedText}`);
+  lines.push("");
+
+  lines.push(`STR ${golem.str} (${formatExportModifier(golem.str)})`);
+  lines.push(`DEX ${golem.dex} (${formatExportModifier(golem.dex)})`);
+  lines.push(`CON ${golem.con} (${formatExportModifier(golem.con)})`);
+  lines.push(`INT ${golem.int} (${formatExportModifier(golem.int)})`);
+  lines.push(`WIS ${golem.wis} (${formatExportModifier(golem.wis)})`);
+  lines.push(`CHA ${golem.cha} (${formatExportModifier(golem.cha)})`);
+  lines.push("");
+
+  lines.push(`Skills: ${formatExportList(golem.skills, "—")}`);
+  lines.push(`Damage Immunities: ${formatExportList(golem.damageImmunities, "—")}`);
+  lines.push(`Damage Resistances: ${formatExportList(golem.damageResistances, "—")}`);
+  lines.push(`Condition Immunities: ${formatExportList(golem.conditionImmunities, "—")}`);
+  lines.push(`Senses: ${formatExportList(golem.senses, "—")}`);
+  lines.push(`Languages: ${formatExportList(golem.languages, "—")}`);
+  lines.push("");
+
+  lines.push("Traits");
+  lines.push("------");
+  lines.push(groupedTraits || "None.");
+  lines.push("");
+
+  lines.push(...exportSection("Actions", actions));
+  lines.push(...exportSection("Reactions", reactions));
+
+  return lines.join("\n").replace(/\n{3,}/g, "\n\n").trim();
+}
+
+function getStatBlockExportText() {
+  const state = getBuildState();
+  const mode = state.mode || "single";
+
+  const player1 = createPlayer(1);
+  const golem1 = createGolem(
+    player1,
+    state.template,
+    state.engine,
+    state.form,
+    state.infusions || []
+  );
+
+  const template1 = getTemplateById(state.template);
+  const form1 = getConstructFormById(state.form);
+  const engine1 = getEngineById(state.engine);
+
+  let displayGolem1 = golem1;
+  let modeLabel = "Single Golem";
+
+  if (mode === "fusion") {
+    displayGolem1 = createFusionGolem(player1, golem1);
+    modeLabel = "Fusion Mode";
+  } else if (mode === "multi") {
+    modeLabel = "Multi-Golem";
+  } else if (mode === "awakened") {
+    displayGolem1 = applyAwakenedCoreBenefits(player1, golem1);
+    modeLabel = "Awakened Core";
+  }
+
+  const blocks = [
+    buildSingleStatBlockExport(
+      mode === "multi" ? "PRIMARY GOLEM" : "ARCANE GOLEM",
+      displayGolem1,
+      player1,
+      {
+        modeLabel,
+        templateName: template1?.name || "None",
+        formName: form1?.name || "None",
+        engineName: engine1?.name || "None"
+      }
+    )
+  ];
+
+  if (mode === "multi") {
+    const player2 = createPlayer(2);
+    const golem2 = createGolem(
+      player2,
+      state.template2,
+      state.engine2,
+      state.form2,
+      state.infusions2 || []
+    );
+
+    const template2 = getTemplateById(state.template2);
+    const form2 = getConstructFormById(state.form2);
+    const engine2 = getEngineById(state.engine2);
+
+    blocks.push(
+      buildSingleStatBlockExport(
+        "SECOND GOLEM",
+        golem2,
+        player2,
+        {
+          modeLabel,
+          templateName: template2?.name || "None",
+          formName: form2?.name || "None",
+          engineName: engine2?.name || "None"
+        }
+      )
+    );
+  }
+
+  const result = blocks.join("\n\n");
+
+  if (!result.trim()) {
+    const statBlock1 = $("#statBlockOutput");
+    return (statBlock1?.innerText || "").trim();
+  }
+
+  return result;
+}
+/* ---------- /Stat Block Export ---------- */
+
+
+/* ---------- Combat Helpers ---------- */
 function getAttackAbility(golem) {
   if (golem.attackAbilityMode === "bestOfStrDex") {
     const strMod = getMod(golem.str || 10);
@@ -88,11 +312,15 @@ function getAttackAbility(golem) {
 
   return golem.attackAbility === "dex" ? "dex" : "str";
 }
+
 function getAttackModifier(golem) {
   const ability = getAttackAbility(golem);
   return getMod(golem[ability] || 10);
 }
+/* ---------- /Combat Helpers ---------- */
 
+
+/* ---------- Render Micro Helpers ---------- */
 function formatHeaderLine(label, value) {
   if (!value || (Array.isArray(value) && value.length === 0)) return "";
 
@@ -130,20 +358,204 @@ function getModeDisplayText(mode) {
   return "Single Golem";
 }
 
-function arraysEqualAsSets(a = [], b = []) {
-  if (a.length !== b.length) return false;
-
-  const aSorted = [...a].sort();
-  const bSorted = [...b].sort();
-
-  return aSorted.every((value, index) => value === bSorted[index]);
-}
 function getPromptMode() {
   return $("#promptModeSelect")?.value || "standard";
 }
-/* =========================
-   Concept Art Prompt System
-========================= */
+/* ---------- /Render Micro Helpers ---------- */
+
+
+/* ---------- Trait + Action Normalization ---------- */
+function normalizeTraitEntry(entry, fallbackCategory = "Core Traits") {
+  if (!entry) return null;
+
+  if (typeof entry === "string") {
+    return {
+      category: fallbackCategory,
+      text: entry
+    };
+  }
+
+  if (typeof entry === "object" && entry.text) {
+    return {
+      category: entry.category || fallbackCategory,
+      text: entry.text
+    };
+  }
+
+  return null;
+}
+
+function pushTrait(target, category, text) {
+  if (!target || !text) return;
+  if (!target.traits) target.traits = [];
+
+  target.traits.push({
+    category: category || "Core Traits",
+    text
+  });
+}
+
+function normalizeActionEntry(action) {
+  if (!action) return null;
+
+  if (typeof action === "string") {
+    return {
+      name: "Action",
+      text: action,
+      isPreformatted: true
+    };
+  }
+
+  if (typeof action === "object") {
+    return {
+      name: action.name || "Action",
+      text: action.text || "",
+      attackType: action.attackType || "",
+      toHit: action.toHit ?? "",
+      reach: action.reach || "",
+      range: action.range || "",
+      target: action.target || "one target",
+      hit: action.hit || "",
+      damageType: action.damageType || "",
+      tag: action.tag || "",
+      isPreformatted: !!action.isPreformatted
+    };
+  }
+
+  return null;
+}
+
+function formatActionLine(action) {
+  const a = normalizeActionEntry(action);
+  if (!a) return "";
+
+  if (a.isPreformatted && a.text) {
+    return `**${a.name}.** ${a.text}`;
+  }
+
+  const parts = [];
+
+  if (a.attackType) {
+    parts.push(`*${a.attackType}:*`);
+  }
+
+  if (a.toHit !== "" && a.toHit !== null && a.toHit !== undefined) {
+    const hitText = typeof a.toHit === "number" ? formatSigned(a.toHit) : a.toHit;
+    parts.push(`${hitText} to hit,`);
+  }
+
+  if (a.reach) {
+    parts.push(`reach ${a.reach},`);
+  } else if (a.range) {
+    parts.push(`range ${a.range},`);
+  }
+
+  if (a.target) {
+    parts.push(`${a.target}.`);
+  }
+
+  let line = `**${a.name}.** ${parts.join(" ").replace(/\s+/g, " ").trim()}`;
+
+  if (a.hit) {
+    line += ` *Hit:* ${a.hit}`;
+  }
+
+  if (a.tag) {
+    line += ` (${a.tag})`;
+  }
+
+  return line.trim();
+}
+
+function formatActionLineHtml(action) {
+  const a = normalizeActionEntry(action);
+  if (!a) return "";
+  if (!a.name && !a.text) return "";
+  if (a.isPreformatted && a.text) {
+    return `<strong>${escapeHtml(a.name)}.</strong> ${escapeHtml(a.text)}`;
+  }
+
+  const parts = [];
+
+  if (a.attackType) {
+    parts.push(`<em>${escapeHtml(a.attackType)}:</em>`);
+  }
+
+  if (a.toHit !== "" && a.toHit !== null && a.toHit !== undefined) {
+    const hitText = typeof a.toHit === "number" ? formatSigned(a.toHit) : a.toHit;
+    parts.push(`${escapeHtml(hitText)} to hit,`);
+  }
+
+  if (a.reach) {
+    parts.push(`reach ${escapeHtml(a.reach)},`);
+  } else if (a.range) {
+    parts.push(`range ${escapeHtml(a.range)},`);
+  }
+
+  if (a.target) {
+    parts.push(`${escapeHtml(a.target)}.`);
+  }
+
+  let line = `<strong>${escapeHtml(a.name)}.</strong> ${parts.join(" ").replace(/\s+/g, " ").trim()}`;
+
+  if (a.hit) {
+    line += ` <em>Hit:</em> ${escapeHtml(a.hit)}`;
+  }
+
+  if (a.tag) {
+    line += ` (${escapeHtml(a.tag)})`;
+  }
+
+  return line.trim();
+}
+
+function groupTraits(traits) {
+  const grouped = {
+    "Core Traits": [],
+    "Engine Traits": [],
+    "Template Traits": [],
+    "Infusion Traits": [],
+    "Special Traits": []
+  };
+
+  ensureArray(traits).forEach((entry) => {
+    const normalized = normalizeTraitEntry(entry);
+    if (!normalized) return;
+
+    const category = grouped[normalized.category]
+      ? normalized.category
+      : "Core Traits";
+
+    grouped[category].push(normalized.text);
+  });
+
+  return grouped;
+}
+
+function renderGroupedTraitText(traits) {
+  const grouped = groupTraits(traits);
+  const order = [
+    "Core Traits",
+    "Engine Traits",
+    "Template Traits",
+    "Infusion Traits",
+    "Special Traits"
+  ];
+
+  return order
+    .filter((section) => grouped[section].length)
+    .map((section) => {
+      const lines = grouped[section].map((text) => `• ${text}`).join("\n");
+      return `${section}\n${lines}`;
+    })
+    .join("\n\n");
+}
+/* ---------- /Trait + Action Normalization ---------- */
+
+
+/* =========================================================
+   CONCEPT ART PROMPT SYSTEM
+========================================================= */
 
 function buildPromptRoleText({ formId, templateId, engineId, infusionIds = [] }) {
   const tags = [];
@@ -194,7 +606,13 @@ function buildPromptPoseText({ formId, engineId }) {
   return "standing in a ready stance";
 }
 
-function generateConceptArtPrompt({ formId, templateId, engineId, infusionIds = [], style = "sheet" }) {
+function generateConceptArtPrompt({
+  formId,
+  templateId,
+  engineId,
+  infusionIds = [],
+  style = "sheet"
+}) {
   const mode = getPromptMode();
   const isSafe = mode === "safe";
 
@@ -283,15 +701,16 @@ async function copyConceptArtPrompt() {
   if (button) {
     const originalText = button.textContent;
     button.textContent = copied ? "Copied!" : "Press Ctrl+C";
+
     setTimeout(() => {
       button.textContent = originalText;
     }, 1400);
   }
 }
 
-/* =========================
-   Data lookup
-========================= */
+/* =========================================================
+   DATA LOOKUP
+========================================================= */
 
 function getTemplateById(id) {
   return TEMPLATES.find((t) => t.id === id) || null;
@@ -313,9 +732,9 @@ function getExampleBuildById(id) {
   return EXAMPLE_BUILDS.find((b) => b.id === id) || null;
 }
 
-/* =========================
-   Base player + golem
-========================= */
+/* =========================================================
+   BASE PLAYER + GOLEM
+========================================================= */
 
 function createPlayer(index = 1) {
   const s = suffix(index);
@@ -328,7 +747,7 @@ function createPlayer(index = 1) {
   return {
     level,
     intMod,
-    pb: proficiencyBonus(level),
+    pb: proficiencyBonus(level)
   };
 }
 
@@ -378,13 +797,13 @@ function createBaseGolem(player) {
     damageReductionAll: 0,
     attackAbility: "str",
 
-    selectedInfusionNames: [],
+    selectedInfusionNames: []
   };
 }
 
-/* =========================
-   Selection state
-========================= */
+/* =========================================================
+   SELECTION STATE
+========================================================= */
 
 function getMode() {
   return $("#mode")?.value || "single";
@@ -427,9 +846,7 @@ function setSelectedFormId(index = 1, id) {
 }
 
 function getInfusionInputSelector(index = 1) {
-  return index === 2
-    ? 'input[name="infusions2"]'
-    : 'input[name="infusions"]';
+  return index === 2 ? 'input[name="infusions2"]' : 'input[name="infusions"]';
 }
 
 function getSelectedInfusionIds(player, index = 1) {
@@ -440,9 +857,11 @@ function getSelectedInfusionIds(player, index = 1) {
     .filter((id) => {
       const infusion = getInfusionById(id);
       if (!infusion) return false;
+
       if (infusion.prerequisiteLevel && player.level < infusion.prerequisiteLevel) {
         return false;
       }
+
       return true;
     });
 
@@ -452,6 +871,7 @@ function getSelectedInfusionIds(player, index = 1) {
 
 function setSelectedInfusions(index = 1, ids = []) {
   const allowed = new Set(ids);
+
   $all(getInfusionInputSelector(index)).forEach((box) => {
     box.checked = allowed.has(box.value);
   });
@@ -501,6 +921,7 @@ function enforceEngineRestrictions(index = 1) {
     setSelectedEngineId(index, "none");
   }
 }
+
 function enforceCapstoneModeRestrictions() {
   const level = createPlayer(1).level;
   const modeSelect = $("#mode");
@@ -520,7 +941,11 @@ function enforceCapstoneModeRestrictions() {
 
   if (
     !capstoneUnlocked &&
-    (modeSelect.value === "awakened" || modeSelect.value === "multi" || modeSelect.value === "fusion")
+    (
+      modeSelect.value === "awakened" ||
+      modeSelect.value === "multi" ||
+      modeSelect.value === "fusion"
+    )
   ) {
     modeSelect.value = "single";
   }
@@ -529,9 +954,10 @@ function enforceCapstoneModeRestrictions() {
     modeLockNote.style.display = capstoneUnlocked ? "none" : "block";
   }
 }
-/* =========================
-   Golem construction
-========================= */
+
+/* =========================================================
+   GOLEM CONSTRUCTION
+========================================================= */
 
 function finalizeDerivedData(golem) {
   golem.skills = dedupe(golem.skills);
@@ -590,19 +1016,36 @@ function createGolem(
 
   const totalHardness = (golem.hardness || 0) + (golem.hardnessBonus || 0);
   if (totalHardness > 0) {
-    golem.traits.push(
+    pushTrait(
+      golem,
+      "Core Traits",
       `Hardness ${totalHardness}. If the golem takes nonmagical bludgeoning, piercing, or slashing damage from a single source and that damage is equal to or less than ${totalHardness}, it takes no damage instead.`
     );
   }
 
   if ((golem.damageReductionAll || 0) > 0) {
-    golem.traits.push(
+    pushTrait(
+      golem,
+      "Core Traits",
       `Damage Reduction. Reduce all incoming damage by ${golem.damageReductionAll}.`
     );
   }
 
+  golem.traits = ensureArray(golem.traits)
+    .map((trait) => normalizeTraitEntry(trait, "Core Traits"))
+    .filter(Boolean);
+
+  golem.actions = ensureArray(golem.actions)
+    .map((action) => normalizeActionEntry(action))
+    .filter(Boolean);
+
+  golem.reactions = ensureArray(golem.reactions)
+    .map((reaction) => normalizeActionEntry(reaction))
+    .filter(Boolean);
+
   return finalizeDerivedData(golem);
 }
+
 function createFusionGolem(player, golem) {
   const fusion = JSON.parse(JSON.stringify(golem));
   const intBonus = player.intMod;
@@ -612,17 +1055,50 @@ function createFusionGolem(player, golem) {
   fusion.fusedTempHp = player.level;
   fusion.fusionState = true;
 
-  fusion.traits = [
-    "Corewright Fusion. The artificer and construct are merged into a single fused form for up to 1 minute. The fused form acts on the artificer's turn and doesn't require commands to take actions.",
-    `Arcane Co-Pilot. Once on each of its turns, the fused form can add ${intBonus >= 0 ? `+${intBonus}` : intBonus} to the damage of one attack it makes.`,
-    `Overclocked Conduit Frame. The fused form gains a +2 bonus to spell attack rolls and to its spell save DC. In addition, once on each of its turns when it casts a spell that deals damage, it can add ${intBonus >= 0 ? `+${intBonus}` : intBonus} to one damage roll of that spell.`,
-    "Integrated Combat Matrix. The fused form can use Strength or Dexterity, whichever is higher, for the attack and damage rolls of its weapon attacks.",
-    "Spell Conduit. When you cast a spell with a range of touch, the fused form can deliver the spell as if it were the caster.",
-    `Unified Vitality. When the fusion begins, the fused form gains ${player.level} temporary hit points.`,
-    "If the fused form is reduced to 0 hit points, the fusion ends and the construct's body is destroyed, though its core remains intact. The artificer is separated and cannot reconstruct the golem until finishing a long rest.",
-    "The artificer can end the fusion early (no action required). If the construct still has hit points when the fusion ends, it remains active and functions as normal.",
-    ...(fusion.traits || [])
-  ];
+  fusion.traits = ensureArray(fusion.traits)
+    .map((trait) => normalizeTraitEntry(trait, "Core Traits"))
+    .filter(Boolean);
+
+  pushTrait(
+    fusion,
+    "Special Traits",
+    "Corewright Fusion. The artificer and construct are merged into a single fused form for up to 1 minute. The fused form acts on the artificer's turn and doesn't require commands to take actions."
+  );
+  pushTrait(
+    fusion,
+    "Special Traits",
+    `Arcane Co-Pilot. Once on each of its turns, the fused form can add ${intBonus >= 0 ? `+${intBonus}` : intBonus} to the damage of one attack it makes.`
+  );
+  pushTrait(
+    fusion,
+    "Special Traits",
+    `Overclocked Conduit Frame. The fused form gains a +2 bonus to spell attack rolls and to its spell save DC. In addition, once on each of its turns when it casts a spell that deals damage, it can add ${intBonus >= 0 ? `+${intBonus}` : intBonus} to one damage roll of that spell.`
+  );
+  pushTrait(
+    fusion,
+    "Special Traits",
+    "Integrated Combat Matrix. The fused form can use Strength or Dexterity, whichever is higher, for the attack and damage rolls of its weapon attacks."
+  );
+  pushTrait(
+    fusion,
+    "Special Traits",
+    "Spell Conduit. When you cast a spell with a range of touch, the fused form can deliver the spell as if it were the caster."
+  );
+  pushTrait(
+    fusion,
+    "Special Traits",
+    `Unified Vitality. When the fusion begins, the fused form gains ${player.level} temporary hit points.`
+  );
+  pushTrait(
+    fusion,
+    "Special Traits",
+    "If the fused form is reduced to 0 hit points, the fusion ends and the construct's body is destroyed, though its core remains intact. The artificer is separated and cannot reconstruct the golem until finishing a long rest."
+  );
+  pushTrait(
+    fusion,
+    "Special Traits",
+    "The artificer can end the fusion early (no action required). If the construct still has hit points when the fusion ends, it remains active and functions as normal."
+  );
 
   return fusion;
 }
@@ -642,42 +1118,64 @@ function applyAwakenedCoreBenefits(player, golem) {
     "Intimidation"
   ];
 
-  awakened.traits = [
-    "Awakened Cognition. The construct's Intelligence score becomes 16, its Wisdom score becomes 14, and its Charisma score becomes 14, unless a score is already higher.",
-    "Autonomous Reasoning. The awakened construct can independently take skill-based actions, including Search, Study, and Influence, as the situation requires.",
-    "Awakened Skills. The construct is proficient in Investigation, Perception, Insight, Persuasion, and Intimidation.",
-    ...(awakened.traits || [])
-  ];
+  awakened.traits = ensureArray(awakened.traits)
+    .map((trait) => normalizeTraitEntry(trait, "Core Traits"))
+    .filter(Boolean);
+
+  pushTrait(
+    awakened,
+    "Special Traits",
+    "Awakened Cognition. The construct's Intelligence score becomes 16, its Wisdom score becomes 14, and its Charisma score becomes 14, unless a score is already higher."
+  );
+  pushTrait(
+    awakened,
+    "Special Traits",
+    "Autonomous Reasoning. The awakened construct can independently take skill-based actions, including Search, Study, and Influence, as the situation requires."
+  );
+  pushTrait(
+    awakened,
+    "Special Traits",
+    "Awakened Skills. The construct is proficient in Investigation, Perception, Insight, Persuasion, and Intimidation."
+  );
 
   return awakened;
 }
 
-/* =========================
-   Attack / Stat Block
-========================= */
+/* =========================================================
+   ATTACK + STAT BLOCK
+========================================================= */
 
-function buildSlamText(golem, player) {
+function buildSlamAction(golem, player) {
   const attackAbility = getAttackAbility(golem);
   const attackMod = getAttackModifier(golem);
   const attackBonus = player.pb + attackMod;
   const damageDie = golem.slamDamageDie || "1d8";
 
-  let text = `Slam. Melee Weapon Attack: +${attackBonus} to hit, reach ${golem.reach} ft., one target. Hit: ${damageDie} ${attackMod >= 0 ? "+" : "-"}${Math.abs(attackMod)} bludgeoning damage.`;
+  let hitText = `${damageDie} ${attackMod >= 0 ? "+" : "-"} ${Math.abs(attackMod)} bludgeoning damage`
+    .replace(/\s+/g, " ")
+    .trim();
 
   if (golem.onHitEffects.length) {
-    text += ` ${golem.onHitEffects.join(" ")}`;
+    hitText += ` ${golem.onHitEffects.join(" ")}`;
   }
 
   if (golem.attackAbilityMode === "bestOfStrDex") {
-    text += ` This attack uses Strength or Dexterity, whichever is higher, for its attack and damage rolls.`;
+    hitText += ` This attack uses Strength or Dexterity, whichever is higher, for its attack and damage rolls.`;
   } else if (attackAbility === "dex") {
-    text += ` This attack uses Dexterity for its attack and damage rolls.`;
+    hitText += ` This attack uses Dexterity for its attack and damage rolls.`;
   }
 
-  return text;
+  return {
+    name: "Slam",
+    attackType: "Melee Weapon Attack",
+    toHit: attackBonus,
+    reach: `${golem.reach} ft.`,
+    target: "one target",
+    hit: hitText
+  };
 }
 
-function buildRangedAttackText(golem, player) {
+function buildRangedAttackAction(golem, player) {
   const attackAbility = getAttackAbility(golem);
   const attackMod = getAttackModifier(golem);
   const attackBonus = player.pb + attackMod;
@@ -687,54 +1185,57 @@ function buildRangedAttackText(golem, player) {
   const damageDie = golem.rangedAttack?.damageDie || "1d10";
   const damageType = golem.rangedAttack?.damageType || "force";
 
-  let text = `${attackName}. Ranged Weapon Attack: +${attackBonus} to hit, range ${range}, one target. Hit: ${damageDie} ${attackMod >= 0 ? "+" : "-"}${Math.abs(attackMod)} ${damageType} damage.`;
+  let hitText = `${damageDie} ${attackMod >= 0 ? "+" : "-"} ${Math.abs(attackMod)} ${damageType} damage`
+    .replace(/\s+/g, " ")
+    .trim();
 
   if (golem.onHitEffects.length) {
-    text += ` ${golem.onHitEffects.join(" ")}`;
+    hitText += ` ${golem.onHitEffects.join(" ")}`;
   }
 
   if (golem.attackAbilityMode === "bestOfStrDex") {
-    text += ` This attack uses Strength or Dexterity, whichever is higher, for its attack and damage rolls.`;
+    hitText += ` This attack uses Strength or Dexterity, whichever is higher, for its attack and damage rolls.`;
   } else if (attackAbility === "dex") {
-    text += ` This attack uses Dexterity for its attack and damage rolls.`;
+    hitText += ` This attack uses Dexterity for its attack and damage rolls.`;
   }
 
-  return text;
+  return {
+    name: attackName,
+    attackType: "Ranged Weapon Attack",
+    toHit: attackBonus,
+    range,
+    target: "one target",
+    hit: hitText
+  };
 }
 
 function buildActionsList(golem, player) {
   const actions = [];
 
   if (golem.multiattack && golem.multiattackText) {
-    actions.push(`Multiattack. ${golem.multiattackText}`);
+    actions.push({
+      name: "Multiattack",
+      text: golem.multiattackText,
+      isPreformatted: true
+    });
   }
 
   if (golem.primaryAttackMode === "ranged") {
-    actions.push(buildRangedAttackText(golem, player));
-    actions.push(buildSlamText(golem, player));
+    actions.push(buildRangedAttackAction(golem, player));
+    actions.push(buildSlamAction(golem, player));
   } else {
-    actions.push(buildSlamText(golem, player));
+    actions.push(buildSlamAction(golem, player));
   }
 
   for (const action of golem.actions || []) {
-    if (typeof action === "string") {
-      actions.push(action);
-    } else if (action?.name && action?.text) {
-      actions.push(`${action.name}. ${action.text}`);
-    }
+    actions.push(action);
   }
 
-  return actions;
+  return actions.filter(Boolean);
 }
 
 function buildReactionsList(golem) {
-  return (golem.reactions || [])
-    .map((reaction) => {
-      if (typeof reaction === "string") return reaction;
-      if (reaction?.name && reaction?.text) return `${reaction.name}. ${reaction.text}`;
-      return "";
-    })
-    .filter(Boolean);
+  return ensureArray(golem.reactions).filter(Boolean);
 }
 
 function buildSpeedText(golem) {
@@ -764,34 +1265,62 @@ function renderStatBlock(golem, player, title = "Arcane Golem") {
   const condImmText = golem.conditionImmunities.length ? golem.conditionImmunities.join(", ") : "—";
   const sensesText = golem.senses.length ? golem.senses.join(", ") : "—";
   const languagesText = golem.languages.length ? golem.languages.join(", ") : "—";
+
   const awakenedSkillsText = (golem.awakenedSkills || []).length
-  ? golem.awakenedSkills
-      .map((skill) => {
-        const skillKey = skill.toLowerCase();
+    ? golem.awakenedSkills
+        .map((skill) => {
+          const skillKey = skill.toLowerCase();
 
-        let abilityMod = 0;
-        if (skillKey === "investigation") abilityMod = getMod(golem.int || 10);
-        else if (skillKey === "perception" || skillKey === "insight") abilityMod = getMod(golem.wis || 10);
-        else if (skillKey === "persuasion" || skillKey === "intimidation") abilityMod = getMod(golem.cha || 10);
+          let abilityMod = 0;
+          if (skillKey === "investigation") {
+            abilityMod = getMod(golem.int || 10);
+          } else if (skillKey === "perception" || skillKey === "insight") {
+            abilityMod = getMod(golem.wis || 10);
+          } else if (skillKey === "persuasion" || skillKey === "intimidation") {
+            abilityMod = getMod(golem.cha || 10);
+          }
 
-        const total = abilityMod + player.pb;
-        const signed = total >= 0 ? `+${total}` : `${total}`;
-        return `${skill} ${signed}`;
+          const total = abilityMod + player.pb;
+          const signed = total >= 0 ? `+${total}` : `${total}`;
+          return `${skill} ${signed}`;
+        })
+        .join(", ")
+    : "";
+
+  const groupedTraits = groupTraits(golem.traits || []);
+  const traitOrder = [
+    "Core Traits",
+    "Engine Traits",
+    "Template Traits",
+    "Infusion Traits",
+    "Special Traits"
+  ];
+
+  const traitsHtml =
+    traitOrder
+      .filter((section) => groupedTraits[section]?.length)
+      .map((section) => {
+        const entries = groupedTraits[section]
+          .map((text) => `<p>• ${escapeHtml(text)}</p>`)
+          .join("");
+
+        return `
+          <div class="trait-group">
+            <h5>${escapeHtml(section)}</h5>
+            ${entries}
+          </div>
+        `;
       })
-      .join(", ")
-  : "";
-  const traitsHtml = (golem.traits || []).length
-    ? golem.traits.map((t) => `<p>${escapeHtml(t)}</p>`).join("")
-    : `<p>—</p>`;
+      .join("") || `<p>—</p>`;
 
-  const actions = buildActionsList(golem, player);
+    const actions = buildActionsList(golem, player);
   const actionsHtml = actions.length
-    ? actions.map((a) => `<p>${escapeHtml(a)}</p>`).join("")
+    ? actions.map((a) => `<p>${formatActionLineHtml(a)}</p>`).join("")
     : `<p>—</p>`;
 
   const reactions = buildReactionsList(golem);
   const reactionsHtml = reactions.length
-    ? reactions.map((r) => `<p>${escapeHtml(r)}</p>`).join("")
+    ? reactions.map((r) => `<p>${formatActionLineHtml(r)}</p>`).join("")
     : `<p>—</p>`;
 
   const headerSection = `
@@ -849,13 +1378,19 @@ function renderStatBlock(golem, player, title = "Arcane Golem") {
         ${actionsHtml}
       </div>
 
-      <div class="reaction-block">
-        <h4>Reactions</h4>
-        ${reactionsHtml}
-      </div>
+      ${reactions.length ? `
+        <div class="reaction-block">
+          <h4>Reactions</h4>
+          ${reactionsHtml}
+        </div>
+      ` : ""}
     </div>
   `;
 }
+
+/* =========================================================
+   SUMMARY HELPERS
+========================================================= */
 
 function renderSelectionSummaryBlock(player, templateId, engineId, formId, infusionIds, title) {
   const template = getTemplateById(templateId);
@@ -916,9 +1451,350 @@ function renderLoadedExampleBanner() {
   `;
 }
 
-/* =========================
-   UI Rendering
-========================= */
+/* =========================================================
+   SAVE / LOAD / SHARE STATE
+========================================================= */
+
+function getBuildState() {
+  const player1 = createPlayer(1);
+  const player2 = createPlayer(2);
+
+  return {
+    mode: getMode(),
+
+    level: player1.level,
+    intMod: player1.intMod,
+    template: getSelectedTemplateId(1),
+    engine: getSelectedEngineId(1),
+    form: getSelectedFormId(1),
+    infusions: getSelectedInfusionIds(player1, 1),
+
+    level2: player2.level,
+    intMod2: player2.intMod,
+    template2: getSelectedTemplateId(2),
+    engine2: getSelectedEngineId(2),
+    form2: getSelectedFormId(2),
+    infusions2: getSelectedInfusionIds(player2, 2)
+  };
+}
+
+function applyBuildState(state) {
+  if (!state) return;
+
+  if ($("#mode") && typeof state.mode !== "undefined") {
+    $("#mode").value = state.mode;
+  }
+
+  if ($("#level") && typeof state.level !== "undefined") {
+    $("#level").value = state.level;
+  }
+
+  if ($("#intMod") && typeof state.intMod !== "undefined") {
+    $("#intMod").value = state.intMod;
+  }
+
+  if ($("#template") && typeof state.template !== "undefined") {
+    $("#template").value = state.template;
+  }
+
+  if ($("#constructForm") && typeof state.form !== "undefined") {
+    setSelectedFormId(1, state.form);
+  }
+
+  if ($("#engine") && typeof state.engine !== "undefined") {
+    $("#engine").value = state.engine;
+  }
+
+  if ($("#level2") && typeof state.level2 !== "undefined") {
+    $("#level2").value = state.level2;
+  }
+
+  if ($("#intMod2") && typeof state.intMod2 !== "undefined") {
+    $("#intMod2").value = state.intMod2;
+  }
+
+  if ($("#template2") && typeof state.template2 !== "undefined") {
+    $("#template2").value = state.template2;
+  }
+
+  if ($("#constructForm2") && typeof state.form2 !== "undefined") {
+    setSelectedFormId(2, state.form2);
+  }
+
+  if ($("#engine2") && typeof state.engine2 !== "undefined") {
+    $("#engine2").value = state.engine2;
+  }
+
+  setSelectedInfusions(1, state.infusions || []);
+  setSelectedInfusions(2, state.infusions2 || []);
+}
+
+function updateShareLink() {
+  const shareVisibleEl = $("#shareLinkVisible");
+  const shareMainEl = $("#shareLinkMain");
+  if (!shareVisibleEl && !shareMainEl) return;
+
+  const state = getBuildState();
+  const params = new URLSearchParams({
+    mode: state.mode,
+
+    level: String(state.level),
+    intMod: String(state.intMod),
+    template: state.template,
+    engine: state.engine,
+    form: state.form,
+    infusions: state.infusions.join(","),
+
+    level2: String(state.level2),
+    intMod2: String(state.intMod2),
+    template2: state.template2,
+    engine2: state.engine2,
+    form2: state.form2,
+    infusions2: state.infusions2.join(",")
+  });
+
+  const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+
+  if (shareVisibleEl) shareVisibleEl.value = url;
+  if (shareMainEl) shareMainEl.value = url;
+}
+
+function loadFromQueryString() {
+  const params = new URLSearchParams(window.location.search);
+  if (![...params.keys()].length) return;
+
+  const state = {
+    mode: params.get("mode") || undefined,
+
+    level: params.get("level") || undefined,
+    intMod: params.get("intMod") || undefined,
+    template: params.get("template") || undefined,
+    engine: params.get("engine") || undefined,
+    form: params.get("form") || undefined,
+    infusions: (params.get("infusions") || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
+
+    level2: params.get("level2") || undefined,
+    intMod2: params.get("intMod2") || undefined,
+    template2: params.get("template2") || undefined,
+    engine2: params.get("engine2") || undefined,
+    form2: params.get("form2") || undefined,
+    infusions2: (params.get("infusions2") || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+  };
+
+  applyBuildState(state);
+}
+
+/* =========================================================
+   PERSISTENCE
+========================================================= */
+
+const WORKING_BUILD_KEY = "corewright-build";
+const NAMED_BUILDS_KEY = "corewright-named-builds";
+
+let lastAutoGeneratedSaveName = "";
+
+function saveBuild() {
+  localStorage.setItem(WORKING_BUILD_KEY, JSON.stringify(getBuildState()));
+}
+
+function loadBuild() {
+  const raw = localStorage.getItem(WORKING_BUILD_KEY);
+  if (!raw) return;
+
+  try {
+    const state = JSON.parse(raw);
+    applyBuildState(state);
+  } catch (err) {
+    console.error("Failed to load saved build:", err);
+  }
+}
+
+function getNamedBuilds() {
+  try {
+    return JSON.parse(localStorage.getItem(NAMED_BUILDS_KEY)) || [];
+  } catch (err) {
+    console.error("Failed to read named builds:", err);
+    return [];
+  }
+}
+
+function setNamedBuilds(builds) {
+  localStorage.setItem(NAMED_BUILDS_KEY, JSON.stringify(builds));
+}
+
+function normalizeBuildName(name) {
+  return String(name || "").trim();
+}
+
+function buildSuggestedSaveName() {
+  const mode = getMode();
+
+  const template1 = getTemplateById(getSelectedTemplateId(1))?.name || "No Template";
+  const form1 = getConstructFormById(getSelectedFormId(1))?.name || "No Form";
+  const engine1 = getEngineById(getSelectedEngineId(1))?.name || "No Engine";
+
+  const primaryLabel = `${template1} ${form1}`.replace(/\s+/g, " ").trim();
+
+  if (mode === "single") {
+    return `${primaryLabel} - ${engine1}`;
+  }
+
+  const template2 = getTemplateById(getSelectedTemplateId(2))?.name || "No Template";
+  const form2 = getConstructFormById(getSelectedFormId(2))?.name || "No Form";
+
+  const secondaryLabel = `${template2} ${form2}`.replace(/\s+/g, " ").trim();
+
+  if (mode === "fusion") {
+    return `Fusion: ${primaryLabel} + ${secondaryLabel}`;
+  }
+
+  return `Dual Build: ${primaryLabel} + ${secondaryLabel}`;
+}
+
+function maybeAutoFillSaveName(force = false) {
+  const input = $("#saveName");
+  if (!input) return;
+
+  const suggestion = buildSuggestedSaveName();
+  const current = normalizeBuildName(input.value);
+
+  const shouldReplace =
+    force ||
+    current === "" ||
+    current === lastAutoGeneratedSaveName;
+
+  if (shouldReplace) {
+    input.value = suggestion;
+    lastAutoGeneratedSaveName = suggestion;
+  }
+}
+
+function refreshNamedBuildsDropdown() {
+  const select = $("#savedBuildsSelect");
+  if (!select) return;
+
+  const currentValue = select.value;
+  const builds = getNamedBuilds();
+
+  select.innerHTML = `<option value="">-- Select Saved Build --</option>`;
+
+  for (const build of builds) {
+    const option = document.createElement("option");
+    option.value = build.name;
+    option.textContent = build.name;
+    select.appendChild(option);
+  }
+
+  if (builds.some((b) => b.name === currentValue)) {
+    select.value = currentValue;
+  }
+}
+
+function saveNamedBuild() {
+  const input = $("#saveName");
+  if (!input) return;
+
+  maybeAutoFillSaveName();
+
+  const name = normalizeBuildName(input.value);
+  if (!name) {
+    alert("Please enter a build name.");
+    return;
+  }
+
+  const builds = getNamedBuilds();
+  const state = getBuildState();
+
+  const record = {
+    name,
+    updatedAt: new Date().toISOString(),
+    state
+  };
+
+  const existingIndex = builds.findIndex(
+    (b) => b.name.toLowerCase() === name.toLowerCase()
+  );
+
+  if (existingIndex >= 0) {
+    builds[existingIndex] = record;
+  } else {
+    builds.push(record);
+  }
+
+  builds.sort((a, b) => a.name.localeCompare(b.name));
+
+  setNamedBuilds(builds);
+  refreshNamedBuildsDropdown();
+
+  const select = $("#savedBuildsSelect");
+  if (select) select.value = name;
+
+  lastAutoGeneratedSaveName = name;
+  saveBuild();
+  alert(`Saved build "${name}".`);
+}
+
+function loadNamedBuild() {
+  const select = $("#savedBuildsSelect");
+  if (!select || !select.value) {
+    alert("Please select a saved build to load.");
+    return;
+  }
+
+  const builds = getNamedBuilds();
+  const selected = builds.find((b) => b.name === select.value);
+
+  if (!selected) {
+    alert("That saved build could not be found.");
+    refreshNamedBuildsDropdown();
+    return;
+  }
+
+  applyBuildState(selected.state);
+
+  const input = $("#saveName");
+  if (input) input.value = selected.name;
+
+  lastAutoGeneratedSaveName = selected.name;
+  updateBuilder();
+  saveBuild();
+}
+
+function deleteNamedBuild() {
+  const select = $("#savedBuildsSelect");
+  if (!select || !select.value) {
+    alert("Please select a saved build to delete.");
+    return;
+  }
+
+  const name = select.value;
+  const confirmed = confirm(`Delete saved build "${name}"?`);
+  if (!confirmed) return;
+
+  const builds = getNamedBuilds().filter((b) => b.name !== name);
+  setNamedBuilds(builds);
+  refreshNamedBuildsDropdown();
+
+  const input = $("#saveName");
+  if (input && input.value === name) {
+    input.value = "";
+  }
+
+  if (lastAutoGeneratedSaveName === name) {
+    lastAutoGeneratedSaveName = "";
+  }
+
+  maybeAutoFillSaveName(true);
+}
+/* =========================================================
+   RENDER PIPELINE
+========================================================= */
 
 function populateCompatibilitySelect(selectId, items, includeNone = true) {
   const select = $(`#${selectId}`);
@@ -953,7 +1829,7 @@ function renderTemplateCards(index = 1) {
 
   const allTemplates = [
     { id: "none", name: "None", tags: ["Base"], summary: "No material template applied." },
-    ...TEMPLATES.filter((t) => t.id !== "none"),
+    ...TEMPLATES.filter((t) => t.id !== "none")
   ];
 
   container.innerHTML = allTemplates
@@ -993,7 +1869,7 @@ function renderConstructFormOptions(index = 1) {
 
   const forms = [
     { id: "none", name: "None", tags: ["Base"], summary: "No specialized construct form applied." },
-    ...CONSTRUCT_FORMS.filter((f) => f.id !== "none"),
+    ...CONSTRUCT_FORMS.filter((f) => f.id !== "none")
   ];
 
   container.innerHTML = forms
@@ -1041,7 +1917,7 @@ function renderEngineCards(index = 1) {
 
     const tags = [
       engine.damageType ? `<span class="tag">${escapeHtml(engine.damageType)}</span>` : "",
-      engine.role ? `<span class="tag">${escapeHtml(engine.role)}</span>` : "",
+      engine.role ? `<span class="tag">${escapeHtml(engine.role)}</span>` : ""
     ].join("");
 
     const preview = getPreviewText(engine, player);
@@ -1087,7 +1963,7 @@ function renderInfusionOptions(index = 1) {
   const tiers = [
     { key: "base", label: "Base Infusions" },
     { key: "advanced", label: "Advanced Infusions" },
-    { key: "masterwork", label: "Masterwork Infusions" },
+    { key: "masterwork", label: "Masterwork Infusions" }
   ];
 
   const checkboxName = index === 2 ? "infusions2" : "infusions";
@@ -1245,6 +2121,7 @@ function syncSelectedCardsFromHiddenInputs(index = 1) {
 
   $all(`#infusions${s} input[type="checkbox"]`).forEach((input) => {
     input.checked = selectedInfusions.has(input.value);
+
     const card = input.closest(".infusion-card");
     if (card) {
       card.classList.toggle("selected", input.checked);
@@ -1271,6 +2148,7 @@ function setupAssemblyToggles() {
     });
   });
 }
+
 function setAssemblyExpanded(targetId, expanded = true) {
   const content = document.getElementById(targetId);
   if (!content) return;
@@ -1308,348 +2186,9 @@ function autoExpandLoadedExample() {
   autoExpandSelectedSections(2);
 }
 
-/* =========================
-   Save / Load / Share
-========================= */
-
-function getBuildState() {
-  const player1 = createPlayer(1);
-  const player2 = createPlayer(2);
-
-  return {
-    mode: getMode(),
-
-    level: player1.level,
-    intMod: player1.intMod,
-    template: getSelectedTemplateId(1),
-    engine: getSelectedEngineId(1),
-    form: getSelectedFormId(1),
-    infusions: getSelectedInfusionIds(player1, 1),
-
-    level2: player2.level,
-    intMod2: player2.intMod,
-    template2: getSelectedTemplateId(2),
-    engine2: getSelectedEngineId(2),
-    form2: getSelectedFormId(2),
-    infusions2: getSelectedInfusionIds(player2, 2),
-  };
-}
-
-function applyBuildState(state) {
-  if (!state) return;
-
-  if ($("#mode") && typeof state.mode !== "undefined") {
-    $("#mode").value = state.mode;
-  }
-
-  if ($("#level") && typeof state.level !== "undefined") {
-    $("#level").value = state.level;
-  }
-
-  if ($("#intMod") && typeof state.intMod !== "undefined") {
-    $("#intMod").value = state.intMod;
-  }
-
-  if ($("#template") && typeof state.template !== "undefined") {
-    $("#template").value = state.template;
-  }
-
-  if ($("#constructForm") && typeof state.form !== "undefined") {
-    setSelectedFormId(1, state.form);
-  }
-
-  if ($("#engine") && typeof state.engine !== "undefined") {
-    $("#engine").value = state.engine;
-  }
-
-  if ($("#level2") && typeof state.level2 !== "undefined") {
-    $("#level2").value = state.level2;
-  }
-
-  if ($("#intMod2") && typeof state.intMod2 !== "undefined") {
-    $("#intMod2").value = state.intMod2;
-  }
-
-  if ($("#template2") && typeof state.template2 !== "undefined") {
-    $("#template2").value = state.template2;
-  }
-
-  if ($("#constructForm2") && typeof state.form2 !== "undefined") {
-    setSelectedFormId(2, state.form2);
-  }
-
-  if ($("#engine2") && typeof state.engine2 !== "undefined") {
-    $("#engine2").value = state.engine2;
-  }
-
-  setSelectedInfusions(1, state.infusions || []);
-  setSelectedInfusions(2, state.infusions2 || []);
-}
-
-function updateShareLink() {
-  const shareEl = $("#shareLink");
-  if (!shareEl) return;
-
-  const state = getBuildState();
-  const params = new URLSearchParams({
-    mode: state.mode,
-
-    level: String(state.level),
-    intMod: String(state.intMod),
-    template: state.template,
-    engine: state.engine,
-    form: state.form,
-    infusions: state.infusions.join(","),
-
-    level2: String(state.level2),
-    intMod2: String(state.intMod2),
-    template2: state.template2,
-    engine2: state.engine2,
-    form2: state.form2,
-    infusions2: state.infusions2.join(","),
-  });
-
-  const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
-  shareEl.value = url;
-}
-
-function loadFromQueryString() {
-  const params = new URLSearchParams(window.location.search);
-  if (![...params.keys()].length) return;
-
-  const state = {
-    mode: params.get("mode") || undefined,
-
-    level: params.get("level") || undefined,
-    intMod: params.get("intMod") || undefined,
-    template: params.get("template") || undefined,
-    engine: params.get("engine") || undefined,
-    form: params.get("form") || undefined,
-    infusions: (params.get("infusions") || "")
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean),
-
-    level2: params.get("level2") || undefined,
-    intMod2: params.get("intMod2") || undefined,
-    template2: params.get("template2") || undefined,
-    engine2: params.get("engine2") || undefined,
-    form2: params.get("form2") || undefined,
-    infusions2: (params.get("infusions2") || "")
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean),
-  };
-
-  applyBuildState(state);
-}
-
-/* =========================
-   Persistence
-========================= */
-
-const WORKING_BUILD_KEY = "corewright-build";
-const NAMED_BUILDS_KEY = "corewright-named-builds";
-
-let lastAutoGeneratedSaveName = "";
-
-function saveBuild() {
-  localStorage.setItem(WORKING_BUILD_KEY, JSON.stringify(getBuildState()));
-}
-
-function loadBuild() {
-  const raw = localStorage.getItem(WORKING_BUILD_KEY);
-  if (!raw) return;
-
-  try {
-    const state = JSON.parse(raw);
-    applyBuildState(state);
-  } catch (err) {
-    console.error("Failed to load saved build:", err);
-  }
-}
-
-function getNamedBuilds() {
-  try {
-    return JSON.parse(localStorage.getItem(NAMED_BUILDS_KEY)) || [];
-  } catch (err) {
-    console.error("Failed to read named builds:", err);
-    return [];
-  }
-}
-
-function setNamedBuilds(builds) {
-  localStorage.setItem(NAMED_BUILDS_KEY, JSON.stringify(builds));
-}
-
-function normalizeBuildName(name) {
-  return String(name || "").trim();
-}
-
-function buildSuggestedSaveName() {
-  const mode = getMode();
-
-  const template1 = getTemplateById(getSelectedTemplateId(1))?.name || "No Template";
-  const form1 = getConstructFormById(getSelectedFormId(1))?.name || "No Form";
-  const engine1 = getEngineById(getSelectedEngineId(1))?.name || "No Engine";
-
-  const primaryLabel = `${template1} ${form1}`.replace(/\s+/g, " ").trim();
-
-  if (mode === "single") {
-    return `${primaryLabel} - ${engine1}`;
-  }
-
-  const template2 = getTemplateById(getSelectedTemplateId(2))?.name || "No Template";
-  const form2 = getConstructFormById(getSelectedFormId(2))?.name || "No Form";
-
-  const secondaryLabel = `${template2} ${form2}`.replace(/\s+/g, " ").trim();
-
-  if (mode === "fusion") {
-    return `Fusion: ${primaryLabel} + ${secondaryLabel}`;
-  }
-
-  return `Dual Build: ${primaryLabel} + ${secondaryLabel}`;
-}
-
-function maybeAutoFillSaveName(force = false) {
-  const input = $("#saveName");
-  if (!input) return;
-
-  const suggestion = buildSuggestedSaveName();
-  const current = normalizeBuildName(input.value);
-
-  const shouldReplace =
-    force ||
-    current === "" ||
-    current === lastAutoGeneratedSaveName;
-
-  if (shouldReplace) {
-    input.value = suggestion;
-    lastAutoGeneratedSaveName = suggestion;
-  }
-}
-
-function refreshNamedBuildsDropdown() {
-  const select = $("#savedBuildsSelect");
-  if (!select) return;
-
-  const currentValue = select.value;
-  const builds = getNamedBuilds();
-
-  select.innerHTML = `<option value="">-- Select Saved Build --</option>`;
-
-  for (const build of builds) {
-    const option = document.createElement("option");
-    option.value = build.name;
-    option.textContent = build.name;
-    select.appendChild(option);
-  }
-
-  if (builds.some((b) => b.name === currentValue)) {
-    select.value = currentValue;
-  }
-}
-
-function saveNamedBuild() {
-  const input = $("#saveName");
-  if (!input) return;
-
-  maybeAutoFillSaveName();
-
-  const name = normalizeBuildName(input.value);
-  if (!name) {
-    alert("Please enter a build name.");
-    return;
-  }
-
-  const builds = getNamedBuilds();
-  const state = getBuildState();
-
-  const record = {
-    name,
-    updatedAt: new Date().toISOString(),
-    state,
-  };
-
-  const existingIndex = builds.findIndex(
-    (b) => b.name.toLowerCase() === name.toLowerCase()
-  );
-
-  if (existingIndex >= 0) {
-    builds[existingIndex] = record;
-  } else {
-    builds.push(record);
-  }
-
-  builds.sort((a, b) => a.name.localeCompare(b.name));
-
-  setNamedBuilds(builds);
-  refreshNamedBuildsDropdown();
-
-  const select = $("#savedBuildsSelect");
-  if (select) select.value = name;
-
-  lastAutoGeneratedSaveName = name;
-  saveBuild();
-  alert(`Saved build "${name}".`);
-}
-
-function loadNamedBuild() {
-  const select = $("#savedBuildsSelect");
-  if (!select || !select.value) {
-    alert("Please select a saved build to load.");
-    return;
-  }
-
-  const builds = getNamedBuilds();
-  const selected = builds.find((b) => b.name === select.value);
-
-  if (!selected) {
-    alert("That saved build could not be found.");
-    refreshNamedBuildsDropdown();
-    return;
-  }
-
-  applyBuildState(selected.state);
-
-  const input = $("#saveName");
-  if (input) input.value = selected.name;
-
-  lastAutoGeneratedSaveName = selected.name;
-  updateBuilder();
-  saveBuild();
-}
-
-function deleteNamedBuild() {
-  const select = $("#savedBuildsSelect");
-  if (!select || !select.value) {
-    alert("Please select a saved build to delete.");
-    return;
-  }
-
-  const name = select.value;
-  const confirmed = confirm(`Delete saved build "${name}"?`);
-  if (!confirmed) return;
-
-  const builds = getNamedBuilds().filter((b) => b.name !== name);
-  setNamedBuilds(builds);
-  refreshNamedBuildsDropdown();
-
-  const input = $("#saveName");
-  if (input && input.value === name) {
-    input.value = "";
-  }
-
-  if (lastAutoGeneratedSaveName === name) {
-    lastAutoGeneratedSaveName = "";
-  }
-
-  maybeAutoFillSaveName(true);
-}
-
-/* =========================
-   Render pipeline
-========================= */
+/* =========================================================
+   OUTPUT RENDERING
+========================================================= */
 
 function populateAllCompatibilitySelects() {
   populateCompatibilitySelect("template", TEMPLATES, true);
@@ -1704,10 +2243,10 @@ function renderPrimaryOutputs(mode) {
       mode === "single"
         ? "Arcane Golem"
         : mode === "awakened"
-        ? "Awakened Construct"
-        : mode === "fusion"
-        ? "Corewright Fusion Form"
-        : "Primary Golem"
+          ? "Awakened Construct"
+          : mode === "fusion"
+            ? "Corewright Fusion Form"
+            : "Primary Golem"
     );
 
     statBlock1.innerHTML = `
@@ -1727,13 +2266,13 @@ function renderPrimaryOutputs(mode) {
           </div>
         `
         : mode === "awakened"
-        ? `
-          <div class="summary-line">
-            <strong>Awakened Core Active</strong><br>
-            Your construct acts with awakened reason and independent purpose, gaining elevated mental ability scores and awakened skills.
-          </div>
-        `
-        : "";
+          ? `
+            <div class="summary-line">
+              <strong>Awakened Core Active</strong><br>
+              Your construct acts with awakened reason and independent purpose, gaining elevated mental ability scores and awakened skills.
+            </div>
+          `
+          : "";
 
     summary1.innerHTML =
       renderLoadedExampleBanner() +
@@ -1747,10 +2286,10 @@ function renderPrimaryOutputs(mode) {
         mode === "single"
           ? "Golem Summary"
           : mode === "awakened"
-          ? "Awakened Construct"
-          : mode === "fusion"
-          ? "Fusion Chassis"
-          : "Primary Golem"
+            ? "Awakened Construct"
+            : mode === "fusion"
+              ? "Fusion Chassis"
+              : "Primary Golem"
       );
   }
 
@@ -1836,11 +2375,18 @@ function updateBuilder() {
   updateShareLink();
   saveBuild();
   maybeAutoFillSaveName();
+
+  const statBlockOutput = $("#statBlockOutput");
+  if (statBlockOutput) {
+    statBlockOutput.classList.remove("updated-flash");
+    void statBlockOutput.offsetWidth;
+    statBlockOutput.classList.add("updated-flash");
+  }
 }
 
-/* =========================
-   Events
-========================= */
+/* =========================================================
+   EVENTS
+========================================================= */
 
 function handleCardRadioChange(target) {
   if (target.closest("#templates2")) {
@@ -1886,7 +2432,11 @@ function bindEvents() {
   document.addEventListener("change", (event) => {
     const target = event.target;
 
-    if (target.matches('#templates input[type="radio"], #templates2 input[type="radio"], #constructForms input[type="radio"], #constructForms2 input[type="radio"], #engines input[type="radio"], #engines2 input[type="radio"]')) {
+    if (
+      target.matches(
+        '#templates input[type="radio"], #templates2 input[type="radio"], #constructForms input[type="radio"], #constructForms2 input[type="radio"], #engines input[type="radio"], #engines2 input[type="radio"]'
+      )
+    ) {
       if (handleCardRadioChange(target)) return;
     }
 
@@ -2001,6 +2551,7 @@ function bindEvents() {
         await navigator.clipboard.writeText(text);
         const originalText = copyStatBlockBtn.textContent;
         copyStatBlockBtn.textContent = "Copied!";
+
         setTimeout(() => {
           copyStatBlockBtn.textContent = originalText;
         }, 1200);
@@ -2014,6 +2565,7 @@ function bindEvents() {
 
         const originalText = copyStatBlockBtn.textContent;
         copyStatBlockBtn.textContent = "Copied!";
+
         setTimeout(() => {
           copyStatBlockBtn.textContent = originalText;
         }, 1200);
@@ -2031,17 +2583,29 @@ function bindEvents() {
   const copyBtn = $("#copyShareLink");
   if (copyBtn) {
     copyBtn.addEventListener("click", async () => {
-      const shareEl = $("#shareLink");
-      if (!shareEl) return;
+      const shareEl = $("#shareLinkVisible") || $("#shareLinkMain");
+      if (!shareEl || !shareEl.value) return;
 
-      shareEl.select();
-      shareEl.setSelectionRange(0, shareEl.value.length);
+      let copied = false;
 
       try {
         await navigator.clipboard.writeText(shareEl.value);
+        copied = true;
       } catch {
-        document.execCommand("copy");
+        const temp = document.createElement("textarea");
+        temp.value = shareEl.value;
+        document.body.appendChild(temp);
+        temp.select();
+        copied = document.execCommand("copy");
+        temp.remove();
       }
+
+      const originalText = copyBtn.textContent;
+      copyBtn.textContent = copied ? "Link Copied!" : "Press Ctrl+C";
+
+      setTimeout(() => {
+        copyBtn.textContent = originalText;
+      }, 1400);
     });
   }
 
@@ -2051,12 +2615,22 @@ function bindEvents() {
       const text = getStatBlockExportText();
       if (!text) return;
 
+      const buildName = ($("#saveName")?.value || "").trim();
+      const mode = getMode();
+      const filenameBase =
+        buildName ||
+        (mode === "multi"
+          ? "dual-core-build"
+          : mode === "fusion"
+            ? "fusion-build"
+            : "corewright-golem");
+
       const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
       const url = URL.createObjectURL(blob);
 
       const a = document.createElement("a");
       a.href = url;
-      a.download = "corewright-golem.txt";
+      a.download = `${slugifyFilename(filenameBase)}-stat-block.txt`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -2066,9 +2640,9 @@ function bindEvents() {
   }
 }
 
-/* =========================
-   Init
-========================= */
+/* =========================================================
+   INIT
+========================================================= */
 
 function hasBuildQueryString() {
   return [...new URLSearchParams(window.location.search).keys()].length > 0;
@@ -2090,7 +2664,6 @@ function initBuilder() {
 
   updateBuilder();
 
-  // 🔥 Auto-expand AFTER render
   if (hasBuildQueryString()) {
     setTimeout(() => {
       autoExpandLoadedExample();
