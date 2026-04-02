@@ -256,16 +256,118 @@ a {
    Example Builds
    ========================= */
 
+.example-build-toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.example-build-toolbar .control-group {
+  width: 100%;
+}
+
+.example-build-toolbar .control-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.example-build-toolbar .control-group input,
+.example-build-toolbar .control-group select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fffaf0;
+  color: var(--ink);
+  padding: 10px 12px;
+}
+
+.example-build-toolbar > .control-group:first-child {
+  width: min(100%, 720px);
+}
+
+.example-build-toolbar > .control-group:first-child input {
+  font-size: 1rem;
+  padding: 12px 14px;
+}
+
+.example-build-toolbar > .control-group:not(:first-child) {
+  max-width: 220px;
+}
+
+.example-build-toolbar {
+  position: relative;
+}
+
+.example-build-toolbar::after {
+  content: "";
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.example-build-toolbar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 220px));
+  justify-content: center;
+}
+
+.example-build-toolbar > .control-group:first-child {
+  grid-column: 1 / -1;
+  justify-self: center;
+}
+
+.example-build-toolbar > .control-group:not(:first-child) {
+  width: 100%;
+}
+
+.section-note {
+  text-align: center;
+  color: var(--muted);
+  margin-top: 14px;
+}
+
 #exampleBuilds {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
+}
+
+.example-build-card {
+  height: 100%;
+  transition: transform 0.14s ease, box-shadow 0.14s ease;
 }
 
 .example-build-card:hover {
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
+/* Hide result count / shown count text if present */
+#resultsCount,
+.results-count,
+.results-meta,
+.build-count,
+.example-build-count {
+  display: none !important;
+}
+
+@media (max-width: 800px) {
+  .example-build-toolbar {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .example-build-toolbar > .control-group:first-child,
+  .example-build-toolbar > .control-group:not(:first-child) {
+    width: 100%;
+    max-width: 100%;
+  }
+}
 /* =========================
    Animations
    ========================= */

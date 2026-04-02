@@ -1,8 +1,15 @@
 # ⚙️ Corewright Builder
 
-**Current Version: 3.4**
+**Current Version: 3.5**
 
 The Corewright Builder is an interactive tool for creating and customizing construct companions for the Corewright Artificer subclass.
+
+---
+
+### Quick Start
+Jump straight into the builder and create your construct in seconds:
+
+👉 https://questforgegamespnw.github.io/corewright-builder/
 
 ---
 
@@ -19,7 +26,48 @@ The Corewright Builder is an interactive tool for creating and customizing const
 - Real-time concept art prompt generation for use with AI image tools
 
 ---
-## 🆕 Latest Update — Version 3.4: Stability & Structure Pass
+
+## 🆕 Latest Update — Version 3.5: System Alignment & UX Refinement
+
+Version 3.5 focuses on **bringing all Corewright systems into full alignment** while improving usability and player-facing clarity.
+
+### Highlights:
+- Fully synchronized:
+  - subclass page
+  - infusions compendium
+  - example builds
+  - builder data
+- Refined infusion wording and mechanics for consistency
+- Expanded and clarified example builds with stronger archetype identities
+- Reworked Example Builds page layout:
+  - centered search
+  - grouped filters (Level, Role, Difficulty)
+  - improved visual hierarchy
+- Removed unnecessary UI elements (e.g. build count display)
+- Added Homebrewery-ready subclass document with:
+  - example stat block
+  - QR-linked builder and website access
+
+---
+
+### Why This Matters
+This update makes Corewright significantly easier to:
+- understand at a glance
+- explore through examples
+- use at the table or in play
+- share as a polished standalone system
+
+---
+
+### What’s Next (3.6+)
+- Guided onboarding / tutorial builds
+- Expanded infusion interactions and scaling
+- Additional example build archetypes
+- Visual enhancements (fusion UI, token generation)
+
+---
+
+## 🆕 Previous Update — Version 3.4: Stability & Structure Pass
 
 Version 3.4 focuses on **codebase consistency, readability, and long-term maintainability**.
 
@@ -49,43 +97,6 @@ This release establishes a **stable foundation** for future development, making 
 - Expanded infusion scaling mechanics
 - Enhanced stat block clarity and combat readability
 - Visual upgrades (fusion UI, token generation, etc.)
-
-## 🆕 Previous Update — Version 3.3: Corewright Capstone Expansion & Builder Integration
-
-### 🧠 Level 17 Capstone Modes
-
-At 17th level, Corewrights unlock **Penultimate Golemmancy**, choosing how their construct evolves:
-
----
-
-#### 🔥 Corewright Fusion  
-Become one with your construct.
-
-- Merge with your golem as a powerful fused form (Corewright Fusion)
-- Gain enhanced combat and spellcasting capabilities
-- Use golem physical stats with player mental stats
-- Limited-use transformation (1/long rest)
-
----
-
-### 🧠 Awakened Core  
-Grant your construct true autonomy.
-
-- Gains independent initiative and actions
-- Increased Intelligence, Wisdom, and Charisma
-- Can independently perform skill-based actions (Search, Study, Influence)
-- Includes a quick-reference skill display in the builder
-
----
-
-### ⚙️ Dual Core Convergence  
-Command multiple constructs.
-
-- Maintain two golems simultaneously
-- Each has reduced durability but increased tactical flexibility
-- Ideal for battlefield control and multi-role strategies
-
----
 
 
 ## 🎨 Previous Major Update — Version 3.1: Visual & Prompt System Expansion
