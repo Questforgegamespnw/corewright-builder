@@ -315,3 +315,39 @@ export const INFUSION_DESCRIPTORS_SAFE = {
   colossus:
     "oversized monumental frame, immense limbs, towering proportions, siege-scale construction"
 };
+
+/* =========================
+   ART STYLES
+========================= */
+
+export const ART_STYLES = {
+  sheet:
+    "Present the construct like polished tabletop concept art on a clean neutral background, full-body, centered composition, highly readable silhouette, professional fantasy illustration.",
+
+  portrait:
+    "Portrait-style fantasy illustration focused on the upper body and head, dramatic framing, strong lighting, expressive core glow, detailed material rendering.",
+
+  action:
+    "Dynamic action scene, cinematic fantasy illustration, the construct in motion, dramatic perspective, energy effects, environmental interaction, highly dynamic pose.",
+
+  blueprint:
+    "Arcane blueprint presentation, technical concept sheet, clean orthographic feel, design-study presentation, visible construction logic, labeled visual language, polished fantasy design document aesthetic."
+};
+
+/* =========================
+   ART STYLES (SAFE)
+========================= */
+
+export const ART_STYLES_SAFE = {
+  sheet:
+    "Present the construct like polished tabletop concept art on a clean neutral background, full-body, centered composition, highly readable silhouette, professional fantasy illustration.",
+
+  portrait:
+    "Portrait-style fantasy illustration focused on the upper body and head, dramatic framing, strong lighting, expressive core glow, detailed material rendering.",
+
+  action:
+    "Dynamic fantasy scene, cinematic illustration, the construct in motion, dramatic perspective, magical energy effects, environmental interaction, highly dynamic pose.",
+
+  blueprint:
+    "Arcane blueprint presentation, technical concept sheet, clean orthographic feel, design-study presentation, visible construction logic, labeled visual language, polished fantasy design document aesthetic."
+};

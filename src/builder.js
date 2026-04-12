@@ -3,6 +3,7 @@ import { ENGINES } from "./data/engines.js";
 import { TEMPLATES } from "./data/templates.js";
 import { CONSTRUCT_FORMS } from "./data/constructForms.js";
 import { EXAMPLE_BUILDS } from "./data/exampleBuilds.js";
+import { SPECIAL_CORES } from "./data/specialCores.js";
 import {
   FORM_DESCRIPTORS,
   FORM_DESCRIPTORS_SAFE,
@@ -176,6 +177,7 @@ function buildSingleStatBlockExport(title, golem, player, meta = {}) {
   lines.push(`Template: ${meta.templateName || "None"}`);
   lines.push(`Construct Form: ${meta.formName || "None"}`);
   lines.push(`Engine Core: ${meta.engineName || "None"}`);
+  lines.push(`Special Core: ${meta.specialCoreName || "None"}`);
   lines.push(`Infusions: ${formatExportList(golem.selectedInfusionNames || [])}`);
   lines.push("");
 
@@ -223,12 +225,13 @@ function getStatBlockExportText() {
 
   const player1 = createPlayer(1);
   const golem1 = createGolem(
-    player1,
-    state.template,
-    state.engine,
-    state.form,
-    state.infusions || []
-  );
+  player1,
+  state.template,
+  state.engine,
+  state.form,
+  state.infusions || [],
+  state.specialCore
+);
 
   const template1 = getTemplateById(state.template);
   const form1 = getConstructFormById(state.form);
@@ -256,7 +259,8 @@ function getStatBlockExportText() {
         modeLabel,
         templateName: template1?.name || "None",
         formName: form1?.name || "None",
-        engineName: engine1?.name || "None"
+        engineName: engine1?.name || "None",
+        specialCoreName: golem1.specialCoreName || "None"
       }
     )
   ];
@@ -268,8 +272,9 @@ function getStatBlockExportText() {
       state.template2,
       state.engine2,
       state.form2,
-      state.infusions2 || []
-    );
+      state.infusions2 || [],
+     "none"
+);
 
     const template2 = getTemplateById(state.template2);
     const form2 = getConstructFormById(state.form2);
@@ -281,10 +286,11 @@ function getStatBlockExportText() {
         golem2,
         player2,
         {
-          modeLabel,
+           modeLabel,
           templateName: template2?.name || "None",
           formName: form2?.name || "None",
-          engineName: engine2?.name || "None"
+          engineName: engine2?.name || "None",
+          specialCoreName: "None"
         }
       )
     );
@@ -720,6 +726,10 @@ function getEngineById(id) {
   return ENGINES.find((e) => e.id === id) || null;
 }
 
+function getSpecialCoreById(id) {
+  return SPECIAL_CORES.find((sc) => sc.id === id) || null;
+}
+
 function getInfusionById(id) {
   return INFUSIONS.find((i) => i.id === id) || null;
 }
@@ -790,8 +800,9 @@ function createBaseGolem(player) {
 
     templateName: "None",
     engineName: "None",
+    specialCoreName: "None",
     formName: "None",
-
+    
     hardness: 0,
     hardnessBonus: 0,
     damageReductionAll: 0,
@@ -829,6 +840,16 @@ function getSelectedEngineId(index = 1) {
 function setSelectedEngineId(index = 1, id) {
   const s = suffix(index);
   const select = $(`#engine${s}`);
+  if (!select) return;
+  select.value = id || "none";
+}
+
+function getSelectedSpecialCoreId() {
+  return $("#specialCore")?.value || "none";
+}
+
+function setSelectedSpecialCoreId(id) {
+  const select = $("#specialCore");
   if (!select) return;
   select.value = id || "none";
 }
@@ -920,6 +941,15 @@ function enforceEngineRestrictions(index = 1) {
   if (player.level < 15 && selected !== "none") {
     setSelectedEngineId(index, "none");
   }
+
+}
+function enforceSpecialCoreRestrictions() {
+  const player = createPlayer(1);
+  const selected = getSelectedSpecialCoreId();
+
+  if (player.level < 15 && selected !== "none") {
+    setSelectedSpecialCoreId("none");
+  }
 }
 
 function enforceCapstoneModeRestrictions() {
@@ -984,12 +1014,16 @@ function createGolem(
   selectedTemplateId,
   selectedEngineId,
   selectedFormId,
-  selectedInfusionIds = []
-) {
+  selectedInfusionIds = [],
+  selectedSpecialCoreId = "none"
+)
+
+{
   const golem = createBaseGolem(player);
 
   const template = getTemplateById(selectedTemplateId);
   const engine = getEngineById(selectedEngineId);
+  const specialCore = getSpecialCoreById(selectedSpecialCoreId);
   const form = getConstructFormById(selectedFormId);
   const infusions = selectedInfusionIds.map(getInfusionById).filter(Boolean);
 
@@ -1007,6 +1041,11 @@ function createGolem(
     engine.apply(golem, player);
     golem.engineName = engine.name;
   }
+
+  if (specialCore && selectedSpecialCoreId !== "none") {
+  specialCore.apply(golem, player);
+  golem.specialCoreName = specialCore.name;
+}
 
   for (const infusion of infusions) {
     infusion.apply(golem, player);
@@ -1328,6 +1367,7 @@ function renderStatBlock(golem, player, title = "Arcane Golem") {
     ${formatHeaderLine("Construct Form", golem.formName !== "None" ? golem.formName : null)}
     ${formatHeaderLine("Infusions", golem.selectedInfusionNames)}
     ${formatHeaderLine("Engine Core", golem.engineName !== "None" ? golem.engineName : null)}
+    ${formatHeaderLine("Special Core", golem.specialCoreName !== "None" ? golem.specialCoreName : null)}
   `;
 
   return `
@@ -1392,9 +1432,10 @@ function renderStatBlock(golem, player, title = "Arcane Golem") {
    SUMMARY HELPERS
 ========================================================= */
 
-function renderSelectionSummaryBlock(player, templateId, engineId, formId, infusionIds, title) {
+function renderSelectionSummaryBlock(player, templateId, engineId, specialCoreId, formId, infusionIds, title) {
   const template = getTemplateById(templateId);
   const engine = getEngineById(engineId);
+  const specialCore = getSpecialCoreById(specialCoreId);
   const form = getConstructFormById(formId);
   const infusions = infusionIds.map(getInfusionById).filter(Boolean);
 
@@ -1408,6 +1449,7 @@ function renderSelectionSummaryBlock(player, templateId, engineId, formId, infus
         infusions.length ? infusions.map((i) => escapeHtml(i.name)).join(", ") : "None"
       }<br>
       <strong>Engine Core:</strong> ${escapeHtml(engine?.name || "None")}
+      <br><strong>Special Core:</strong> ${escapeHtml(specialCore?.name || "None")}
     </div>
   `;
 }
@@ -1466,6 +1508,7 @@ function getBuildState() {
     intMod: player1.intMod,
     template: getSelectedTemplateId(1),
     engine: getSelectedEngineId(1),
+    specialCore: getSelectedSpecialCoreId(),
     form: getSelectedFormId(1),
     infusions: getSelectedInfusionIds(player1, 1),
 
@@ -1505,6 +1548,10 @@ function applyBuildState(state) {
     $("#engine").value = state.engine;
   }
 
+  if ($("#specialCore") && typeof state.specialCore !== "undefined") {
+  $("#specialCore").value = state.specialCore;
+  }
+
   if ($("#level2") && typeof state.level2 !== "undefined") {
     $("#level2").value = state.level2;
   }
@@ -1542,6 +1589,7 @@ function updateShareLink() {
     intMod: String(state.intMod),
     template: state.template,
     engine: state.engine,
+    specialCore: state.specialCore,
     form: state.form,
     infusions: state.infusions.join(","),
 
@@ -1570,6 +1618,7 @@ function loadFromQueryString() {
     intMod: params.get("intMod") || undefined,
     template: params.get("template") || undefined,
     engine: params.get("engine") || undefined,
+    specialCore: params.get("specialCore") || undefined,
     form: params.get("form") || undefined,
     infusions: (params.get("infusions") || "")
       .split(",")
@@ -1951,6 +2000,58 @@ function renderEngineCards(index = 1) {
   `;
 }
 
+function renderSpecialCoreCards() {
+  const container = $("#specialCores");
+  if (!container) return;
+
+  const player = createPlayer(1);
+  const selectedId = getSelectedSpecialCoreId();
+  const unlocked = player.level >= 15;
+
+  const cards = SPECIAL_CORES.map((core) => {
+    const isNone = core.id === "none";
+    const selectable = isNone || unlocked;
+    const checked = core.id === selectedId ? "checked" : "";
+    const selectedClass = core.id === selectedId ? "selected" : "";
+    const lockedClass = selectable ? "" : "locked";
+
+    const tags = [
+      core.role ? `<span class="tag">${escapeHtml(core.role)}</span>` : "",
+      core.rarity ? `<span class="tag">${escapeHtml(core.rarity)}</span>` : "",
+      core.category ? `<span class="tag">${escapeHtml(core.category)}</span>` : ""
+    ].join("");
+
+    const preview = getPreviewText(core, player);
+
+    return `
+      <label class="select-card special-core-card ${selectedClass} ${lockedClass}">
+        <input
+          type="radio"
+          name="specialCoreCard"
+          value="${escapeHtml(core.id)}"
+          ${checked}
+          ${!selectable ? "disabled" : ""}
+        >
+        <div class="select-card-header">
+          <strong>${escapeHtml(core.name)}</strong>
+          <div class="card-tags">
+            ${tags}
+            ${!selectable ? `<span class="lock-note">Unlocks at 15</span>` : ""}
+          </div>
+        </div>
+        <div class="select-card-body">
+          ${preview ? `<p>${escapeHtml(preview)}</p>` : ""}
+        </div>
+      </label>
+    `;
+  }).join("");
+
+  container.innerHTML = `
+    ${!unlocked ? `<div class="section-note">Special Cores unlock at level 15. Until then, only None is available.</div>` : ""}
+    ${cards}
+  `;
+}
+
 function renderInfusionOptions(index = 1) {
   const s = suffix(index);
   const container = $(`#infusions${s}`);
@@ -2100,6 +2201,7 @@ function syncSelectedCardsFromHiddenInputs(index = 1) {
   const selectedTemplateId = getSelectedTemplateId(index);
   const selectedFormId = getSelectedFormId(index);
   const selectedEngineId = getSelectedEngineId(index);
+  const selectedSpecialCoreId = index === 1 ? getSelectedSpecialCoreId() : "none";
   const selectedInfusions = new Set(getSelectedInfusionIds(createPlayer(index), index));
 
   const s = suffix(index);
@@ -2118,6 +2220,13 @@ function syncSelectedCardsFromHiddenInputs(index = 1) {
     input.checked = input.value === selectedEngineId;
     input.closest(".engine-card")?.classList.toggle("selected", input.checked);
   });
+
+  if (index === 1) {
+  $all(`#specialCores input[type="radio"]`).forEach((input) => {
+    input.checked = input.value === selectedSpecialCoreId;
+    input.closest(".special-core-card")?.classList.toggle("selected", input.checked);
+  });
+}
 
   $all(`#infusions${s} input[type="checkbox"]`).forEach((input) => {
     input.checked = selectedInfusions.has(input.value);
@@ -2167,15 +2276,18 @@ function setAssemblyExpanded(targetId, expanded = true) {
 
 function autoExpandSelectedSections(index = 1) {
   const s = suffix(index);
-
   const templateId = getSelectedTemplateId(index);
   const formId = getSelectedFormId(index);
   const engineId = getSelectedEngineId(index);
+  const specialCoreId = index === 1 ? getSelectedSpecialCoreId() : "none";
   const infusions = getSelectedInfusionIds(createPlayer(index), index);
 
   if (templateId !== "none") setAssemblyExpanded(`templates${s}-section`, true);
   if (formId !== "none") setAssemblyExpanded(`constructforms${s}-section`, true);
   if (engineId !== "none") setAssemblyExpanded(`engines${s}-section`, true);
+  if (index === 1 && specialCoreId !== "none") {
+  setAssemblyExpanded("specialcores-section", true);
+}
   if (infusions.length > 0) setAssemblyExpanded(`infusions${s}-section`, true);
 }
 
@@ -2194,7 +2306,7 @@ function populateAllCompatibilitySelects() {
   populateCompatibilitySelect("template", TEMPLATES, true);
   populateCompatibilitySelect("constructForm", CONSTRUCT_FORMS, true);
   populateCompatibilitySelect("engine", ENGINES, false);
-
+  populateCompatibilitySelect("specialCore", SPECIAL_CORES, true);
   populateCompatibilitySelect("template2", TEMPLATES, true);
   populateCompatibilitySelect("constructForm2", CONSTRUCT_FORMS, true);
   populateCompatibilitySelect("engine2", ENGINES, false);
@@ -2202,29 +2314,43 @@ function populateAllCompatibilitySelects() {
 
 function renderSelectionPanels(index = 1) {
   normalizeInfusionsForCapacity(index);
-  enforceEngineRestrictions(index);
+enforceEngineRestrictions(index);
 
-  if (index === 1) {
-    enforceCapstoneModeRestrictions();
-  }
+if (index === 1) {
+  enforceSpecialCoreRestrictions();
+  enforceCapstoneModeRestrictions();
+}
 
-  renderTemplateCards(index);
-  renderConstructFormOptions(index);
-  renderInfusionOptions(index);
-  renderEngineCards(index);
-  syncSelectedCardsFromHiddenInputs(index);
+renderTemplateCards(index);
+renderConstructFormOptions(index);
+renderInfusionOptions(index);
+renderEngineCards(index);
+
+if (index === 1) {
+  renderSpecialCoreCards();
+}
+
+syncSelectedCardsFromHiddenInputs(index);
 }
 
 function renderPrimaryOutputs(mode) {
   const player1 = createPlayer(1);
   const templateId1 = getSelectedTemplateId(1);
   const engineId1 = getSelectedEngineId(1);
+  const specialCoreId1 = getSelectedSpecialCoreId();
   const formId1 = getSelectedFormId(1);
   const infusionIds1 = getSelectedInfusionIds(player1, 1);
 
   updateInfusionCapacityDisplay(Math.max(0, player1.intMod), infusionIds1.length, 1);
 
-  const golem1 = createGolem(player1, templateId1, engineId1, formId1, infusionIds1);
+  const golem1 = createGolem(
+  player1,
+  templateId1,
+  engineId1,
+  formId1,
+  infusionIds1,
+  specialCoreId1
+);
 
   let displayGolem = golem1;
   if (mode === "fusion") {
@@ -2281,6 +2407,7 @@ function renderPrimaryOutputs(mode) {
         player1,
         templateId1,
         engineId1,
+        specialCoreId1,
         formId1,
         infusionIds1,
         mode === "single"
@@ -2314,17 +2441,25 @@ function renderSecondaryOutputs(mode) {
 
   updateInfusionCapacityDisplay(Math.max(0, player2.intMod), infusionIds2.length, 2);
 
-  const golem2 = createGolem(player2, templateId2, engineId2, formId2, infusionIds2);
+  const golem2 = createGolem(
+  player2,
+  templateId2,
+  engineId2,
+  formId2,
+  infusionIds2,
+  "none"
+);
 
   if (secondarySummary) {
     secondarySummary.innerHTML = renderSelectionSummaryBlock(
-      player2,
-      templateId2,
-      engineId2,
-      formId2,
-      infusionIds2,
-      "Second Golem"
-    );
+  player2,
+  templateId2,
+  engineId2,
+  "none",
+  formId2,
+  infusionIds2,
+  "Second Golem"
+);
   }
 
   if (secondaryStatBlock) {
@@ -2425,6 +2560,12 @@ function handleCardRadioChange(target) {
     return true;
   }
 
+  if (target.closest("#specialCores")) {
+   setSelectedSpecialCoreId(target.value);
+   updateBuilder();
+   return true;
+  }
+
   return false;
 }
 
@@ -2434,7 +2575,7 @@ function bindEvents() {
 
     if (
       target.matches(
-        '#templates input[type="radio"], #templates2 input[type="radio"], #constructForms input[type="radio"], #constructForms2 input[type="radio"], #engines input[type="radio"], #engines2 input[type="radio"]'
+        '#templates input[type="radio"], #templates2 input[type="radio"], #constructForms input[type="radio"], #constructForms2 input[type="radio"], #engines input[type="radio"], #engines2 input[type="radio"], #specialCores input[type="radio"]'
       )
     ) {
       if (handleCardRadioChange(target)) return;
@@ -2447,6 +2588,7 @@ function bindEvents() {
       target.matches("#template") ||
       target.matches("#constructForm") ||
       target.matches("#engine") ||
+      target.matches("#specialCore") ||
       target.matches("#level2") ||
       target.matches("#intMod2") ||
       target.matches("#template2") ||
