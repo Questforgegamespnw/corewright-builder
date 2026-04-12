@@ -5,6 +5,65 @@ All notable changes to the **Corewright Builder** project will be documented in 
 This project follows a simplified version of [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and uses semantic-style versioning.
 
 ---
+## [3.5.1] – Builder Recovery & Special Core Integration
+
+### 🛠️ Builder Stability Fixes
+- Resolved builder initialization failure caused by missing `ART_STYLES` exports in `descriptors.js`
+- Restored full Assembly rendering for:
+  - Templates
+  - Construct Forms
+  - Infusions
+  - Engine Cores
+- Fixed broken builder state caused by partial data-file mismatch
+- Recovered missing UI styling after incomplete CSS overwrite during 3.3 → 3.4 transition
+
+---
+
+### ⚙️ New System: Special Cores
+- Introduced **Special Core system** as a parallel layer to Engine Cores
+- Special Cores:
+  - exist alongside standard Engine selection
+  - apply via independent `apply()` pipeline
+  - integrate into stat block, export, save/load, and share systems
+
+---
+
+### 🔮 Added: Anima Prime Engine
+- Added **Anima Prime Engine** as a Special Core option
+- Features:
+  - Core Integration (+PB AC, +PB saves, bonus HP scaling)
+  - Distributed Intelligence (spell origin from golem space)
+  - Ultima Mode (1/long rest transformation state)
+- Restricted to **primary golem only**
+- Fully integrated into:
+  - stat block rendering
+  - export text
+  - builder state
+  - share links
+
+---
+
+### 📚 Subclass Page Improvements
+- Added **Default Construct Chassis** reference block to Corewright subclass page
+- Provides clear baseline stat block before Templates, Forms, Engines, and Infusions
+- Improves player onboarding and system clarity
+
+---
+
+### 🧹 Internal Improvements
+- Maintained clean separation between:
+  - Engine system
+  - Special Core system
+- Preserved modular `apply()` architecture across all systems
+- Ensured backward compatibility with existing builds and example data
+
+---
+
+### 🚀 Notes
+This update restores full builder functionality while introducing a new high-tier system layer.  
+Special Cores establish a foundation for future expansion (unique cores, boss cores, and advanced build systems).
+
+---
 
 ## [3.5] – System Alignment, Infusion Pass & UX Refinement
 

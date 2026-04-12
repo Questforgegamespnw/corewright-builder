@@ -20,6 +20,7 @@ Jump straight into the builder and create your construct in seconds:
   - Construct Forms
   - Infusions
   - Engine Cores
+  - Special Cores (high-tier parallel system)
 - Real-time stat block generation (5e-style)
 - Save, load, and share builds
 - Print and export support
@@ -64,6 +65,7 @@ This update makes Corewright significantly easier to:
 - Expanded infusion interactions and scaling
 - Additional example build archetypes
 - Visual enhancements (fusion UI, token generation)
+- Expanded Special Core system (additional cores, boss cores, and variant integrations)
 
 ---
 
@@ -129,6 +131,23 @@ For detailed version history and technical updates, see:
 
 ---
 
+## 🔮 Special Cores
+
+Special Cores are a high-tier system layer that exists **alongside Engine Cores**, rather than replacing them.
+
+- Provide powerful, identity-defining enhancements
+- Apply independently of standard engine effects
+- Designed for late-game or unique character progression
+
+### Current Implementation
+- **Anima Prime Engine**
+  - A legendary secondary core representing pure arcane will
+  - Enhances defense, survivability, and spellcasting flexibility
+  - Grants access to **Ultima Mode**, a powerful 1/long rest transformation
+
+> Note: Special Cores currently apply to the **primary golem only**.
+---
+
 ## 🧑‍💻 Getting Started
 
 ### Run Locally  
@@ -184,6 +203,7 @@ corewright-builder/
 │ ├─ infusions.js
 │ ├─ templates.js
 │ ├─ engines.js
+  ├─ specialCores.js 
 │ ├─ exampleBuilds.js
 │ └─ constructForms.js
 ├─ README.md

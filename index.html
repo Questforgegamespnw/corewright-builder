@@ -91,7 +91,21 @@
                   <div id="templates"></div>
                 </div>
               </div>
+              <!-- --- Special Core --- -->
+            <div class="assembly-card">
+             <button
+                class="assembly-toggle"
+                type="button"
+                data-target="specialcores-section"
+                >
+                <span>Special Core</span>
+                <span class="toggle-icon">+</span>
+              </button>
 
+  <div class="assembly-content is-collapsed" id="specialcores-section">
+    <div id="specialCores"></div>
+  </div>
+</div>
               <!-- --- Construct Forms --- -->
               <div class="assembly-card">
                 <button
@@ -199,6 +213,11 @@
               <select id="engine" tabindex="-1">
                 <option value="none">None</option>
               </select>
+
+              <select id="specialCore" tabindex="-1">
+                <option value="none">None</option>
+              </select>
+              
             </div>
 
             <!-- ========================================= -->
