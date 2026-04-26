@@ -939,15 +939,6 @@ function enforceSpecialCoreRestrictions() {
   // Individual features inside a Special Core may still have their own gates.
 }
 
-function enforceSpecialCoreRestrictions() {
-  const player = createPlayer(1);
-  const selected = getSelectedSpecialCoreId();
-
-  if (player.level < 15 && selected !== "none") {
-    setSelectedSpecialCoreId("none");
-  }
-}
-
 function enforceCapstoneModeRestrictions() {
   const level = createPlayer(1).level;
   const modeSelect = $("#mode");
