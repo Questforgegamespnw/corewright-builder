@@ -934,6 +934,15 @@ function normalizeInfusionsForCapacity(index = 1) {
   setSelectedInfusions(index, trimmed);
 }
 
+function enforceEngineRestrictions(index = 1) {
+  const player = createPlayer(index);
+  const selected = getSelectedEngineId(index);
+
+  if (player.level < 15 && selected !== "none") {
+    setSelectedEngineId(index, "none");
+  }
+}
+
 function enforceSpecialCoreRestrictions() {
   // Special Cores are available from level 1.
   // Individual features inside a Special Core may still have their own gates.
@@ -1993,7 +2002,7 @@ function renderSpecialCoreCards() {
 
   const player = createPlayer(1);
   const selectedId = getSelectedSpecialCoreId();
-  const unlocked = player.level >= 15;
+  const unlocked = true;
 
   const cards = SPECIAL_CORES.map((core) => {
     const isNone = core.id === "none";
@@ -2034,7 +2043,7 @@ function renderSpecialCoreCards() {
   }).join("");
 
   container.innerHTML = `
-    ${!unlocked ? `<div class="section-note">Special Cores unlock at level 15. Until then, only None is available.</div>` : ""}
+   <div class="section-note">Special Cores are unique campaign progression options. Some features may remain dormant until story or tier milestones are reached.</div>
     ${cards}
   `;
 }
@@ -2608,6 +2617,9 @@ function bindEvents() {
 
     const checkbox = infusionCard.querySelector('input[type="checkbox"]');
     if (!checkbox) return;
+
+    // ✅ allow direct checkbox clicks to behave normally
+    if (event.target === checkbox) return;
 
     const index = Number(infusionCard.dataset.infusionIndex || "1");
 
