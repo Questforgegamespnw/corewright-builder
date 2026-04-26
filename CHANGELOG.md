@@ -33,7 +33,7 @@ This project follows a simplified version of [Keep a Changelog](https://keepacha
 - Features:
   - Core Integration (+PB AC, +PB saves, bonus HP scaling)
   - Distributed Intelligence (spell origin from golem space)
-  - Ultima Mode (1/long rest transformation state)
+  - Ultima Mode (1/long rest transformation state once in Ragnarok Tier 4)
 - Restricted to **primary golem only**
 - Fully integrated into:
   - stat block rendering

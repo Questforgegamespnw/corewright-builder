@@ -934,15 +934,11 @@ function normalizeInfusionsForCapacity(index = 1) {
   setSelectedInfusions(index, trimmed);
 }
 
-function enforceEngineRestrictions(index = 1) {
-  const player = createPlayer(index);
-  const selected = getSelectedEngineId(index);
-
-  if (player.level < 15 && selected !== "none") {
-    setSelectedEngineId(index, "none");
-  }
-
+function enforceSpecialCoreRestrictions() {
+  // Special Cores are available from level 1.
+  // Individual features inside a Special Core may still have their own gates.
 }
+
 function enforceSpecialCoreRestrictions() {
   const player = createPlayer(1);
   const selected = getSelectedSpecialCoreId();

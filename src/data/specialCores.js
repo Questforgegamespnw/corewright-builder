@@ -33,7 +33,9 @@ export const SPECIAL_CORES = [
 
         `Distributed Intelligence. When you cast a spell, you can have the spell originate from the golem’s space instead of your own.`,
 
-        `Ultima Mode (1/Long Rest). As a bonus action, the golem enters a transcendent state for 1 minute. While active, it has resistance to all damage, gains a bonus to attack rolls equal to your proficiency bonus, and its attacks deal additional damage equal to your proficiency bonus.
+        `Ultima Mode (Ragnarok Tier 4, 1/Long Rest). This mode is dormant until the Ragnarok Escalation reaches Tier 4.
+
+Once awakened, as a bonus action, the golem enters a transcendent state for 1 minute. While active, it has resistance to all damage, gains a bonus to attack rolls equal to your proficiency bonus, and its attacks deal additional damage equal to your proficiency bonus.
 
 At the start of each of its turns, choose one:
 
